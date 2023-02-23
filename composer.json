@@ -8,12 +8,30 @@
       "RH\\Tweakwise\\": "src/"
     }
   },
+  "require": {
+    "shopware/core": ">=6.4.0",
+    "shopware/administration": "*",
+    "shopware/storefront": "*"
+  },
   "extra": {
     "shopware-plugin-class": "RH\\Tweakwise\\Tweakwise",
+    "plugin-icon": "src/Resources/config/plugin.png",
+    "copyright": "richardhaeser.com",
     "label": {
       "de-DE": "Tweakwise für Shopware 6",
       "en-GB": "Tweakwise for Shopware 6",
       "nl-NL": "Tweakwise voor Shopware 6"
+    },
+    "manufacturerLink": {
+      "de-DE": "https://www.richardhaeser.com",
+      "en-GB": "https://www.richardhaeser.com",
+      "nl-NL": "https://www.richardhaeser.com"
     }
-  }
+  },
+  "authors": [
+    {
+      "name": "richardhaeser.com",
+      "homepage": "https://www.richardhaeser.com"
+    }
+  ]
 }
