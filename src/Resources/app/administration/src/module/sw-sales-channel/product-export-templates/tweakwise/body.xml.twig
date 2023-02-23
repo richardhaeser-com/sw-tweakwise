@@ -1,0 +1,36 @@
+{% set price = product.calculatedPrice %}
+{%- if product.calculatedPrices.count > 0 -%}
+    {% set price = product.calculatedPrices.last %}
+{%- endif -%}
+<item>
+    <id>{{ product.productNumber }}</id>
+    <price>{{ price.unitPrice|number_format(context.currency.itemRounding.decimals, '.', '') }}</price>
+    <name><![CDATA[{{ product.translated.name|raw }}]]></name>
+    {% if product.manufacturer %}
+        <brand><![CDATA[{{ product.manufacturer.translated.name|raw }}]]></brand>
+    {% endif %}
+    <stock>{{ product.availableStock }}</stock>
+    <url>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</url>
+    {% if product.cover.media is defined %}<image>{{ product.cover.media.url }}</image>{% endif %}
+    <attributes>
+        {% for properties in product.properties %}
+            <attribute>
+                <name><![CDATA[{{ properties.group.name|raw }}]]></name>
+                <value><![CDATA[{{ properties.translated.name|raw }}]]></value>
+            </attribute>
+        {% endfor %}
+        <attribute>
+            <name>new</name>
+            <value>{% if product.isNew %}true{% else %}false{% endif %}</value>
+        </attribute>
+        <attribute>
+            <name>keywords</name>
+            <value>{{ product.customSearchKeywords|join(', ') }}</value>
+        </attribute>
+    </attributes>
+    <categories>
+        {% for category in product.categories %}
+            <categoryid>{{ category.id }}</categoryid>
+        {% endfor %}
+    </categories>
+</item>

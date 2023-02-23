@@ -1,0 +1,19 @@
+{
+  "name": "richardhaeser/sw-tweakwise",
+  "description": "Tweakwise for Shopware 6",
+  "type": "shopware-platform-plugin",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "RH\\Tweakwise\\": "src/"
+    }
+  },
+  "extra": {
+    "shopware-plugin-class": "RH\\Tweakwise\\Tweakwise",
+    "label": {
+      "de-DE": "Tweakwise für Shopware 6",
+      "en-GB": "Tweakwise for Shopware 6",
+      "nl-NL": "Tweakwise voor Shopware 6"
+    }
+  }
+}

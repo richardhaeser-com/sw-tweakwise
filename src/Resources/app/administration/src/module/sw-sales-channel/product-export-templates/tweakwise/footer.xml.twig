@@ -1,0 +1,18 @@
+</items>
+
+{% set categoryTree = tw_category_tree(context) %}
+<categories>
+    {% for category in categoryTree %}
+        <category>
+            <categoryid>{{ category.id }}</categoryid>
+            <name><![CDATA[{{ category.name|raw }}]]></name>
+            <rank>{{ loop.index }}</rank>
+            {% if category.parentId %}
+                <parents>
+                    <categoryid>{{ category.parentId }}</categoryid>
+                </parents>
+            {% endif %}
+        </category>
+    {% endfor %}
+</categories>
+</tweakwise>

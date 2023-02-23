@@ -1,0 +1,13 @@
+{
+  "sw-sales-channel": {
+    "detail": {
+      "productComparison": {
+        "templates": {
+          "template-label": {
+            "tweakwise": "Tweakwise product feed"
+          }
+        }
+      }
+    }
+  }
+}
