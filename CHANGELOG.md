@@ -9,4 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [0.9.0] - 24-02-2023
+
+### Added
+
 - Sales channel templates for Tweakwise product feed
