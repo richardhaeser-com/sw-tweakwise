@@ -13,6 +13,9 @@ At the moment the following features are supported:
 
 _All features are tested on a default Shopware 6 installation and in a real-life webshop_
 
+## Changelog
+Do you want an overview of all changes in the past versions? Just have a look at the [changelog](CHANGELOG.md).
+
 ## Roadmap
 Tweakwise offers a lot of really nice features. Those features don't work out-of-the-box on your site
 and therefor those features needs to be integrated into the extension. I don't have an exact roadmap 
