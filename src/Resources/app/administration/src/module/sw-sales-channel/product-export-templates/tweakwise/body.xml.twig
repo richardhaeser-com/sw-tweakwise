@@ -2,6 +2,24 @@
 {%- if product.calculatedPrices.count > 0 -%}
     {% set price = product.calculatedPrices.last %}
 {%- endif -%}
+
+{% set listPrice = false %}
+{% if price.listPrice %}
+    {% set listPrice = price.listPrice.percentage > 0 %}
+{% endif %}
+
+{% set hasRange = product.calculatedPrices.count > 1 %}
+
+{% set displayParent = false %}
+{% if product.variantListingConfig %}
+    {% set displayParent = product.variantListingConfig.displayParent and product.parentId === null %}
+{% endif %}
+
+{% set displayFromVariants = false %}
+{% if displayParent %}
+    {% set displayFromVariants = displayParent and price.unitPrice !== product.calculatedCheapestPrice.unitPrice %}
+{% endif %}
+
 <item>
     <id>{{ product.productNumber }}</id>
     <price>{{ price.unitPrice|number_format(context.currency.itemRounding.decimals, '.', '') }}</price>
@@ -20,11 +38,19 @@
             </attribute>
         {% endfor %}
         <attribute>
-            <name>new</name>
+            <name>sw-new</name>
             <value>{% if product.isNew %}true{% else %}false{% endif %}</value>
         </attribute>
         <attribute>
-            <name>keywords</name>
+            <name>sw-has-discount</name>
+            <value>{% if listPrice and not hasRange and not displayFromVariants %}true{% else %}false{% endif %}</value>
+        </attribute>
+        <attribute>
+            <name>sw-is-topseller</name>
+            <value>{% if product.markAsTopseller %}true{% else %}false{% endif %}</value>
+        </attribute>
+        <attribute>
+            <key>sw-keywords</key>
             <value>{{ product.customSearchKeywords|join(', ') }}</value>
         </attribute>
     </attributes>

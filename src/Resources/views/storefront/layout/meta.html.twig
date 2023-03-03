@@ -1,0 +1,26 @@
+{% sw_extends '@Storefront/storefront/layout/meta.html.twig' %}
+
+{% block layout_head_meta_tags %}
+    {{ parent() }}
+
+    {% if page.extensions.customFields.rh_tweakwise_integration_type == 'js-basic' %}
+        {% set instanceKey = page.extensions.customFields.rh_tweakwise_instancekey %}
+        <script>
+            window.tweakwiseFailover = function (src) {
+                var script = document.createElement("script");
+                script.async = true;
+                script.src = src;
+                document.head.appendChild(script);
+            };
+        </script>
+        <link rel="preload" href="https://gateway.tweakwisenavigator.net/js/starter.js" as="script" />
+        <link
+                rel="preload"
+                href="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"
+                as="script"
+                data-failover-src="https://gateway.tweakwisenavigator.com/js/{{ instanceKey }}/tweakwise.js"
+                onerror="tweakwiseFailover(this.dataset.failoverSrc);"
+        />
+        <script async src="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"></script>
+    {% endif %}
+{% endblock %}
