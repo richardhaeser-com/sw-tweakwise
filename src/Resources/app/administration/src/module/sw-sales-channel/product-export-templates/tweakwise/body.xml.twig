@@ -2,6 +2,24 @@
 {%- if product.calculatedPrices.count > 0 -%}
     {% set price = product.calculatedPrices.last %}
 {%- endif -%}
+
+{% set listPrice = false %}
+{% if price.listPrice %}
+    {% set listPrice = price.listPrice.percentage > 0 %}
+{% endif %}
+
+{% set hasRange = product.calculatedPrices.count > 1 %}
+
+{% set displayParent = false %}
+{% if product.variantListingConfig %}
+    {% set displayParent = product.variantListingConfig.displayParent and product.parentId === null %}
+{% endif %}
+
+{% set displayFromVariants = false %}
+{% if displayParent %}
+    {% set displayFromVariants = displayParent and price.unitPrice !== product.calculatedCheapestPrice.unitPrice %}
+{% endif %}
+
 <item>
     <id>{{ product.productNumber }}</id>
     <price>{{ price.unitPrice|number_format(context.currency.itemRounding.decimals, '.', '') }}</price>
@@ -13,18 +31,36 @@
     <url>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</url>
     {% if product.cover.media is defined %}<image>{{ product.cover.media.url }}</image>{% endif %}
     <attributes>
-        {% for properties in product.properties %}
+        {% set optionGroups = [] %}
+        {% for option in product.options %}
             <attribute>
-                <name><![CDATA[{{ properties.group.name|raw }}]]></name>
-                <value><![CDATA[{{ properties.translated.name|raw }}]]></value>
+                <name><![CDATA[{{ option.group.translated.name|raw }}]]></name>
+                <value><![CDATA[{{ option.translated.name|raw }}]]></value>
             </attribute>
+            {% set optionGroups = optionGroups|merge([option.groupId]) %}
+        {% endfor %}
+        {% for property in product.properties %}
+            {% if not (property.groupId in optionGroups) %}
+                <attribute>
+                    <name><![CDATA[{{ property.group.translated.name|raw }}]]></name>
+                    <value><![CDATA[{{ property.translated.name|raw }}]]></value>
+                </attribute>
+            {% endif %}
         {% endfor %}
         <attribute>
-            <name>new</name>
+            <name>sw-new</name>
             <value>{% if product.isNew %}true{% else %}false{% endif %}</value>
         </attribute>
         <attribute>
-            <name>keywords</name>
+            <name>sw-has-discount</name>
+            <value>{% if listPrice and not hasRange and not displayFromVariants %}true{% else %}false{% endif %}</value>
+        </attribute>
+        <attribute>
+            <name>sw-is-topseller</name>
+            <value>{% if product.markAsTopseller %}true{% else %}false{% endif %}</value>
+        </attribute>
+        <attribute>
+            <key>sw-keywords</key>
             <value>{{ product.customSearchKeywords|join(', ') }}</value>
         </attribute>
     </attributes>

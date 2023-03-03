@@ -1,0 +1,37 @@
+{% sw_extends '@Storefront/storefront/layout/header/search.html.twig' %}
+
+{% block layout_header_search %}
+    {% if page.extensions.customFields.rh_tweakwise_integration_type == 'js-basic' %}
+        <div class="collapse"
+             id="searchCollapse">
+            <div class="header-search">
+                <form action="#"
+                      method="get"
+                      id="tweakwise-input"
+                      class="header-search-form">
+                    {% block layout_header_search_input_group %}
+                        <div class="input-group">
+                            {% block layout_header_search_input %}
+                                {{ parent() }}
+                            {% endblock %}
+
+                            {% block layout_header_search_button %}
+                                <div class="input-group-append">
+                                    <button type="submit"
+                                            class="btn header-search-btn"
+                                            aria-label="{{ "header.searchButton"|trans|striptags }}">
+                                    <span class="header-search-icon">
+                                        {% sw_icon 'search' style {'size': 'sm'} %}
+                                    </span>
+                                    </button>
+                                </div>
+                            {% endblock %}
+                        </div>
+                    {% endblock %}
+                </form>
+            </div>
+        </div>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
