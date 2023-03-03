@@ -5,11 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.9.1]
 
 ### Added
+- Possibility to enable standard javascript implementation
+
 ### Changed
 - Added link to this changelog to the readme of the extension
+- **[BREAKING]** Changed extension key from Tweakwise to RhTweakwise
 
 ## [0.9.0] - 24-02-2023
 
