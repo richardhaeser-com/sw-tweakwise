@@ -9,10 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Possibility to enable standard javascript implementation
+- Added attributes new, discount and topseller to product feed
 
 ### Changed
 - Added link to this changelog to the readme of the extension
 - **[BREAKING]** Changed extension key from Tweakwise to RhTweakwise
+
+### Fixed
+- Exclude property group when one of the properties of that group was already set as a variant option.
 
 ## [0.9.0] - 24-02-2023
 
