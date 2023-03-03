@@ -5,6 +5,19 @@
 
     {% if page.extensions.customFields.rh_tweakwise_integration_type == 'js-basic' %}
         {% set instanceKey = page.extensions.customFields.rh_tweakwise_instancekey %}
+        <style>
+            .twn-starter__products-item a:not([href]):not([tabindex]) {
+                color: #fff;
+            }
+
+            .twn-starter__filter-btn a:not([href]):not([tabindex]) {
+                color: #fff;
+            }
+
+            .twn-product-tile__cart {
+                display: none;
+            }
+        </style>
         <script>
             window.tweakwiseFailover = function (src) {
                 var script = document.createElement("script");

@@ -31,11 +31,21 @@
     <url>{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}</url>
     {% if product.cover.media is defined %}<image>{{ product.cover.media.url }}</image>{% endif %}
     <attributes>
-        {% for properties in product.properties %}
+        {% set optionGroups = [] %}
+        {% for option in product.options %}
             <attribute>
-                <name><![CDATA[{{ properties.group.name|raw }}]]></name>
-                <value><![CDATA[{{ properties.translated.name|raw }}]]></value>
+                <name><![CDATA[{{ option.group.translated.name|raw }}]]></name>
+                <value><![CDATA[{{ option.translated.name|raw }}]]></value>
             </attribute>
+            {% set optionGroups = optionGroups|merge([option.groupId]) %}
+        {% endfor %}
+        {% for property in product.properties %}
+            {% if not (property.groupId in optionGroups) %}
+                <attribute>
+                    <name><![CDATA[{{ property.group.translated.name|raw }}]]></name>
+                    <value><![CDATA[{{ property.translated.name|raw }}]]></value>
+                </attribute>
+            {% endif %}
         {% endfor %}
         <attribute>
             <name>sw-new</name>
