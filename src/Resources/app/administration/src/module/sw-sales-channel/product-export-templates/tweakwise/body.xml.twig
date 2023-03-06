@@ -20,6 +20,15 @@
     {% set displayFromVariants = displayParent and price.unitPrice !== product.calculatedCheapestPrice.unitPrice %}
 {% endif %}
 
+{% set label = '' %}
+{% if (product.markAsTopseller) %}
+    {% set label = "listing.boxLabelTopseller"|trans|sw_sanitize %}
+{% elseif (listPrice and not hasRange and not displayFromVariants) %}
+    {% set label = '&#37;' %}
+{% elseif (product.isNew) %}
+    {% set label = "listing.boxLabelNew"|trans|sw_sanitize %}
+{% endif %}
+
 <item>
     <id>{{ product.productNumber }}</id>
     <price>{{ price.unitPrice|number_format(context.currency.itemRounding.decimals, '.', '') }}</price>
@@ -62,6 +71,10 @@
         <attribute>
             <key>sw-keywords</key>
             <value>{{ product.customSearchKeywords|join(', ') }}</value>
+        </attribute>
+        <attribute>
+            <key>sw-label</key>
+            <value>{{ label }}</value>
         </attribute>
     </attributes>
     <categories>
