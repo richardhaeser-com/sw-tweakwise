@@ -69,11 +69,11 @@
             <value>{% if product.markAsTopseller %}true{% else %}false{% endif %}</value>
         </attribute>
         <attribute>
-            <key>sw-keywords</key>
+            <name>sw-keywords</name>
             <value>{{ product.customSearchKeywords|join(', ') }}</value>
         </attribute>
         <attribute>
-            <key>sw-label</key>
+            <name>sw-label</name>
             <value>{{ label }}</value>
         </attribute>
     </attributes>
