@@ -4,25 +4,27 @@
     {% if page.extensions.customFields.rh_tweakwise_integration_type == 'js-basic' %}
         <div class="collapse" id="searchCollapse">
             <div class="header-search">
-                <div class="input-group">
-                    <input type="search"
-                           name="tn_q"
-                           id="tweakwise-input"
-                           class="form-control header-search-input"
-                           autocomplete="off"
-                           autocapitalize="off"
-                           placeholder="{{ "header.searchPlaceholder"|trans|striptags }}"
-                           aria-label="{{ "header.searchPlaceholder"|trans|striptags }}"
-                           value="{{ page.searchTerm }}"
-                    >
-                    <div class="input-group-append">
-                        <button type="submit"
-                                class="btn header-search-btn"
-                                aria-label="{{ "header.searchButton"|trans|striptags }}">
+                <div class="header-search-form">
+                    <div class="input-group">
+                        <input type="search"
+                               name="tn_q"
+                               id="tweakwise-input"
+                               class="form-control header-search-input"
+                               autocomplete="off"
+                               autocapitalize="off"
+                               placeholder="{{ "header.searchPlaceholder"|trans|striptags }}"
+                               aria-label="{{ "header.searchPlaceholder"|trans|striptags }}"
+                               value="{{ page.searchTerm }}"
+                        >
+                        <div class="input-group-append">
+                            <button type="submit"
+                                    class="btn header-search-btn"
+                                    aria-label="{{ "header.searchButton"|trans|striptags }}">
                         <span class="header-search-icon">
                             {% sw_icon 'search' style {'size': 'sm'} %}
                         </span>
-                        </button>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
