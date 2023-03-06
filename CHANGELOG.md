@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- A label property is now added to the product feed
+
 ### Fixed
 - Fixed issue that was hiding results when submitting search form with basic javascript integration
 
@@ -26,5 +29,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.9.0] - 24-02-2023
 
 ### Added
-
 - Sales channel templates for Tweakwise product feed
