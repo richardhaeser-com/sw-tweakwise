@@ -23,6 +23,8 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         $customFields = $salesChannel->getCustomFields();
         /** @var Page $page */
         $page = $event->getParameters()['page'];
-        $page->addExtensions(['customFields' => new ArrayStruct($customFields)]);
+        if ($page instanceof Page) {
+            $page->addExtensions(['customFields' => new ArrayStruct($customFields)]);
+        }
     }
 }
