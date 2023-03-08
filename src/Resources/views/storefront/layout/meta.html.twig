@@ -5,19 +5,91 @@
 
     {% if page.extensions.customFields.rh_tweakwise_integration_type == 'js-basic' %}
         {% set instanceKey = page.extensions.customFields.rh_tweakwise_instancekey %}
-        <style>
-            .twn-starter__products-item a:not([href]):not([tabindex]) {
-                color: #fff;
-            }
+        <script>
+            window["twn-starter-config"] = {
+                navigation: {
+                    cid: ""
+                },
 
-            .twn-starter__filter-btn a:not([href]):not([tabindex]) {
-                color: #fff;
-            }
+                on: {
+                    "twn.add-to-cart": function (event) {
+                        var shopwareIdAttribute = event.data.attributes.find(attribute => {
+                            return attribute.name === 'product_id'
+                        });
+                        if (shopwareIdAttribute === undefined) {
+                            alert('An error occurred');
+                        }
+                        const productId = shopwareIdAttribute.values[0];
 
-            .twn-product-tile__cart {
-                display: none;
-            }
-        </style>
+                        var form = document.createElement('form');
+                        form.dataset.addToCart = 'true';
+                        form.setAttribute('action', '{{ path('frontend.checkout.line-item.add') }}');
+                        form.setAttribute('method', 'post');
+                        form.setAttribute('id', 'twn-add-to-cart-form');
+
+                        var redirectToField = document.createElement('input');
+                        redirectToField.setAttribute('type', 'hidden');
+                        redirectToField.setAttribute('name', 'redirectTo');
+                        redirectToField.setAttribute('value', 'frontend.detail.page');
+
+                        var redirectParametersField = document.createElement('input');
+                        redirectParametersField.setAttribute('type', 'hidden');
+                        redirectParametersField.setAttribute('name', 'redirectParameters');
+                        redirectParametersField.dataset.redirectParameters = 'true';
+                        redirectParametersField.setAttribute('value', '{"productId": "' + productId + '"}');
+
+                        var lineItemIdField = document.createElement('input');
+                        lineItemIdField.setAttribute('type', 'hidden');
+                        lineItemIdField.setAttribute('name', 'lineItems[' + productId + '][id]');
+                        lineItemIdField.setAttribute('value', productId);
+
+                        var lineItemReferenceIdField = document.createElement('input');
+                        lineItemReferenceIdField.setAttribute('type', 'hidden');
+                        lineItemReferenceIdField.setAttribute('name', 'lineItems[' + productId + '][referencedId]');
+                        lineItemReferenceIdField.setAttribute('value', productId);
+
+                        var lineItemTypeField = document.createElement('input');
+                        lineItemTypeField.setAttribute('type', 'hidden');
+                        lineItemTypeField.setAttribute('name', 'lineItems[' + productId + '][type]');
+                        lineItemTypeField.setAttribute('value', 'product');
+
+                        var lineItemStackableField = document.createElement('input');
+                        lineItemStackableField.setAttribute('type', 'hidden');
+                        lineItemStackableField.setAttribute('name', 'lineItems[' + productId + '][stackable]');
+                        lineItemStackableField.setAttribute('value', '1');
+
+                        var lineItemRemovableField = document.createElement('input');
+                        lineItemRemovableField.setAttribute('type', 'hidden');
+                        lineItemRemovableField.setAttribute('name', 'lineItems[' + productId + '][removable]');
+                        lineItemRemovableField.setAttribute('value', '1');
+
+                        var lineItemQuantityField = document.createElement('input');
+                        lineItemQuantityField.setAttribute('type', 'hidden');
+                        lineItemQuantityField.setAttribute('name', 'lineItems[' + productId + '][quantity]');
+                        lineItemQuantityField.setAttribute('value', '1');
+
+                        var csrfTokenField = document.createElement('input');
+                        csrfTokenField.setAttribute('type', 'hidden');
+                        csrfTokenField.setAttribute('name', '_csrf_token');
+                        csrfTokenField.setAttribute('value', '{{ sw_csrf('frontend.checkout.line-item.add', {"mode": "token"}) }}');
+
+                        form.appendChild(redirectToField);
+                        form.appendChild(redirectParametersField);
+                        form.appendChild(lineItemIdField);
+                        form.appendChild(lineItemReferenceIdField);
+                        form.appendChild(lineItemTypeField);
+                        form.appendChild(lineItemStackableField);
+                        form.appendChild(lineItemRemovableField);
+                        form.appendChild(lineItemQuantityField);
+                        form.appendChild(csrfTokenField);
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                }
+            };
+        </script>
+
         <script>
             window.tweakwiseFailover = function (src) {
                 var script = document.createElement("script");
@@ -26,7 +98,6 @@
                 document.head.appendChild(script);
             };
         </script>
-        <link rel="preload" href="https://gateway.tweakwisenavigator.net/js/starter.js" as="script" />
         <link
                 rel="preload"
                 href="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"
