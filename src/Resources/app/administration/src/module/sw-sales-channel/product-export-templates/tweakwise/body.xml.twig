@@ -76,6 +76,18 @@
             <name>sw-label</name>
             <value>{{ label }}</value>
         </attribute>
+        <attribute>
+            <name>sw-id</name>
+            <value>{{ product.id }}</value>
+        </attribute>
+        <attribute>
+            <name>sw-ean</name>
+            <value>{{ product.ean }}</value>
+        </attribute>
+        <attribute>
+            <name>sw-manufacturer-partnumber</name>
+            <value>{{ product.manufacturerNumber }}</value>
+        </attribute>
     </attributes>
     <categories>
         {% for category in product.categories %}
