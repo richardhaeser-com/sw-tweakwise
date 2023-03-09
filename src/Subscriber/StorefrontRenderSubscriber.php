@@ -8,6 +8,7 @@ use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Navigation\NavigationPage;
 use Shopware\Storefront\Page\Page;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use function array_key_exists;
 
 class StorefrontRenderSubscriber implements EventSubscriberInterface
 {
@@ -21,10 +22,13 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
     {
         $salesChannel = $event->getSalesChannelContext()->getSalesChannel();
         $customFields = $salesChannel->getCustomFields();
-        /** @var Page $page */
-        $page = $event->getParameters()['page'];
-        if ($page instanceof Page) {
-            $page->addExtensions(['customFields' => new ArrayStruct($customFields)]);
+        $parameters = $event->getParameters();
+        if (is_array($parameters) && array_key_exists('page', $parameters)) {
+            /** @var Page $page */
+            $page = $event->getParameters()['page'];
+            if ($page instanceof Page) {
+                $page->addExtensions(['customFields' => new ArrayStruct($customFields)]);
+            }
         }
     }
 }
