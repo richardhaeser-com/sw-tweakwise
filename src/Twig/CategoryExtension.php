@@ -54,6 +54,7 @@ class CategoryExtension extends AbstractExtension
 
         $criteria = new Criteria();
         $criteria->addAssociation('parent');
+        $criteria->addAssociation('products');
         $criteria->addFilter(new EqualsFilter('parentId', $category->getId()));
         $subCategories = $this->categoryRepository->search($criteria, $context->getContext());
 

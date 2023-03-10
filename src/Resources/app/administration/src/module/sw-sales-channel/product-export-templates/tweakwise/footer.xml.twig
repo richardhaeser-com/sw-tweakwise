@@ -3,16 +3,18 @@
 {% set categoryTree = tw_category_tree(context) %}
 <categories>
     {% for category in categoryTree %}
-        <category>
-            <categoryid>{{ category.id }}</categoryid>
-            <name><![CDATA[{{ category.name|raw }}]]></name>
-            <rank>{{ loop.index }}</rank>
-            {% if category.parentId %}
-                <parents>
-                    <categoryid>{{ category.parentId }}</categoryid>
-                </parents>
-            {% endif %}
-        </category>
+        {% if category.childCount or (category.type == 'page' and category.productAssignmentType == 'product' and category.products|length) %}
+            <category>
+                <categoryid>{{ category.id }}</categoryid>
+                <name><![CDATA[{{ category.name|raw }}]]></name>
+                <rank>{{ loop.index }}</rank>
+                {% if category.parentId %}
+                    <parents>
+                        <categoryid>{{ category.parentId }}</categoryid>
+                    </parents>
+                {% endif %}
+            </category>
+        {% endif %}
     {% endfor %}
 </categories>
 </tweakwise>

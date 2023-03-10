@@ -24,7 +24,7 @@
 {% if (product.markAsTopseller) %}
     {% set label = "listing.boxLabelTopseller"|trans|sw_sanitize %}
 {% elseif (listPrice and not hasRange and not displayFromVariants) %}
-    {% set label = '&#37;' %}
+    {% set label = "listing.boxLabelDiscount"|trans|sw_sanitize %}
 {% elseif (product.isNew) %}
     {% set label = "listing.boxLabelNew"|trans|sw_sanitize %}
 {% endif %}
@@ -87,6 +87,10 @@
         <attribute>
             <name>sw-manufacturer-partnumber</name>
             <value>{{ product.manufacturerNumber }}</value>
+        </attribute>
+        <attribute>
+            <name>sw-release-date</name>
+            <value>{% if product.releaseDate %}{{ product.releaseDate|date('Y-m-d') }}{% endif %}</value>
         </attribute>
     </attributes>
     <categories>
