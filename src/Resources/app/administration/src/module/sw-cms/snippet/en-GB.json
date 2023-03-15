@@ -1,0 +1,13 @@
+{
+  "sw-cms": {
+    "elements": {
+      "productBox": {
+        "config": {
+          "label": {
+            "layoutTypeTweakwise": "Tweakwise Merchandise (will override the default product listing)"
+          }
+        }
+      }
+    }
+  }
+}
