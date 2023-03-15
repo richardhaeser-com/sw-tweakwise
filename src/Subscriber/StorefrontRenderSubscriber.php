@@ -21,7 +21,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         $salesChannel = $event->getSalesChannelContext()->getSalesChannel();
         $customFields = $salesChannel->getCustomFields();
         $parameters = $event->getParameters();
-        if (is_array($parameters) && array_key_exists('page', $parameters)) {
+        if ($customFields && is_array($parameters) && array_key_exists('page', $parameters)) {
             /** @var Page $page */
             $page = $event->getParameters()['page'];
             if ($page instanceof Page) {

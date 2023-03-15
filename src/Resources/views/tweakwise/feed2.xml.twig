@@ -1,0 +1,46 @@
+{% block feed_wrapper %}
+<tweakwise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    {% block feed_items %}
+    <items></items>
+    {% endblock %}
+
+    {% block feed_categories %}
+    <categories>
+        <category>
+            <categoryid>root</categoryid>
+            <name>Shopware feed</name>
+        </category>
+
+        {% for salesChannelId, salesChannel in categoryData.salesChannels %}
+            <category>
+                <categoryid>{{ salesChannelId }}</categoryid>
+                <name>{{ salesChannel.name }}</name>
+                <parents>
+                    <categoryid>root</categoryid>
+                </parents>
+            </category>
+
+            {% for domainId, domain in salesChannel.domains %}
+                <category>
+                    <categoryid>{{ domain.rootCategoryId }}-{{ domainId }}</categoryid>
+                    <name>{{ domain.name }}</name>
+                    <parents>
+                        <categoryid>{{ salesChannelId }}</categoryid>
+                    </parents>
+                </category>
+
+                {% for category in domain.categories %}
+                    <category>
+                        <categoryid>{{ category.id }}-{{ domainId }}</categoryid>
+                        <name>{{ category.translated.name }}</name>
+                        <parents>
+                            <categoryid>{{ category.parentId }}-{{ domainId }}</categoryid>
+                        </parents>
+                    </category>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    </categories>
+    {% endblock %}
+</tweakwise>
+{% endblock %}
