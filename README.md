@@ -26,9 +26,6 @@ at the moment, but things you can expect are:
 - With the **Standard Site Search based on the API** you will be able to use Tweakwise without the need to include the JavaScript library of Tweakwise. 
 - The **Autocomplete** feature will also be included.
 
-## Demo
-You can find an implementation of the latest version on https://www.driekleinehaasjes.nl.
-
 ## Support
 This is an opensource extension and the development of this extension is on a voluntary basis. Therefor I can't provide you
 free support. Luckily there are some possibilities to get the most out of the extension.
