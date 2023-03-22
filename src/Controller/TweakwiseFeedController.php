@@ -24,32 +24,11 @@ use function dd;
  */
 class TweakwiseFeedController extends StorefrontController
 {
-    private EntityRepository $salesChannelRepository;
-    private EntityRepository $categoryRepository;
-    private Context $context;
-    private array $categoryData = [];
-    private array $categoryMapping = [];
-
-    private array $productData = [];
     private FeedService $feedService;
 
-    public function __construct(EntityRepository $salesChannelRepository, EntityRepository $categoryRepository, FeedService $feedService)
+    public function __construct(FeedService $feedService)
     {
-        $this->salesChannelRepository = $salesChannelRepository;
-        $this->categoryRepository = $categoryRepository;
-        $this->context = Context::createDefaultContext();
         $this->feedService = $feedService;
-    }
-
-    /**
-     * @Route("/tweakwise/feed2.xml", name="storefront.tweakwise.feed2", methods={"GET"})
-     */
-    public function feed2(): Response
-    {
-        $content = $this->feedService->generateFeed();
-        $response = new Response($content);
-        $response->headers->set('Content-Type', 'text/xml;charset=UTF-8');
-        return $response;
     }
 
     /**
@@ -57,22 +36,9 @@ class TweakwiseFeedController extends StorefrontController
      */
     public function feed(): Response
     {
-        //@todo check if static file exists and is not to old
-
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('active', true));
-        $criteria->addAssociations(['language', 'languages', 'currency', 'currencies', 'domains', 'type', 'customFields', 'customField']);
-        /** @var SalesChannelCollection $salesChannels */
-        $salesChannels = $this->salesChannelRepository->search($criteria, $this->context)->getEntities();
-        $this->defineCategories($salesChannels);
-
-        $response = $this->render('@Storefront/tweakwise/feed.xml.twig', [
-            'categoryData' => $this->categoryData,
-            'categoryMapping' => $this->categoryMapping
-        ]);
+        $content = $this->feedService->generateFeed();
+        $response = new Response($content);
         $response->headers->set('Content-Type', 'text/xml;charset=UTF-8');
-
-        dd($response->getContent());
         return $response;
     }
 
