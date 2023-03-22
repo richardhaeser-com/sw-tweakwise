@@ -124,15 +124,17 @@
                 {% set rank = rank + 1 %}
 
                 {% for category in domain.categories %}
-                    <category>
-                        <categoryid>{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
-                        <name>{{ category.translated.name }}</name>
-                        <rank>{{ rank }}</rank>
-                        <parents>
-                            <categoryid>{{ md5(category.parentId ~ '_' ~ domainId) }}</categoryid>
-                        </parents>
-                    </category>
-                    {% set rank = rank + 1 %}
+                    {% if category.childCount or (category.type == 'page' and category.productAssignmentType == 'product' and category.products|length) %}
+                        <category>
+                            <categoryid>{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
+                            <name>{{ category.translated.name }}</name>
+                            <rank>{{ rank }}</rank>
+                            <parents>
+                                <categoryid>{{ md5(category.parentId ~ '_' ~ domainId) }}</categoryid>
+                            </parents>
+                        </category>
+                        {% set rank = rank + 1 %}
+                    {% endif %}
                 {% endfor %}
             {% endfor %}
         {% endfor %}
