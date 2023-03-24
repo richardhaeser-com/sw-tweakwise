@@ -79,6 +79,10 @@
                                             <name>sw-keywords</name>
                                             <value>{{ product.customSearchKeywords|join(', ') }}</value>
                                         </attribute>
+                                        <attribute>
+                                            <name>sw-product-number</name>
+                                            <value>{{ product.productNumber }}</value>
+                                        </attribute>
                                         {% set label = '' %}
                                         {% if (product.markAsTopseller) %}
                                             {% set label = "listing.boxLabelTopseller"|trans|sw_sanitize %}
