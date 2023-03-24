@@ -5,7 +5,7 @@
         {% if page.extensions.customFields.rh_tweakwise_integration_type == 'js-basic' %}
             <script>
                 window["twn-starter-config"]["navigation"]["output"] = 'tweakwise-output-listing';
-                window["twn-starter-config"]["navigation"]["cid"] = '{{ page.navigationId }}';
+                window["twn-starter-config"]["navigation"]["cid"] = '{{ md5(page.navigationId ~ '_' ~ context.domainId) }}';
             </script>
 
             <div id="tweakwise-output-listing"></div>

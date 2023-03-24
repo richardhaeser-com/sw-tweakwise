@@ -13,7 +13,7 @@
                     {% block feed_item %}
                     <item>
                         {% block feed_item_inner %}
-                            <id>{{ product.productNumber }} ({{ domain.lang }})</id>
+                            <id>{{ product.productNumber }} ({{ domain.name }})</id>
                             <price>{{ price.unitPrice|number_format(context.currency.itemRounding.decimals, '.', '') }}</price>
                             <name><![CDATA[{{ product.translated.name|raw }}]]></name>
                             <stock>{{ product.availableStock }}</stock>
@@ -33,6 +33,20 @@
                             {% block feed_item_attributes %}
                                 <attributes>
                                     {% block feed_item_attributes_inner %}
+                                        {% if product.options %}
+                                        <attribute>
+                                            <name>Selected option</name>
+                                            <value>
+                                                <![CDATA[
+                                        {% for option in product.options %}
+                                            {{ option.group.translated.name|raw }}: {{ option.translated.name|raw }}
+                                            {% if not loop.last %}|{% endif %}
+                                        {% endfor %}
+                                                ]]>
+                                            </value>
+                                        </attribute>
+                                        {% endif %}
+
                                         {% set optionGroups = [] %}
                                         {% for option in product.options %}
                                             <attribute>

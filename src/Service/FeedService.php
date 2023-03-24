@@ -2,8 +2,14 @@
 
 namespace RH\Tweakwise\Service;
 
+use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
+use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
+use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
+use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
+use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Adapter\Twig\TemplateFinder;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
@@ -31,21 +37,34 @@ class FeedService
     private EntityRepository $productsRepository;
     private AbstractProductPriceCalculator $priceCalculator;
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
+    private ProductListingLoader $listingLoader;
+    private ProductStreamBuilderInterface $productStreamBuilder;
 
-    public function __construct(EntityRepository $salesChannelRepository, EntityRepository $categoryRepository, EntityRepository $productsRepository, Environment $twig, TemplateFinder $templateFinder, AbstractProductPriceCalculator $priceCalculator, AbstractSalesChannelContextFactory $salesChannelContextFactory)
+    public function __construct(
+        EntityRepository $salesChannelRepository,
+        EntityRepository $categoryRepository,
+        Environment $twig,
+        TemplateFinder $templateFinder,
+        AbstractSalesChannelContextFactory $salesChannelContextFactory,
+        ProductListingLoader $listingLoader,
+        ProductStreamBuilderInterface $productStreamBuilder
+    )
     {
         $this->salesChannelRepository = $salesChannelRepository;
         $this->categoryRepository = $categoryRepository;
-        $this->productsRepository = $productsRepository;
         $this->context = Context::createDefaultContext();
         $this->twig = $twig;
         $this->templateFinder = $templateFinder;
-        $this->priceCalculator = $priceCalculator;
         $this->salesChannelContextFactory = $salesChannelContextFactory;
+        $this->listingLoader = $listingLoader;
+        $this->productStreamBuilder = $productStreamBuilder;
     }
 
     public function generateFeed()
     {
+        // See vendor/shopware/core/Content/Product/SalesChannel/Listing/ProductListingRoute.php:22
+
+
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addAssociations(['language', 'languages', 'currency', 'currencies', 'domains', 'domains.salesChannel', 'domains.language', 'domains.language.translationCode', 'type', 'customFields', 'customField']);
@@ -108,34 +127,31 @@ class FeedService
     {
         $salesChannel = $domain->getSalesChannel();
         $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $domain->getLanguageId()]);
-        $context = new Context(new SystemSource(), [], $domain->getCurrencyId(), [$domain->getLanguageId(), $salesChannel->getLanguageId()]);
 
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsAnyFilter('visibilities.salesChannel.id', [$salesChannel->getId()]));
-
         $criteria->addAssociation('customFields');
-        $criteria->addAssociation('categories');
         $criteria->addAssociation('options');
         $criteria->addAssociation('options.group');
         $criteria->addAssociation('properties');
         $criteria->addAssociation('properties.group');
-        $criteria->addAssociation('price');
-        $criteria->addAssociation('cover');
-        $criteria->addAssociation('prices');
-        $criteria->addAssociation('children');
         $criteria->addAssociation('manufacturer');
-        $criteria->addAssociation('calculatedPrices');
-
+        $criteria->addAssociation('categories');
         $criteria->getAssociation('seoUrls')
             ->setLimit(1)
             ->addFilter(new EqualsFilter('isCanonical', true));
 
         $criteria->addAssociation('seoUrls.url');
-        $criteria->addAssociation('seoUrls.sales');
-        $products = $this->productsRepository->search($criteria, $context);
 
-        $this->priceCalculator->calculate($products, $salesChannelContext);
-        $this->categoryData['salesChannels'][$salesChannel->getId()]['domains'][$domain->getId() ]['products'] = $products->getElements();
+        $criteria->addFilter(
+            new ProductAvailableFilter($salesChannel->getId(), ProductVisibilityDefinition::VISIBILITY_ALL)
+        );
+
+        $entities = $this->listingLoader->load($criteria, $salesChannelContext);
+
+        $result = ProductListingResult::createFrom($entities);
+        $result->addState(...$entities->getStates());
+
+        $this->categoryData['salesChannels'][$salesChannel->getId()]['domains'][$domain->getId() ]['products'] = $result->getElements();
     }
 
     protected function parseCategory(array $categories, CategoryEntity $categoryEntity, Context $context, SalesChannelDomainEntity $domainEntity, bool $includeCurrentLevel = true): array

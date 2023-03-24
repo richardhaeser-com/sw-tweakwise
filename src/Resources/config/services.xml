@@ -25,11 +25,11 @@
         <service id="RH\Tweakwise\Service\FeedService" public="true">
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="category.repository"/>
-            <argument type="service" id="product.repository"/>
             <argument type="service" id="Twig\Environment"/>
             <argument type="service" id="Shopware\Core\Framework\Adapter\Twig\TemplateFinder"/>
-            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Price\ProductPriceCalculator"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
+            <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
         </service>
     </services>
 </container>
