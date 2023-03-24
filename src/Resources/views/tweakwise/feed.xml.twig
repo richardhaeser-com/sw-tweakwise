@@ -13,7 +13,7 @@
                     {% block feed_item %}
                     <item>
                         {% block feed_item_inner %}
-                            <id>{{ product.productNumber }} - {{ domain.name }}</id>
+                            <id>{{ product.productNumber }} ({{ crc32(domainId) }})</id>
                             <price>{{ price.unitPrice|number_format(context.currency.itemRounding.decimals, '.', '') }}</price>
                             <name><![CDATA[{{ product.translated.name|raw }}]]></name>
                             <stock>{{ product.availableStock }}</stock>
@@ -34,17 +34,17 @@
                                 <attributes>
                                     {% block feed_item_attributes_inner %}
                                         {% if product.options %}
-                                        <attribute>
-                                            <name>Selected option</name>
-                                            <value>
-                                                <![CDATA[
-                                        {% for option in product.options %}
-                                            {{ option.group.translated.name|raw }}: {{ option.translated.name|raw }}
-                                            {% if not loop.last %}|{% endif %}
-                                        {% endfor %}
-                                                ]]>
-                                            </value>
-                                        </attribute>
+                                            <attribute>
+                                                <name>Selected option</name>
+                                                <value>
+                                                    <![CDATA[
+                                            {% for option in product.options %}
+                                                {{ option.group.translated.name|raw }}: {{ option.translated.name|raw }}
+                                                {% if not loop.last %}|{% endif %}
+                                            {% endfor %}
+                                                    ]]>
+                                                </value>
+                                            </attribute>
                                         {% endif %}
 
                                         {% set optionGroups = [] %}
@@ -69,7 +69,7 @@
                                         </attribute>
                                         <attribute>
                                             <name>sw-has-discount</name>
-                                            <value>{% if listPrice and not hasRange and not displayFromVariants %}true{% else %}false{% endif %}</value>
+                                            <value>{% if listPrice %}true{% else %}false{% endif %}</value>
                                         </attribute>
                                         <attribute>
                                             <name>sw-is-topseller</name>
@@ -79,6 +79,16 @@
                                             <name>sw-keywords</name>
                                             <value>{{ product.customSearchKeywords|join(', ') }}</value>
                                         </attribute>
+                                        {% set label = '' %}
+                                        {% if (product.markAsTopseller) %}
+                                            {% set label = "listing.boxLabelTopseller"|trans|sw_sanitize %}
+                                        {% elseif (listPrice) %}
+                                            {% set label = "listing.boxLabelDiscount"|trans|sw_sanitize %}
+                                        {% elseif (product.isNew) %}
+                                            {% set label = "listing.boxLabelNew"|trans|sw_sanitize %}
+                                        {% elseif (product.availableStock < 1) %}
+                                            {% set label = "listing.boxLabelSoldout"|trans|sw_sanitize %}
+                                        {% endif %}
                                         <attribute>
                                             <name>sw-label</name>
                                             <value>{{ label }}</value>
