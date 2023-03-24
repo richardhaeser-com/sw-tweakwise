@@ -13,6 +13,10 @@
         <service id="RH\Tweakwise\Twig\Md5Extension">
             <tag name="twig.extension"/>
         </service>
+        <service id="RH\Tweakwise\Twig\ImageResizeExtension">
+            <argument type="service" id="RH\Tweakwise\Service\ImageResizeService" />
+            <tag name="twig.extension"/>
+        </service>
         <service id="RH\Tweakwise\Subscriber\StorefrontRenderSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
@@ -22,6 +26,11 @@
             </call>
             <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
         </service>
+        <service id="RH\Tweakwise\Service\ImageResizeService">
+            <argument type="service" id="kernel"/>
+            <argument type="service" id="shopware.asset.public"/>
+        </service>
+
         <service id="RH\Tweakwise\Service\FeedService" public="true">
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="category.repository"/>
