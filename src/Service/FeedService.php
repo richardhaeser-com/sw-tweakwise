@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Service;
 
+use League\Flysystem\FilesystemInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
@@ -22,9 +23,11 @@ use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Twig\Environment;
 use function array_key_exists;
+use function time;
 
 class FeedService
 {
+    public const EXPORT_PATH = 'tweakwise/feed.xml';
     private EntityRepository $salesChannelRepository;
     private EntityRepository $categoryRepository;
     private Context $context;
@@ -35,7 +38,7 @@ class FeedService
     private AbstractProductPriceCalculator $priceCalculator;
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
     private ProductListingLoader $listingLoader;
-    private ProductStreamBuilderInterface $productStreamBuilder;
+    private FilesystemInterface $filesystem;
 
     public function __construct(
         EntityRepository $salesChannelRepository,
@@ -44,7 +47,7 @@ class FeedService
         TemplateFinder $templateFinder,
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
         ProductListingLoader $listingLoader,
-        ProductStreamBuilderInterface $productStreamBuilder
+        FilesystemInterface $filesystem
     )
     {
         $this->salesChannelRepository = $salesChannelRepository;
@@ -54,7 +57,20 @@ class FeedService
         $this->templateFinder = $templateFinder;
         $this->salesChannelContextFactory = $salesChannelContextFactory;
         $this->listingLoader = $listingLoader;
-        $this->productStreamBuilder = $productStreamBuilder;
+        $this->filesystem = $filesystem;
+    }
+
+    public function readFeed(): string
+    {
+        if (!$this->filesystem->has(self::EXPORT_PATH) || time() - $this->getTimestampOfFeed() > 86400) {
+            $this->generateFeed();
+        }
+        return $this->filesystem->read(self::EXPORT_PATH);
+    }
+
+    public function getTimestampOfFeed(): int
+    {
+        return $this->filesystem->getTimestamp(self::EXPORT_PATH);
     }
 
     public function generateFeed()
@@ -85,7 +101,12 @@ class FeedService
         $content = $this->twig->render($this->resolveView('tweakwise/feed.xml.twig'), [
             'categoryData' => $this->categoryData
         ]);
-        return $content;
+
+        if ($this->filesystem->has(self::EXPORT_PATH)) {
+            $this->filesystem->delete(self::EXPORT_PATH);
+        }
+
+        $this->filesystem->write(self::EXPORT_PATH, $content);
     }
 
     private function resolveView(string $view): string

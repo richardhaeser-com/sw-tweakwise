@@ -31,6 +31,11 @@
             <argument type="service" id="shopware.asset.public"/>
         </service>
 
+        <service id="RH\Tweakwise\Command\GenerateFeedCommand">
+            <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
+            <tag name="console.command"/>
+        </service>
+
         <service id="RH\Tweakwise\Service\FeedService" public="true">
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="category.repository"/>
@@ -38,7 +43,7 @@
             <argument type="service" id="Shopware\Core\Framework\Adapter\Twig\TemplateFinder"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
-            <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
+            <argument type="service" id="shopware.filesystem.private"/>
         </service>
     </services>
 </container>
