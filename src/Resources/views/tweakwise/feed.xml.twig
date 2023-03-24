@@ -13,7 +13,7 @@
                     {% block feed_item %}
                     <item>
                         {% block feed_item_inner %}
-                            <id>{{ product.productNumber }} ({{ domain.name }})</id>
+                            <id>{{ product.productNumber }} - {{ domain.name }}</id>
                             <price>{{ price.unitPrice|number_format(context.currency.itemRounding.decimals, '.', '') }}</price>
                             <name><![CDATA[{{ product.translated.name|raw }}]]></name>
                             <stock>{{ product.availableStock }}</stock>
