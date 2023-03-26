@@ -9,10 +9,11 @@ about Tweakwise can be found on their [website](https://www.tweakwise.com).
 This extension is still in development. I will add more and more features over time.
 At the moment the following features are supported:
 
-- Fully customizable product feed which out-of-the-box gives you a valid feed for Tweakwise (per sales-channel, one feed)
-- Basic JavaScript implementation for search and category listings
+- Fully customizable product feed which out-of-the-box gives you a valid feed for Tweakwise (multi-channel, multi-language)
+- Instant search (JS)
+- Merchandise (JS)
 
-_All features are tested on a default Shopware 6 installation and in a real-life webshop_
+_All features are tested on a default Shopware 6.4 installation and in a real-life webshop._
 
 ## Changelog
 Do you want an overview of all changes in the past versions? Just have a look at the [changelog](CHANGELOG.md).
@@ -28,24 +29,8 @@ at the moment, but things you can expect are:
 
 ## Support
 This is an opensource extension and the development of this extension is on a voluntary basis. Therefor I can't provide you
-free support. Luckily there are some possibilities to get the most out of the extension.
-
-### Documentation
-You can find a small manual at [GitHub](https://github.com/richardhaeser-com/sw-tweakwise/wiki/Documentation). 
-This manual will help you to setup the extension. The documentation will be updated on every release so
-make sure you keep an eye on it.
-
-### Bugs
-As I am just a human, I am sure there are bugs in this extension. If you have found such a bug, please
-report them on [GitHub](https://github.com/richardhaeser-com/sw-tweakwise/issues).
-
-### Feature requests
-Do you want a feature of Tweakwise that is not yet implemented, please [get in touch](mailto:support@richardhaeser.com) with me. Together we can discuss 
-when this feature can be implemented and on what conditions.
-
-### Additional support
-If you have a difficult time to get the extension working and the manual is not giving you the information you need,
-you are able to get paid support. Please [get in touch](mailto:support@richardhaeser.com) with me so we can discuss the possibilities.
+free support. If you want support, you can buy this extension in the Shopware Store. You will get free updates and free support as long
+as you have an active subscription.
 
 ## About me
 My name is Richard Haeser. I'm a freelance PHP-developer and specialised in creating value

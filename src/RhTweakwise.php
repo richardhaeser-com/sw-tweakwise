@@ -114,6 +114,18 @@ class RhTweakwise extends Plugin
                         ]
                     ],
                     [
+                        'name' => 'rh_tweakwise_exclude_from_feed',
+                        'type' => CustomFieldTypes::CHECKBOX,
+                        'config' => [
+                            'label' => [
+                                'en-GB' => 'Exclude sales-channel from product feed',
+                                'de-DE' => 'Schließen Sie den Vertriebskanal aus dem Produkt-Feed aus',
+                                'nl-NL' => 'Verkoopkanaal uitsluiten van product feed'
+                            ],
+                            'customFieldPosition' => 2
+                        ]
+                    ],
+                    [
                         'name' => 'rh_tweakwise_integration_type',
                         'type' => CustomFieldTypes::SELECT,
                         'config' => [
@@ -124,7 +136,7 @@ class RhTweakwise extends Plugin
                                 'de-DE' => 'Weg der Integration',
                                 'nl-NL' => 'Manier van integratie'
                             ],
-                            'customFieldPosition' => 2,
+                            'customFieldPosition' => 3,
                             'options' => [
                                 [
                                     'value' => 'no-integration',

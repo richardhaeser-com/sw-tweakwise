@@ -10,8 +10,40 @@
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader"/>
             <tag name="twig.extension"/>
         </service>
+        <service id="RH\Tweakwise\Twig\HashExtension">
+            <tag name="twig.extension"/>
+        </service>
+        <service id="RH\Tweakwise\Twig\ImageResizeExtension">
+            <argument type="service" id="RH\Tweakwise\Service\ImageResizeService" />
+            <tag name="twig.extension"/>
+        </service>
         <service id="RH\Tweakwise\Subscriber\StorefrontRenderSubscriber">
             <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="RH\Tweakwise\Controller\TweakwiseFeedController" public="true">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
+        </service>
+        <service id="RH\Tweakwise\Service\ImageResizeService">
+            <argument type="service" id="kernel"/>
+            <argument type="service" id="shopware.asset.public"/>
+        </service>
+
+        <service id="RH\Tweakwise\Command\GenerateFeedCommand">
+            <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="RH\Tweakwise\Service\FeedService" public="true">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="category.repository"/>
+            <argument type="service" id="Twig\Environment"/>
+            <argument type="service" id="Shopware\Core\Framework\Adapter\Twig\TemplateFinder"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
+            <argument type="service" id="shopware.filesystem.private"/>
         </service>
     </services>
 </container>

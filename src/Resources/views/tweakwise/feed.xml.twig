@@ -1,0 +1,190 @@
+{% block feed_wrapper %}
+<tweakwise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <timestamp>{{ date().timestamp }}</timestamp>
+    {% block feed_items %}
+    <items>
+        {% for salesChannelId, salesChannel in categoryData.salesChannels %}
+            {% for domainId, domain in salesChannel.domains %}
+                {% for product in domain.products %}
+                    {% set price = product.calculatedPrice %}
+                    {%- if product.calculatedPrices.count > 0 -%}
+                        {% set price = product.calculatedPrices.last %}
+                    {%- endif -%}
+
+                    {% block feed_item %}
+                    <item>
+                        {% block feed_item_inner %}
+                            <id>{{ product.productNumber }} ({{ crc32(domainId) }})</id>
+                            <price>{{ price.unitPrice|number_format(context.currency.itemRounding.decimals, '.', '') }}</price>
+                            <name><![CDATA[{{ product.translated.name|raw }}]]></name>
+                            <stock>{{ product.availableStock }}</stock>
+                            {% if product.manufacturer %}
+                                <brand><![CDATA[{{ product.manufacturer.translated.name|raw }}]]></brand>
+                            {% endif %}
+                            {% for url in product.seoUrls %}
+                                <url>{{ domain.url ~ url.seoPathInfo }}</url>
+                            {% endfor %}
+
+                            {% if product.cover.media is defined %}<image>{{ rh_imageResize(product.cover.media.url, 500, 0, 'png') }}</image>{% endif %}
+                            <categories>
+                                {% for category in product.categories %}
+                                    <categoryid>{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
+                                {% endfor %}
+                            </categories>
+                            {% block feed_item_attributes %}
+                                <attributes>
+                                    {% block feed_item_attributes_inner %}
+                                        {% if product.options %}
+                                            <attribute>
+                                                <name>Selected option</name>
+                                                <value>
+                                                    <![CDATA[
+                                            {% for option in product.options %}
+                                                {{ option.group.translated.name|raw }}: {{ option.translated.name|raw }}
+                                                {% if not loop.last %}|{% endif %}
+                                            {% endfor %}
+                                                    ]]>
+                                                </value>
+                                            </attribute>
+                                        {% endif %}
+
+                                        {% set optionGroups = [] %}
+                                        {% for option in product.options %}
+                                            <attribute>
+                                                <name><![CDATA[{{ option.group.translated.name|raw }}]]></name>
+                                                <value><![CDATA[{{ option.translated.name|raw }}]]></value>
+                                            </attribute>
+                                            {% set optionGroups = optionGroups|merge([option.groupId]) %}
+                                        {% endfor %}
+                                        {% for property in product.properties %}
+                                            {% if not (property.groupId in optionGroups) %}
+                                                <attribute>
+                                                    <name><![CDATA[{{ property.group.translated.name|raw }}]]></name>
+                                                    <value><![CDATA[{{ property.translated.name|raw }}]]></value>
+                                                </attribute>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <attribute>
+                                            <name>sw-new</name>
+                                            <value>{% if product.isNew %}true{% else %}false{% endif %}</value>
+                                        </attribute>
+                                        <attribute>
+                                            <name>sw-has-discount</name>
+                                            <value>{% if listPrice %}true{% else %}false{% endif %}</value>
+                                        </attribute>
+                                        <attribute>
+                                            <name>sw-is-topseller</name>
+                                            <value>{% if product.markAsTopseller %}true{% else %}false{% endif %}</value>
+                                        </attribute>
+                                        <attribute>
+                                            <name>sw-keywords</name>
+                                            <value>{{ product.customSearchKeywords|join(', ') }}</value>
+                                        </attribute>
+                                        <attribute>
+                                            <name>sw-product-number</name>
+                                            <value>{{ product.productNumber }}</value>
+                                        </attribute>
+                                        {% set label = '' %}
+                                        {% if (product.markAsTopseller) %}
+                                            {% set label = "listing.boxLabelTopseller"|trans|sw_sanitize %}
+                                        {% elseif (listPrice) %}
+                                            {% set label = "listing.boxLabelDiscount"|trans|sw_sanitize %}
+                                        {% elseif (product.isNew) %}
+                                            {% set label = "listing.boxLabelNew"|trans|sw_sanitize %}
+                                        {% elseif (product.availableStock < 1) %}
+                                            {% set label = "listing.boxLabelSoldout"|trans|sw_sanitize %}
+                                        {% endif %}
+                                        <attribute>
+                                            <name>sw-label</name>
+                                            <value>{{ label }}</value>
+                                        </attribute>
+                                        <attribute>
+                                            <name>sw-id</name>
+                                            <value>{{ product.id }}</value>
+                                        </attribute>
+                                        <attribute>
+                                            <name>sw-ean</name>
+                                            <value>{{ product.ean }}</value>
+                                        </attribute>
+                                        <attribute>
+                                            <name>sw-manufacturer-partnumber</name>
+                                            <value>{{ product.manufacturerNumber }}</value>
+                                        </attribute>
+                                        <attribute>
+                                            <name>sw-release-date</name>
+                                            <value>{% if product.releaseDate %}{{ product.releaseDate|date('Y-m-d') }}{% endif %}</value>
+                                        </attribute>
+                                    {% endblock %}
+                                </attributes>
+                            {% endblock %}
+                        {% endblock %}
+                    </item>
+                    {% endblock %}
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    </items>
+    {% endblock %}
+
+    {% block feed_categories %}
+        {% set rank = 1 %}
+
+        <categories>
+            {% block feed_categories_root %}
+                <category>
+                    <categoryid>root</categoryid>
+                    <name>Shopware feed</name>
+                    <rank>{{ rank }}</rank>
+                </category>
+            {% endblock %}
+            {% set rank = rank + 1 %}
+
+        {% for salesChannelId, salesChannel in categoryData.salesChannels %}
+            {% block feed_categories_saleschannel %}
+                <category>
+                    <categoryid>{{ md5(salesChannelId) }}</categoryid>
+                    <name>{{ salesChannel.name }}</name>
+                    <rank>{{ rank }}</rank>
+                    <parents>
+                        <categoryid>root</categoryid>
+                    </parents>
+                </category>
+            {% endblock %}
+            {% set rank = rank + 1 %}
+
+            {% for domainId, domain in salesChannel.domains %}
+                {% block feed_categories_domain %}
+                    <category>
+                        <categoryid>{{ md5(domain.rootCategoryId ~ '_' ~ domainId) }}</categoryid>
+                        <name>{{ domain.name }}</name>
+                        <rank>{{ rank }}</rank>
+                        <parents>
+                            <categoryid>{{ md5(salesChannelId) }}</categoryid>
+                        </parents>
+                    </category>
+                {% endblock %}
+                {% set rank = rank + 1 %}
+
+                {% for category in domain.categories %}
+                    {% block feed_categories_wrapper %}
+                        {% if category.childCount or (category.type == 'page' and category.productAssignmentType == 'product' and category.products|length) %}
+                            {% block feed_categories_item %}
+                                <category>
+                                    <categoryid>{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
+                                    <name>{{ category.translated.name }}</name>
+                                    <rank>{{ rank }}</rank>
+                                    <parents>
+                                        <categoryid>{{ md5(category.parentId ~ '_' ~ domainId) }}</categoryid>
+                                    </parents>
+                                </category>
+                            {% endblock %}
+                            {% set rank = rank + 1 %}
+                        {% endif %}
+                    {% endblock %}
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    </categories>
+    {% endblock %}
+</tweakwise>
+{% endblock %}
