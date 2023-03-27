@@ -156,7 +156,7 @@
                 {% block feed_categories_domain %}
                     <category>
                         <categoryid>{{ md5(domain.rootCategoryId ~ '_' ~ domainId) }}</categoryid>
-                        <name>{{ domain.name }}</name>
+                        <name>{{ domain.lang }}</name>
                         <rank>{{ rank }}</rank>
                         <parents>
                             <categoryid>{{ md5(salesChannelId) }}</categoryid>
