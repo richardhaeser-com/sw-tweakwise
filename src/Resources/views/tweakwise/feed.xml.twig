@@ -86,13 +86,13 @@
                                         </attribute>
                                         {% set label = '' %}
                                         {% if (product.markAsTopseller) %}
-                                            {% set label = "listing.boxLabelTopseller"|trans|sw_sanitize %}
+                                            {% set label = "listing.boxLabelTopseller"|rh_translate(domain.lang)|sw_sanitize %}
                                         {% elseif (listPrice) %}
-                                            {% set label = "listing.boxLabelDiscount"|trans|sw_sanitize %}
+                                            {% set label = "listing.boxLabelDiscount"|rh_translate(domain.lang)|sw_sanitize %}
                                         {% elseif (product.isNew) %}
-                                            {% set label = "listing.boxLabelNew"|trans|sw_sanitize %}
+                                            {% set label = "listing.boxLabelNew"|rh_translate(domain.lang)|sw_sanitize %}
                                         {% elseif (product.availableStock < 1) %}
-                                            {% set label = "listing.boxLabelSoldout"|trans|sw_sanitize %}
+                                            {% set label = "listing.boxLabelSoldout"|rh_translate(domain.lang)|sw_sanitize %}
                                         {% endif %}
                                         <attribute>
                                             <name>sw-label</name>
