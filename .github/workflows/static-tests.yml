@@ -17,10 +17,13 @@ jobs:
         include:
           - os: 'ubuntu-18.04'
             php: 'php7.4'
+            experimental: false
           - os: 'ubuntu-18.04'
             php: 'php8.0'
+            experimental: false
           - os: 'ubuntu-18.04'
             php: 'php8.1'
+            experimental: false
 
     continue-on-error: ${{ matrix.experimental }}
 
