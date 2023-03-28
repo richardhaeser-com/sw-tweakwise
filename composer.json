@@ -2,14 +2,14 @@
   "name": "richardhaeser/sw-tweakwise",
   "description": "Tweakwise for Shopware 6",
   "type": "shopware-platform-plugin",
-  "license": "MIT",
+  "license": "proprietary",
   "autoload": {
     "psr-4": {
       "RH\\Tweakwise\\": "src/"
     }
   },
   "require": {
-    "shopware/core": ">=6.4.0",
+    "shopware/core": ">=6.4.17",
     "shopware/administration": "*",
     "shopware/storefront": "*"
   },
