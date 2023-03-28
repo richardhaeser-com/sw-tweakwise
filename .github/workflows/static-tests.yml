@@ -7,9 +7,15 @@ jobs:
     name: Build PHP
     runs-on: ubuntu-latest
 
-    matrix:
-      php: ['php7.4', 'php8.1', 'php8.2']
-      experimental: [false]
+    strategy:
+      max-parallel: 6
+      fail-fast: false
+      matrix:
+        php: ['php7.4', 'php8.1', 'php8.2']
+        experimental: [false]
+
+    continue-on-error: ${{ matrix.experimental }}
+
     steps:
       - uses: actions/checkout@v1
       - name: Set up PHP Version
