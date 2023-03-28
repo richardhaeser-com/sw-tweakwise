@@ -7,7 +7,6 @@
     <services>
         <service id="RH\Tweakwise\Twig\CategoryExtension">
             <argument type="service" id="category.repository"/>
-            <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader"/>
             <tag name="twig.extension"/>
         </service>
         <service id="RH\Tweakwise\Twig\HashExtension">

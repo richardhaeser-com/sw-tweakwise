@@ -34,8 +34,6 @@ class FeedService
     private Environment $twig;
     private TemplateFinder $templateFinder;
     private array $categoryData = [];
-    private EntityRepository $productsRepository;
-    private AbstractProductPriceCalculator $priceCalculator;
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
     private ProductListingLoader $listingLoader;
     private FilesystemInterface $filesystem;
@@ -173,8 +171,6 @@ class FeedService
     {
         if ($includeCurrentLevel) {
             $categories[] = $categoryEntity;
-
-            $this->categoryMapping[$categoryEntity->getId()][] = $categoryEntity->getId() . '_' . $domainEntity->getId();
         }
 
         $criteria = new Criteria();

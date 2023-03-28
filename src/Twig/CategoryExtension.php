@@ -17,14 +17,11 @@ use Twig\TwigFunction;
 
 class CategoryExtension extends AbstractExtension
 {
-    private CachedSalesChannelContextFactory $salesChannelContextFactory;
-    private NavigationLoader $navigationLoader;
     private array $categories = [];
     private EntityRepositoryInterface $categoryRepository;
 
-    public function __construct(EntityRepositoryInterface $categoryRepository, NavigationLoader $navigationLoader)
+    public function __construct(EntityRepositoryInterface $categoryRepository)
     {
-        $this->navigationLoader = $navigationLoader;
         $this->categoryRepository = $categoryRepository;
     }
 
