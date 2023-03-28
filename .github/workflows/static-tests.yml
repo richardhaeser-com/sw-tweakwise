@@ -1,0 +1,28 @@
+name: Static analysis
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Build PHP
+    runs-on: ubuntu-latest
+
+    matrix:
+      php: ['php7.4', 'php8.1', 'php8.2']
+      experimental: [false]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up PHP Version
+        run: |
+          sudo update-alternatives --set php /usr/bin/${{ matrix.php }}
+          php -v
+      - name: Update Composer
+        run: |
+          sudo composer self-update
+          composer --version
+      - name: Install
+        run: |
+          composer install
+      - name: PHPStan
+        run: |
+          php -d memory_limit=-1 vendor/bin/phpstan analyse --configuration phpstan.neon --debug

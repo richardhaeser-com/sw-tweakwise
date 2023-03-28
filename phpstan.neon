@@ -1,0 +1,26 @@
+parameters:
+    level: 4
+
+    bootstrapFiles:
+        - %currentWorkingDirectory%/vendor/autoload.php
+    paths:
+        - %currentWorkingDirectory%
+    excludePaths:
+        - %currentWorkingDirectory%/Components/Smarty
+        - %currentWorkingDirectory%/vendor
+        - %currentWorkingDirectory%/tests/
+        - %currentWorkingDirectory%/Test/
+        - %currentWorkingDirectory%/Resources/smarty
+        - %currentWorkingDirectory%/platform
+        - %currentWorkingDirectory%/autoload-dist/vendor/
+
+    ignoreErrors:
+        - '#apcu_#'
+        - '#ioncube_#'
+        - '#opcache_#'
+        - '#imagettftext#'
+        - '#class Redis#'
+        - '#Constant STARTTIME#'
+
+    reportUnmatchedIgnoredErrors: false
+    tipsOfTheDay: false

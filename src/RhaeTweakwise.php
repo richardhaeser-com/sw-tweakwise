@@ -2,14 +2,12 @@
 
 namespace RH\Tweakwise;
 
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetEntity;
 use Shopware\Core\System\CustomField\Aggregate\CustomFieldSetRelation\CustomFieldSetRelationEntity;
 use Shopware\Core\System\CustomField\CustomFieldEntity;
@@ -33,7 +31,7 @@ class RhaeTweakwise extends Plugin
 
     private function createCustomFields($context): void
     {
-        /** @var EntityRepositoryInterface $systemConfigRepository */
+        /** @var EntityRepositoryInterface $customFieldSetRepository */
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
         foreach ($this->getCustomFields() as $customFieldSet) {

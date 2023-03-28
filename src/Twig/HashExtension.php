@@ -22,7 +22,7 @@ class HashExtension extends AbstractExtension
     {
         return [
             new TwigFunction('md5', [$this, 'md5']),
-            new TwigFunction('crc32', [$this, 'crc32']),
+            new TwigFunction('crc32', [$this, 'crc32'])
         ];
     }
 
@@ -30,8 +30,8 @@ class HashExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFunction('md5', [$this, 'md5']),
-            new TwigFunction('crc32', [$this, 'crc32']),
+            new TwigFilter('md5', [$this, 'md5']),
+            new TwigFilter('crc32', [$this, 'crc32'])
         ];
     }
 
