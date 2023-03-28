@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.6] - 28-03-2023
+
+### Changed
+- **[BREAKING]** The extension key is changed from RhTweakwise to RhaeTweakwise to comply to the rules of the Shopware store. Please make sure to install and activate the right plugin after you update the extension. 
+
 ## [0.9.5] - 27-03-2023
 
 ### Fixed

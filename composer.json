@@ -14,7 +14,7 @@
     "shopware/storefront": "*"
   },
   "extra": {
-    "shopware-plugin-class": "RH\\Tweakwise\\RhTweakwise",
+    "shopware-plugin-class": "RH\\Tweakwise\\RhaeTweakwise",
     "plugin-icon": "src/Resources/config/plugin.png",
     "copyright": "richardhaeser.com",
     "label": {
