@@ -12,8 +12,15 @@ jobs:
       fail-fast: false
       matrix:
         os: ['ubuntu-latest']
-        php: ['php8.0', 'php8.1']
+        php: ['php8.1']
         experimental: [false]
+        include:
+          - os: 'ubuntu-18.04'
+            php: 'php7.4'
+          - os: 'ubuntu-18.04'
+            php: 'php8.0'
+          - os: 'ubuntu-18.04'
+            php: 'php8.1'
 
     continue-on-error: ${{ matrix.experimental }}
 
