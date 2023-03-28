@@ -5,13 +5,14 @@ on: [push, pull_request]
 jobs:
   build:
     name: Build PHP
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       max-parallel: 6
       fail-fast: false
       matrix:
-        php: ['php7.4', 'php8.1', 'php8.2']
+        os: ['ubuntu-latest']
+        php: ['php8.0', 'php8.1']
         experimental: [false]
 
     continue-on-error: ${{ matrix.experimental }}
