@@ -16,9 +16,6 @@ use function array_search;
 
 class RhaeTweakwise extends Plugin
 {
-    public const CUSTOM_FIELD_TWEAKWISE_FIELD_SET = 'rh_tweakwise';
-    public const CUSTOM_FIELD_TWEAKWISE_INSTANCEKEY = 'rh_tweakwise_instancekey';
-
     public function install(InstallContext $installContext): void
     {
         $this->createCustomFields($installContext->getContext());
