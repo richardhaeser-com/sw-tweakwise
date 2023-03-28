@@ -5,11 +5,28 @@ on: [push, pull_request]
 jobs:
   build:
     name: Build PHP
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
-    matrix:
-      php: ['php7.4', 'php8.1', 'php8.2']
-      experimental: [false]
+    strategy:
+      max-parallel: 6
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-latest']
+        php: ['php8.1']
+        experimental: [false]
+        include:
+          - os: 'ubuntu-20.04'
+            php: 'php7.4'
+            experimental: false
+          - os: 'ubuntu-20.04'
+            php: 'php8.0'
+            experimental: false
+          - os: 'ubuntu-20.04'
+            php: 'php8.1'
+            experimental: false
+
+    continue-on-error: ${{ matrix.experimental }}
+
     steps:
       - uses: actions/checkout@v1
       - name: Set up PHP Version
