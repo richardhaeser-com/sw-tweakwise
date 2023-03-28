@@ -14,16 +14,20 @@ jobs:
         os: ['ubuntu-latest']
         php: ['php8.1']
         experimental: [false]
+        dependencies: ['lowest', 'highest']
         include:
           - os: 'ubuntu-20.04'
             php: 'php7.4'
             experimental: false
+            dependencies: highest
           - os: 'ubuntu-20.04'
             php: 'php8.0'
             experimental: false
+            dependencies: highest
           - os: 'ubuntu-20.04'
             php: 'php8.1'
             experimental: false
+            dependencies: highest
 
     continue-on-error: ${{ matrix.experimental }}
 
@@ -33,13 +37,20 @@ jobs:
         run: |
           sudo update-alternatives --set php /usr/bin/${{ matrix.php }}
           php -v
+
       - name: Update Composer
         run: |
           sudo composer self-update
           composer --version
-      - name: Install
-        run: |
-          composer install
+
+      - name: Install lowest dependencies with composer
+        if: matrix.dependencies == 'lowest'
+        run: composer update --no-ansi --no-interaction --no-progress --prefer-lowest
+
+      - name: Install highest dependencies with composer
+        if: matrix.dependencies == 'highest'
+        run: composer update --no-ansi --no-interaction --no-progress
+
       - name: PHPStan
         run: |
           php -d memory_limit=-1 vendor/bin/phpstan analyse --configuration phpstan.neon --debug
