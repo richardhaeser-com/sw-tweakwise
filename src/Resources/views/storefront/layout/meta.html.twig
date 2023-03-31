@@ -2,109 +2,50 @@
 
 {% block layout_head_meta_tags %}
     {{ parent() }}
+    
+    {% if page.extensions.twCustomFields.rh_tweakwise_integration_type == 'js-basic' %}
+        {% set instanceKey = page.extensions.twCustomFields.rh_tweakwise_instancekey|escape %}
+        {% set languageKey = page.header.activeLanguage.translationCode.code|split('-')[0]|escape %}
 
-    {% if page.extensions.customFields.rh_tweakwise_integration_type == 'js-basic' %}
-        {% set instanceKey = page.extensions.customFields.rh_tweakwise_instancekey %}
-        <script>
-            window["twn-starter-config"] = {
-                navigation: {
-                    cid: ""
-                },
-                lang: "{{ page.header.activeLanguage.translationCode.code|split('-')[0] }}",
-                on: {
-                    "twn.add-to-cart": function (event) {
-                        var shopwareIdAttribute = event.data.attributes.find(attribute => {
-                            return attribute.name === 'product_id'
-                        });
-                        if (shopwareIdAttribute === undefined) {
-                            alert('An error occurred');
+        {% if instanceKey %}
+            <script>
+                window["twn-starter-config"] = {
+                    navigation: {
+                        cid: ""
+                    },
+                    cid: "{{ md5(page.extensions.twRootCategoryInfo.rootCategoryId ~ '_' ~ page.extensions.twRootCategoryInfo.domainId) }}",
+                    lang: "{{ languageKey }}",
+                    on: {
+                        "twn.add-to-cart": function (event) {
+                            let addToCartEvent = new CustomEvent('twAddToCart', {
+                                detail: {
+                                    addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
+                                    csrfToken: '{{ sw_csrf('frontend.checkout.line-item.add', {"mode": "token"}) }}',
+                                    data: event.data
+                                }
+                            });
+                            window.dispatchEvent(addToCartEvent);
                         }
-                        const productId = shopwareIdAttribute.values[0];
-
-                        var form = document.createElement('form');
-                        form.dataset.addToCart = 'true';
-                        form.setAttribute('action', '{{ path('frontend.checkout.line-item.add') }}');
-                        form.setAttribute('method', 'post');
-                        form.setAttribute('id', 'twn-add-to-cart-form');
-
-                        var redirectToField = document.createElement('input');
-                        redirectToField.setAttribute('type', 'hidden');
-                        redirectToField.setAttribute('name', 'redirectTo');
-                        redirectToField.setAttribute('value', 'frontend.detail.page');
-
-                        var redirectParametersField = document.createElement('input');
-                        redirectParametersField.setAttribute('type', 'hidden');
-                        redirectParametersField.setAttribute('name', 'redirectParameters');
-                        redirectParametersField.dataset.redirectParameters = 'true';
-                        redirectParametersField.setAttribute('value', '{"productId": "' + productId + '"}');
-
-                        var lineItemIdField = document.createElement('input');
-                        lineItemIdField.setAttribute('type', 'hidden');
-                        lineItemIdField.setAttribute('name', 'lineItems[' + productId + '][id]');
-                        lineItemIdField.setAttribute('value', productId);
-
-                        var lineItemReferenceIdField = document.createElement('input');
-                        lineItemReferenceIdField.setAttribute('type', 'hidden');
-                        lineItemReferenceIdField.setAttribute('name', 'lineItems[' + productId + '][referencedId]');
-                        lineItemReferenceIdField.setAttribute('value', productId);
-
-                        var lineItemTypeField = document.createElement('input');
-                        lineItemTypeField.setAttribute('type', 'hidden');
-                        lineItemTypeField.setAttribute('name', 'lineItems[' + productId + '][type]');
-                        lineItemTypeField.setAttribute('value', 'product');
-
-                        var lineItemStackableField = document.createElement('input');
-                        lineItemStackableField.setAttribute('type', 'hidden');
-                        lineItemStackableField.setAttribute('name', 'lineItems[' + productId + '][stackable]');
-                        lineItemStackableField.setAttribute('value', '1');
-
-                        var lineItemRemovableField = document.createElement('input');
-                        lineItemRemovableField.setAttribute('type', 'hidden');
-                        lineItemRemovableField.setAttribute('name', 'lineItems[' + productId + '][removable]');
-                        lineItemRemovableField.setAttribute('value', '1');
-
-                        var lineItemQuantityField = document.createElement('input');
-                        lineItemQuantityField.setAttribute('type', 'hidden');
-                        lineItemQuantityField.setAttribute('name', 'lineItems[' + productId + '][quantity]');
-                        lineItemQuantityField.setAttribute('value', '1');
-
-                        var csrfTokenField = document.createElement('input');
-                        csrfTokenField.setAttribute('type', 'hidden');
-                        csrfTokenField.setAttribute('name', '_csrf_token');
-                        csrfTokenField.setAttribute('value', '{{ sw_csrf('frontend.checkout.line-item.add', {"mode": "token"}) }}');
-
-                        form.appendChild(redirectToField);
-                        form.appendChild(redirectParametersField);
-                        form.appendChild(lineItemIdField);
-                        form.appendChild(lineItemReferenceIdField);
-                        form.appendChild(lineItemTypeField);
-                        form.appendChild(lineItemStackableField);
-                        form.appendChild(lineItemRemovableField);
-                        form.appendChild(lineItemQuantityField);
-                        form.appendChild(csrfTokenField);
-
-                        document.body.appendChild(form);
-                        form.submit();
                     }
-                }
-            };
-        </script>
+                };
+            </script>
 
-        <script>
-            window.tweakwiseFailover = function (src) {
-                var script = document.createElement("script");
-                script.async = true;
-                script.src = src;
-                document.head.appendChild(script);
-            };
-        </script>
-        <link
-                rel="preload"
-                href="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"
-                as="script"
-                data-failover-src="https://gateway.tweakwisenavigator.com/js/{{ instanceKey }}/tweakwise.js"
-                onerror="tweakwiseFailover(this.dataset.failoverSrc);"
-        />
-        <script async src="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"></script>
+            <script>
+                window.tweakwiseFailover = function (src) {
+                    var script = document.createElement("script");
+                    script.async = true;
+                    script.src = src;
+                    document.head.appendChild(script);
+                };
+            </script>
+            <link
+                    rel="preload"
+                    href="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"
+                    as="script"
+                    data-failover-src="https://gateway.tweakwisenavigator.com/js/{{ instanceKey }}/tweakwise.js"
+                    onerror="tweakwiseFailover(this.dataset.failoverSrc);"
+            />
+            <script async src="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"></script>
+        {% endif %}
     {% endif %}
 {% endblock %}

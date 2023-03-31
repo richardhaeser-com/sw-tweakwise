@@ -2,7 +2,7 @@
 
 {% block element_product_listing %}
     {% if element.translated.config.boxLayout.value == 'tweakwise' %}
-        {% if page.extensions.customFields.rh_tweakwise_integration_type == 'js-basic' %}
+        {% if page.extensions.twCustomFields.rh_tweakwise_integration_type == 'js-basic' and page.extensions.twCustomFields.rh_tweakwise_instancekey|escape('js')%}
             <script>
                 window["twn-starter-config"]["navigation"]["output"] = 'tweakwise-output-listing';
                 window["twn-starter-config"]["navigation"]["cid"] = '{{ md5(page.navigationId ~ '_' ~ context.domainId) }}';

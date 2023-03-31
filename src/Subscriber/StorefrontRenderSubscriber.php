@@ -20,13 +20,19 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
     {
         $salesChannel = $event->getSalesChannelContext()->getSalesChannel();
         $customFields = $salesChannel->getTranslated()['customFields'] ?: [];
+        $domainId = $event->getSalesChannelContext()->getDomainId();
+        $rootCategoryId = $event->getSalesChannelContext()->getSalesChannel()->getNavigationCategoryId();
+        $twRootCategoryInfo = ['domainId' => $domainId, 'rootCategoryId' => $rootCategoryId];
         $parameters = $event->getParameters();
 
         if ($customFields && is_array($parameters) && array_key_exists('page', $parameters)) {
             /** @var Page $page */
             $page = $event->getParameters()['page'];
             if ($page instanceof Page) {
-                $page->addExtensions(['customFields' => new ArrayStruct($customFields)]);
+                $page->addExtensions([
+                    'twCustomFields' => new ArrayStruct($customFields),
+                    'twRootCategoryInfo' => new ArrayStruct($twRootCategoryInfo)
+                ]);
             }
         }
     }
