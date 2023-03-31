@@ -2,7 +2,7 @@
 
 {% block layout_head_meta_tags %}
     {{ parent() }}
-    
+
     {% if page.extensions.twCustomFields.rh_tweakwise_integration_type == 'js-basic' %}
         {% set instanceKey = page.extensions.twCustomFields.rh_tweakwise_instancekey|escape %}
         {% set languageKey = page.header.activeLanguage.translationCode.code|split('-')[0]|escape %}

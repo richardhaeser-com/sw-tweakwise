@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.0.1] - 31-03-2023
+
+### Fixed
+- Search is now only searching in the root category of the current shop
+
+### Changed
+- Labels on the result pages are now translated based on the language of the domain
+- By changing a bit of code, we are now supporting Shopware 6.4.10 and higher
+- Some inline Javascript is moved towards a dedicated JS file
+
+
 ## [1.0.0] - 28-03-2023
 
 ### Added
