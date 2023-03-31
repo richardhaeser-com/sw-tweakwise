@@ -19,8 +19,9 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
     public function getTweakwiseConfig(StorefrontRenderEvent $event): void
     {
         $salesChannel = $event->getSalesChannelContext()->getSalesChannel();
-        $customFields = $salesChannel->getCustomFields();
+        $customFields = $salesChannel->getTranslated()['customFields'] ?: [];
         $parameters = $event->getParameters();
+
         if ($customFields && is_array($parameters) && array_key_exists('page', $parameters)) {
             /** @var Page $page */
             $page = $event->getParameters()['page'];

@@ -110,7 +110,7 @@ class RhaeTweakwise extends Plugin
                     ],
                     [
                         'name' => 'rh_tweakwise_exclude_from_feed',
-                        'type' => CustomFieldTypes::CHECKBOX,
+                        'type' => 'checkbox',
                         'config' => [
                             'label' => [
                                 'en-GB' => 'Exclude sales-channel from product feed',
@@ -122,7 +122,7 @@ class RhaeTweakwise extends Plugin
                     ],
                     [
                         'name' => 'rh_tweakwise_integration_type',
-                        'type' => CustomFieldTypes::SELECT,
+                        'type' => 'select',
                         'config' => [
                             'componentName' => 'sw-single-select',
                             'customFieldType' => 'select',

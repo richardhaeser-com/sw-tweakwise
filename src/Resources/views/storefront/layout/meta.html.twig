@@ -10,7 +10,7 @@
                 navigation: {
                     cid: ""
                 },
-
+                lang: "{{ page.header.activeLanguage.translationCode.code|split('-')[0] }}",
                 on: {
                     "twn.add-to-cart": function (event) {
                         var shopwareIdAttribute = event.data.attributes.find(attribute => {
