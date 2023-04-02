@@ -15,7 +15,7 @@
                     <item>
                         {% block feed_item_inner %}
                             <id>{{ product.productNumber }} ({{ crc32(domainId) }})</id>
-                            <price>{{ price.unitPrice|number_format(context.currency.itemRounding.decimals, '.', '') }}</price>
+                            <price>{{ price.unitPrice }}</price>
                             <name><![CDATA[{{ product.translated.name|raw }}]]></name>
                             <stock>{{ product.availableStock }}</stock>
                             {% if product.manufacturer %}
