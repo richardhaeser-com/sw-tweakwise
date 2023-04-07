@@ -3,49 +3,63 @@
 {% block layout_head_meta_tags %}
     {{ parent() }}
 
-    {% if page.extensions.twCustomFields.rh_tweakwise_integration_type == 'js-basic' %}
-        {% set instanceKey = page.extensions.twCustomFields.rh_tweakwise_instancekey|escape %}
-        {% set languageKey = page.header.activeLanguage.translationCode.code|split('-')[0]|escape %}
+    {% block tweakwise_config %}
+        {% if page.extensions.twCustomFields.rh_tweakwise_integration_type == 'js-basic' %}
+            {% set instanceKey = page.extensions.twCustomFields.rh_tweakwise_instancekey|escape %}
+            {% set languageKey = page.header.activeLanguage.translationCode.code|split('-')[0]|escape %}
 
-        {% if instanceKey %}
-            <script>
-                window["twn-starter-config"] = {
-                    navigation: {
-                        cid: ""
-                    },
-                    cid: "{{ md5(page.extensions.twRootCategoryInfo.rootCategoryId ~ '_' ~ page.extensions.twRootCategoryInfo.domainId) }}",
-                    lang: "{{ languageKey }}",
-                    on: {
-                        "twn.add-to-cart": function (event) {
-                            let addToCartEvent = new CustomEvent('twAddToCart', {
-                                detail: {
-                                    addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
-                                    csrfToken: '{{ sw_csrf('frontend.checkout.line-item.add', {"mode": "token"}) }}',
-                                    data: event.data
-                                }
-                            });
-                            window.dispatchEvent(addToCartEvent);
+            {% if instanceKey %}
+                <script>
+                    window["twn-starter-config"] = {
+                        navigation: {
+                            cid: ""
+                        },
+                        cid: "{{ md5(page.extensions.twRootCategoryInfo.rootCategoryId ~ '_' ~ page.extensions.twRootCategoryInfo.domainId) }}",
+                        lang: "{{ languageKey }}",
+                        on: {
+                            "twn.add-to-cart": function (event) {
+                                let addToCartEvent = new CustomEvent('twAddToCart', {
+                                    detail: {
+                                        addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
+                                        csrfToken: '{{ sw_csrf('frontend.checkout.line-item.add', {"mode": "token"}) }}',
+                                        data: event.data
+                                    }
+                                });
+                                window.dispatchEvent(addToCartEvent);
+                            },
+                            "twn.request.navigation.completed": function (event) {
+                                let navSuccessEvent = new CustomEvent('twNavigationSuccess', {
+                                    detail: {}
+                                });
+                                window.dispatchEvent(navSuccessEvent);
+                            },
+                            "twn.request.completed'": function (event) {
+                                let navSuccessEvent = new CustomEvent('twSuccess', {
+                                    detail: {}
+                                });
+                                window.dispatchEvent(navSuccessEvent);
+                            },
                         }
-                    }
-                };
-            </script>
+                    };
+                </script>
 
-            <script>
-                window.tweakwiseFailover = function (src) {
-                    var script = document.createElement("script");
-                    script.async = true;
-                    script.src = src;
-                    document.head.appendChild(script);
-                };
-            </script>
-            <link
-                    rel="preload"
-                    href="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"
-                    as="script"
-                    data-failover-src="https://gateway.tweakwisenavigator.com/js/{{ instanceKey }}/tweakwise.js"
-                    onerror="tweakwiseFailover(this.dataset.failoverSrc);"
-            />
-            <script async src="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"></script>
+                <script>
+                    window.tweakwiseFailover = function (src) {
+                        var script = document.createElement("script");
+                        script.async = true;
+                        script.src = src;
+                        document.head.appendChild(script);
+                    };
+                </script>
+                <link
+                        rel="preload"
+                        href="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"
+                        as="script"
+                        data-failover-src="https://gateway.tweakwisenavigator.com/js/{{ instanceKey }}/tweakwise.js"
+                        onerror="tweakwiseFailover(this.dataset.failoverSrc);"
+                />
+                <script async src="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"></script>
+            {% endif %}
         {% endif %}
-    {% endif %}
+    {% endblock %}
 {% endblock %}
