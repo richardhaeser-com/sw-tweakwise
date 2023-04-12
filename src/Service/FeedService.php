@@ -75,7 +75,7 @@ class FeedService
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('active', true));
-        $criteria->addAssociations(['language', 'languages', 'currency', 'currencies', 'domains', 'domains.salesChannel', 'domains.language', 'domains.language.translationCode', 'type', 'customFields', 'customField']);
+        $criteria->addAssociations(['language', 'languages', 'currency', 'currencies', 'domains', 'domains.salesChannel', 'domains.language', 'domains.language.translationCode', 'type', 'customFields']);
         /** @var SalesChannelCollection $salesChannels */
         $salesChannels = $this->salesChannelRepository->search($criteria, $this->context)->getEntities();
         /** @var SalesChannelEntity $salesChannel */
