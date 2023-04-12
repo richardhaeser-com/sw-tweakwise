@@ -109,8 +109,6 @@ class FeedService
 
     private function resolveView(string $view): string
     {
-        $this->templateFinder->reset();
-
         return $this->templateFinder->find('@Storefront/' . $view, true, '@RhTweakwise/' . $view);
     }
 

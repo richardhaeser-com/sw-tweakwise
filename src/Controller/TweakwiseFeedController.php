@@ -9,6 +9,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
@@ -20,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use function dd;
 
 /**
- * @Route(defaults={"_routeScope"={"storefront"}})
+ * @RouteScope(scopes={"storefront"})
  */
 class TweakwiseFeedController extends StorefrontController
 {

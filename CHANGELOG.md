@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Make the extension work from Shopware v6.4.6
+
 ### Fixed
 - In the template of the feed, the price was rounded while this was already done in the generation of data which could lead to wrongly rounded prices. In the template we don't do any rounding of prices anymore.
 
