@@ -42,6 +42,9 @@ class ImageResizeService
     public function resizeImage(string $imageUrl, int $width = null, int $height = null, string $format = null, $crop = false)
     {
         $originalImage = $this->getFileFromImageUrl($imageUrl);
+        if (!$originalImage) {
+            return '';
+        }
         return $this->getDestinationFileName($originalImage, $width, $height, $format, $crop);
     }
 
@@ -52,7 +55,7 @@ class ImageResizeService
     {
         $imagePath = $this->getPublicDirectory() . str_replace($this->urlPackage->getBaseUrl($imageUrl), '', $imageUrl);
         if (!file_exists($imagePath)) {
-            throw new FileNotFoundException($imagePath);
+            return '';
         }
 
         return $imagePath;
@@ -60,6 +63,10 @@ class ImageResizeService
 
     private function getDestinationFileName(string $originalFilename, ?float $width, ?float $height, ?string $extension, ?bool $crop): string
     {
+        if (!is_file($originalFilename)) {
+            return '';
+        }
+
         $fileInfo = pathinfo($originalFilename);
         $destinationDirectory = str_replace($this->getPublicDirectory() . '/media', $this->getPublicDirectory() . '/thumbnail/generated', $fileInfo['dirname']);
         $filename = $fileInfo['filename'] . '-' . sha1($width . 'x' . $height . ($crop ? 'c' : '')) . '.' . ($extension ?: $fileInfo['extension']) ;

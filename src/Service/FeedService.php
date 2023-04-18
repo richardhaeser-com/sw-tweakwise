@@ -156,8 +156,6 @@ class FeedService
         $context = new Context(new SystemSource(), [], $domain->getCurrencyId(), [$domain->getLanguageId(), $salesChannel->getLanguageId()]);
 
         $criteria = new Criteria([$salesChannel->getNavigationCategoryId()]);
-        $criteria->addAssociation('products');
-        $criteria->addAssociation('products.customFields');
         /** @var CategoryEntity $rootCategory */
         $rootCategory = $this->categoryRepository->search($criteria, $context)->first();
 
@@ -209,7 +207,6 @@ class FeedService
 
         $criteria = new Criteria();
         $criteria->addAssociation('parent');
-        $criteria->addAssociation('products');
         $criteria->addFilter(new EqualsFilter('parentId', $categoryEntity->getId()));
         $subCategories = $this->categoryRepository->search($criteria, $context);
         if ($categoryProgressBar instanceof ProgressBar) {
@@ -220,7 +217,7 @@ class FeedService
         /** @var CategoryEntity $subCategory */
         foreach ($subCategories as $subCategory) {
             if ($categoryProgressBar instanceof ProgressBar) {
-                $categoryProgressBar->setMessage($subCategory->getName(), 'category');
+                $categoryProgressBar->setMessage($subCategory->getTranslated()['name'], 'category');
             }
 
             $categories = $this->parseCategory($categories, $subCategory, $context, $domainEntity, true, $categoryProgressBar);

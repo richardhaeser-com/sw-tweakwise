@@ -167,7 +167,7 @@
 
                 {% for category in domain.categories %}
                     {% block feed_categories_wrapper %}
-                        {% if category.childCount or (category.type == 'page' and category.productAssignmentType == 'product' and category.products|length) %}
+                        {% if category.childCount or (category.type == 'page' and category.productAssignmentType == 'product') %}
                             {% block feed_categories_item %}
                                 <category>
                                     <categoryid>{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
