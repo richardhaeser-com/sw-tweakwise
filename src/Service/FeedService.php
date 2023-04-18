@@ -21,6 +21,7 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Twig\Environment;
 use function array_key_exists;
 use function time;
@@ -71,15 +72,24 @@ class FeedService
         return $this->filesystem->getTimestamp(self::EXPORT_PATH);
     }
 
-    public function generateFeed()
+    public function generateFeed(ProgressBar $salesChannelProgressBar = null, ProgressBar $domainProgressBar = null, ProgressBar $categoryProgressBar = null)
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addAssociations(['language', 'languages', 'currency', 'currencies', 'domains', 'domains.salesChannel', 'domains.language', 'domains.language.translationCode', 'type', 'customFields']);
         /** @var SalesChannelCollection $salesChannels */
         $salesChannels = $this->salesChannelRepository->search($criteria, $this->context)->getEntities();
+
+        if ($salesChannelProgressBar instanceof ProgressBar) {
+            $salesChannelProgressBar->setMaxSteps($salesChannels->count());
+            $salesChannelProgressBar->start();
+        }
+
         /** @var SalesChannelEntity $salesChannel */
         foreach ($salesChannels as $salesChannel) {
+            if ($salesChannelProgressBar instanceof ProgressBar) {
+                $salesChannelProgressBar->setMessage($salesChannel->getName(), 'sales-channel');
+            }
             $customFields = $salesChannel->getCustomFields();
             if ($customFields && array_key_exists('rh_tweakwise_exclude_from_feed', $customFields)) {
                 continue;
@@ -89,15 +99,39 @@ class FeedService
                 'name' => $salesChannel->getName(),
             ];
 
+            if ($domainProgressBar instanceof ProgressBar) {
+                $domainProgressBar->setMaxSteps($salesChannel->getDomains()->count());
+                $domainProgressBar->start();
+            }
+
             /** @var SalesChannelDomainEntity $domain */
             foreach ($salesChannel->getDomains() as $domain) {
-                $this->defineCategories($domain);
+                if ($domainProgressBar instanceof ProgressBar) {
+                    $domainProgressBar->setMessage($domain->getUrl(), 'domain');
+                }
+
+                $this->defineCategories($domain, $categoryProgressBar);
                 $this->defineProducts($domain);
+
+                if ($domainProgressBar instanceof ProgressBar) {
+                    $domainProgressBar->advance();
+                }
             }
+
+            if ($domainProgressBar instanceof ProgressBar) {
+                $domainProgressBar->finish();
+            }
+
+            if ($salesChannelProgressBar instanceof ProgressBar) {
+                $salesChannelProgressBar->advance();
+            }
+        }
+        if ($salesChannelProgressBar instanceof ProgressBar) {
+            $salesChannelProgressBar->finish();
         }
 
         $content = $this->twig->render($this->resolveView('tweakwise/feed.xml.twig'), [
-            'categoryData' => $this->categoryData
+            'categoryData' => $this->categoryData,
         ]);
 
         if ($this->filesystem->has(self::EXPORT_PATH)) {
@@ -113,7 +147,7 @@ class FeedService
     }
 
 
-    public function defineCategories(SalesChannelDomainEntity $domain): void
+    public function defineCategories(SalesChannelDomainEntity $domain, ProgressBar $categoryProgressBar = null): void
     {
         $salesChannel = $domain->getSalesChannel();
 
@@ -130,7 +164,7 @@ class FeedService
             'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
             'url' => rtrim($domain->getUrl(), '/') . '/',
             'rootCategoryId' => $rootCategory->getId(),
-            'categories' => $this->parseCategory([], $rootCategory, $context, $domain, false)
+            'categories' => $this->parseCategory([], $rootCategory, $context, $domain, false, $categoryProgressBar),
         ];
     }
 
@@ -165,7 +199,7 @@ class FeedService
         $this->categoryData['salesChannels'][$salesChannel->getId()]['domains'][$domain->getId() ]['products'] = $result->getElements();
     }
 
-    protected function parseCategory(array $categories, CategoryEntity $categoryEntity, Context $context, SalesChannelDomainEntity $domainEntity, bool $includeCurrentLevel = true): array
+    protected function parseCategory(array $categories, CategoryEntity $categoryEntity, Context $context, SalesChannelDomainEntity $domainEntity, bool $includeCurrentLevel = true, ProgressBar $categoryProgressBar = null): array
     {
         if ($includeCurrentLevel) {
             $categories[] = $categoryEntity;
@@ -176,8 +210,25 @@ class FeedService
         $criteria->addAssociation('products');
         $criteria->addFilter(new EqualsFilter('parentId', $categoryEntity->getId()));
         $subCategories = $this->categoryRepository->search($criteria, $context);
+        if ($categoryProgressBar instanceof ProgressBar) {
+            $categoryProgressBar->setMaxSteps($subCategories->count());
+            $categoryProgressBar->start();
+        }
+
+        /** @var CategoryEntity $subCategory */
         foreach ($subCategories as $subCategory) {
-            $categories = $this->parseCategory($categories, $subCategory, $context, $domainEntity);
+            if ($categoryProgressBar instanceof ProgressBar) {
+                $categoryProgressBar->setMessage($subCategory->getName(), 'category');
+            }
+
+            $categories = $this->parseCategory($categories, $subCategory, $context, $domainEntity, true, $categoryProgressBar);
+            if ($categoryProgressBar instanceof ProgressBar) {
+                $categoryProgressBar->advance();
+            }
+        }
+
+        if ($categoryProgressBar instanceof ProgressBar) {
+            $categoryProgressBar->finish();
         }
         return $categories;
     }

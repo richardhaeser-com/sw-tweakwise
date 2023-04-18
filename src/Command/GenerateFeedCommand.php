@@ -4,6 +4,7 @@ namespace RH\Tweakwise\Command;
 
 use RH\Tweakwise\Service\FeedService;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -25,8 +26,23 @@ class GenerateFeedCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $section1 = $output->section();
+        $section2 = $output->section();
+        $section3 = $output->section();
+        $section4 = $output->section();
+
+        $progressBarSalesChannels = new ProgressBar($section1);
+        $progressBarSalesChannels->setFormat(sprintf("Sales-channel: <info>%%sales-channel%%</info>\n%s\n\n", $progressBarSalesChannels->getFormatDefinition('normal')));
+
+        $progressBarDomain = new ProgressBar($section2);
+        $progressBarDomain->setFormat(sprintf("Domain: <info>%%domain%%</info>\n%s\n\n", $progressBarDomain->getFormatDefinition('normal')));
+
+        $progressBarCategory = new ProgressBar($section3);
+        $progressBarCategory->setFormat(sprintf("Category: <info>%%category%%</info>\n%s\n\n", $progressBarDomain->getFormatDefinition('normal')));
+
         $time_start = microtime(true);
-        $this->feedService->generateFeed();
+        $this->feedService->generateFeed($progressBarSalesChannels, $progressBarDomain, $progressBarCategory);
+
         $time_end = microtime(true);
         $execution_time = ceil($time_end - $time_start);
 
