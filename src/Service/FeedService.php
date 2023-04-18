@@ -89,6 +89,7 @@ class FeedService
         foreach ($salesChannels as $salesChannel) {
             if ($salesChannelProgressBar instanceof ProgressBar) {
                 $salesChannelProgressBar->setMessage($salesChannel->getName(), 'sales-channel');
+                $salesChannelProgressBar->display();
             }
             $customFields = $salesChannel->getCustomFields();
             if ($customFields && array_key_exists('rh_tweakwise_exclude_from_feed', $customFields)) {
@@ -108,6 +109,7 @@ class FeedService
             foreach ($salesChannel->getDomains() as $domain) {
                 if ($domainProgressBar instanceof ProgressBar) {
                     $domainProgressBar->setMessage($domain->getUrl(), 'domain');
+                    $domainProgressBar->display();
                 }
 
                 $this->defineCategories($domain, $categoryProgressBar);
