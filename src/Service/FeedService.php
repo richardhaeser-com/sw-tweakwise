@@ -218,7 +218,7 @@ class FeedService
     protected function parseCategory(array $categories, CategoryEntity $categoryEntity, Context $context, SalesChannelDomainEntity $domainEntity, bool $includeCurrentLevel = true, ProgressBar $categoryProgressBar = null): array
     {
         if ($includeCurrentLevel) {
-            $this->uniqueCategoryIds[] = $categoryEntity->getId();
+            $this->uniqueCategoryIds[] = $categoryEntity->getId() . '_' . $domainEntity->getId();
             $categories[] = $categoryEntity;
         }
 

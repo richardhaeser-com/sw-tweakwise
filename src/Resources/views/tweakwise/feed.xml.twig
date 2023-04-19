@@ -28,7 +28,7 @@
                             {% if product.cover.media is defined %}<image>{{ rh_imageResize(product.cover.media.url, 500, 0, 'png') }}</image>{% endif %}
                             <categories>
                                 {% for category in product.categories %}
-                                    {% if category.id in categoryIdsInFeed %}
+                                    {% if (category.id ~ '_' ~ domainId) in categoryIdsInFeed %}
                                     <categoryid name="{{ category.translated.name }}" domain="{{ domain.url }}">{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
                                     {% endif %}
                                 {% endfor %}
