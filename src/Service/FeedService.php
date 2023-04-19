@@ -74,7 +74,7 @@ class FeedService
         return $this->filesystem->getTimestamp(self::EXPORT_PATH);
     }
 
-    public function generateFeed(ProgressBar $salesChannelProgressBar = null, ProgressBar $domainProgressBar = null, ProgressBar $categoryProgressBar = null)
+    public function generateFeed(ProgressBar $salesChannelProgressBar = null, ProgressBar $domainProgressBar = null, ProgressBar $categoryProgressBar = null, ProgressBar $productProgressBar = null)
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('active', true));
@@ -115,7 +115,20 @@ class FeedService
                 }
 
                 $this->defineCategories($domain, $categoryProgressBar);
+
+                if ($productProgressBar instanceof ProgressBar) {
+                    $productProgressBar->setMessage('Generating...');
+                    $productProgressBar->setMaxSteps(1);
+                    $productProgressBar->start();
+                }
+
                 $this->defineProducts($domain);
+                if ($productProgressBar instanceof ProgressBar) {
+                    $productProgressBar->advance();
+                    $productProgressBar->setMessage('Done');
+                    $productProgressBar->finish();
+                    $productProgressBar->clear();
+                }
 
                 if ($domainProgressBar instanceof ProgressBar) {
                     $domainProgressBar->advance();

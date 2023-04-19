@@ -45,8 +45,11 @@ class GenerateFeedCommand extends Command
         $progressBarCategory = new ProgressBar($section3);
         $progressBarCategory->setFormat(sprintf("Category: <info>%%category%%</info>\n%s\n\n", $progressBarDomain->getFormatDefinition('normal')));
 
+        $progressBarProducts = new ProgressBar($section4);
+        $progressBarProducts->setFormat(sprintf("Products: <info>%%message%%</info>\n%s\n\n", $progressBarProducts->getFormatDefinition('normal')));
+
         $time_start = microtime(true);
-        $this->feedService->generateFeed($progressBarSalesChannels, $progressBarDomain, $progressBarCategory);
+        $this->feedService->generateFeed($progressBarSalesChannels, $progressBarDomain, $progressBarCategory, $progressBarProducts);
 
         $time_end = microtime(true);
         $execution_time = ceil($time_end - $time_start);
