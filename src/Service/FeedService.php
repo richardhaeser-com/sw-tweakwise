@@ -24,6 +24,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Twig\Environment;
 use function array_key_exists;
+use function array_unique;
 use function time;
 
 class FeedService
@@ -35,6 +36,7 @@ class FeedService
     private Environment $twig;
     private TemplateFinder $templateFinder;
     private array $categoryData = [];
+    private array $uniqueCategoryIds = [];
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
     private ProductListingLoader $listingLoader;
     private FilesystemInterface $filesystem;
@@ -133,6 +135,7 @@ class FeedService
         }
 
         $content = $this->twig->render($this->resolveView('tweakwise/feed.xml.twig'), [
+            'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
             'categoryData' => $this->categoryData,
         ]);
 
@@ -202,6 +205,7 @@ class FeedService
     protected function parseCategory(array $categories, CategoryEntity $categoryEntity, Context $context, SalesChannelDomainEntity $domainEntity, bool $includeCurrentLevel = true, ProgressBar $categoryProgressBar = null): array
     {
         if ($includeCurrentLevel) {
+            $this->uniqueCategoryIds[] = $categoryEntity->getId();
             $categories[] = $categoryEntity;
         }
 
