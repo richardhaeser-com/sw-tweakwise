@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.0.3] - 20-04-2023
+
+### Changed
+- Optimized the feed to only link products to categories that are exported
+- Improved performance of feed generation
+
 ## [1.0.2] - 12-04-2023
 
 ### Changed
