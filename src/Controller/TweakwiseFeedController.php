@@ -38,6 +38,10 @@ class TweakwiseFeedController extends StorefrontController
     public function feed(): Response
     {
         $content = $this->feedService->readFeed();
+
+        if (!$content) {
+            return new Response('Feed not found, please generate feed', 404);
+        }
         $response = new Response($content);
         $response->headers->set('Content-Type', 'text/xml;charset=UTF-8');
         return $response;

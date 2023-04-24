@@ -67,7 +67,7 @@ class FeedService
     public function readFeed(): string
     {
         if (!$this->filesystem->has(self::EXPORT_PATH) || time() - $this->getTimestampOfFeed() > 86400) {
-            $this->generateFeed();
+            return '';
         }
         return $this->filesystem->read(self::EXPORT_PATH);
     }
