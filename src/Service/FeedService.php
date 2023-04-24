@@ -4,12 +4,12 @@ namespace RH\Tweakwise\Service;
 
 use League\Flysystem\FilesystemInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Category\Service\NavigationLoader;
+use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
-use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
-use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Adapter\Twig\TemplateFinder;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
@@ -40,6 +40,7 @@ class FeedService
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
     private ProductListingLoader $listingLoader;
     private FilesystemInterface $filesystem;
+    private NavigationLoader $navigationLoader;
 
     public function __construct(
         EntityRepository $salesChannelRepository,
@@ -48,7 +49,8 @@ class FeedService
         TemplateFinder $templateFinder,
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
         ProductListingLoader $listingLoader,
-        FilesystemInterface $filesystem
+        FilesystemInterface $filesystem,
+        NavigationLoader $navigationLoader
     )
     {
         $this->salesChannelRepository = $salesChannelRepository;
@@ -59,6 +61,7 @@ class FeedService
         $this->salesChannelContextFactory = $salesChannelContextFactory;
         $this->listingLoader = $listingLoader;
         $this->filesystem = $filesystem;
+        $this->navigationLoader = $navigationLoader;
     }
 
     public function readFeed(): string
@@ -114,7 +117,13 @@ class FeedService
                     $domainProgressBar->display();
                 }
 
-                $this->defineCategories($domain, $categoryProgressBar);
+                if ($categoryProgressBar instanceof ProgressBar) {
+                    $categoryProgressBar->start();
+                    $this->defineCategories($domain, $categoryProgressBar);
+                    $categoryProgressBar->finish();
+                } else {
+                    $this->defineCategories($domain, $categoryProgressBar);
+                }
 
                 if ($productProgressBar instanceof ProgressBar) {
                     $productProgressBar->setMessage('Generating...');
@@ -168,19 +177,22 @@ class FeedService
     public function defineCategories(SalesChannelDomainEntity $domain, ProgressBar $categoryProgressBar = null): void
     {
         $salesChannel = $domain->getSalesChannel();
+        $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $domain->getLanguageId()]);
 
         $context = new Context(new SystemSource(), [], $domain->getCurrencyId(), [$domain->getLanguageId(), $salesChannel->getLanguageId()]);
-
         $criteria = new Criteria([$salesChannel->getNavigationCategoryId()]);
         /** @var CategoryEntity $rootCategory */
         $rootCategory = $this->categoryRepository->search($criteria, $context)->first();
+
+        $navigation = $this->navigationLoader->load($rootCategory->getId(), $salesChannelContext, $rootCategory->getId(), 99);
+        $categories = $this->parseTreeItems([], $navigation->getTree(), $domain, $categoryProgressBar);
 
         $this->categoryData['salesChannels'][$salesChannel->getId()]['domains'][$domain->getId() ] = [
             'name' => $domain->getUrl(),
             'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
             'url' => rtrim($domain->getUrl(), '/') . '/',
             'rootCategoryId' => $rootCategory->getId(),
-            'categories' => $this->parseCategory([], $rootCategory, $context, $domain, false, $categoryProgressBar),
+            'categories' => $categories,
         ];
     }
 
@@ -215,37 +227,21 @@ class FeedService
         $this->categoryData['salesChannels'][$salesChannel->getId()]['domains'][$domain->getId() ]['products'] = $result->getElements();
     }
 
-    protected function parseCategory(array $categories, CategoryEntity $categoryEntity, Context $context, SalesChannelDomainEntity $domainEntity, bool $includeCurrentLevel = true, ProgressBar $categoryProgressBar = null): array
+    protected function parseTreeItems(array $categories, array $treeItems, SalesChannelDomainEntity $domainEntity, ProgressBar $categoryProgressBar = null): array
     {
-        if ($includeCurrentLevel) {
-            $this->uniqueCategoryIds[] = $categoryEntity->getId() . '_' . $domainEntity->getId();
-            $categories[] = $categoryEntity;
-        }
+        /** @var TreeItem $treeItem */
+        foreach ($treeItems as $treeItem) {
+            $this->uniqueCategoryIds[] = $treeItem->getCategory()->getId() . '_' . $domainEntity->getId();
+            $categories[] = $treeItem->getCategory();
 
-        $criteria = new Criteria();
-        $criteria->addAssociation('parent');
-        $criteria->addFilter(new EqualsFilter('parentId', $categoryEntity->getId()));
-        $subCategories = $this->categoryRepository->search($criteria, $context);
-        if ($categoryProgressBar instanceof ProgressBar) {
-            $categoryProgressBar->setMaxSteps($subCategories->count());
-            $categoryProgressBar->start();
-        }
-
-        /** @var CategoryEntity $subCategory */
-        foreach ($subCategories as $subCategory) {
             if ($categoryProgressBar instanceof ProgressBar) {
-                $categoryProgressBar->setMessage($subCategory->getTranslated()['name'], 'category');
-            }
-
-            $categories = $this->parseCategory($categories, $subCategory, $context, $domainEntity, true, $categoryProgressBar);
-            if ($categoryProgressBar instanceof ProgressBar) {
+                $categoryProgressBar->setMessage($treeItem->getCategory()->getTranslated()['name'] ?: '-', 'category');
                 $categoryProgressBar->advance();
             }
+
+            $categories = $this->parseTreeItems($categories, $treeItem->getChildren(), $domainEntity, $categoryProgressBar);
         }
 
-        if ($categoryProgressBar instanceof ProgressBar) {
-            $categoryProgressBar->finish();
-        }
         return $categories;
     }
 }
