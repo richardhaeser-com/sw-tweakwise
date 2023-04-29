@@ -1,0 +1,11 @@
+{
+  "rhae-tweakwise-feed": {
+    "main": {
+        "menuLabel": "Tweakwise Feed",
+        "menuDescription": "Configureer je Tweakwise feed"
+    },
+    "list": {
+        "addButtonText": "Maak nieuwe feed"
+    }
+  }
+}
