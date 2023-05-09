@@ -14,7 +14,7 @@
             <brand><![CDATA[{{ product.manufacturer.translated.name|raw }}]]></brand>
         {% endif %}
         {% for url in product.seoUrls %}
-            <url>{{ domain.url ~ url.seoPathInfo }}</url>
+            <url>{{ domainUrl ~ url.seoPathInfo }}</url>
         {% endfor %}
 
         {% if product.cover.media is defined %}<image>{{ rh_imageResize(product.cover.media.url, 500, 0, 'png') }}</image>{% endif %}

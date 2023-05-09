@@ -185,6 +185,7 @@ class FeedService
             $output .= $this->twig->render($this->resolveView('tweakwise/product.xml.twig'), [
                 'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
                 'domainId' => $domain->getId(),
+                'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
                 'product' => $product,
                 'lang' => $domain->getLanguage()->getTranslationCode()->getCode()
             ]);
