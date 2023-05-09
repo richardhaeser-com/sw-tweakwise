@@ -1,0 +1,8 @@
+<category>
+    <categoryid>{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
+    <name>{{ category.translated.name }}</name>
+    <rank>{{ rank }}</rank>
+    <parents>
+        <categoryid>{{ md5(category.parentId ~ '_' ~ domainId) }}</categoryid>
+    </parents>
+</category>
