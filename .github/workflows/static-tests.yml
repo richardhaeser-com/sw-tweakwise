@@ -42,6 +42,7 @@ jobs:
         run: |
           sudo composer self-update
           composer --version
+          composer config --no-plugins allow-plugins.symfony/runtime true
 
       - name: Install lowest dependencies with composer
         if: matrix.dependencies == 'lowest'
