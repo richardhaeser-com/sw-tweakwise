@@ -1,0 +1,116 @@
+{% set price = product.calculatedPrice %}
+{%- if product.calculatedPrices.count > 0 -%}
+    {% set price = product.calculatedPrices.last %}
+{%- endif -%}
+
+{% block feed_item %}
+<item>
+    {% block feed_item_inner %}
+        <id>{{ product.productNumber }} ({{ crc32(domainId) }})</id>
+        <price>{{ price.unitPrice }}</price>
+        <name><![CDATA[{{ product.translated.name|raw }}]]></name>
+        <stock>{{ product.availableStock }}</stock>
+        {% if product.manufacturer %}
+            <brand><![CDATA[{{ product.manufacturer.translated.name|raw }}]]></brand>
+        {% endif %}
+        {% for url in product.seoUrls %}
+            <url>{{ domainUrl ~ url.seoPathInfo }}</url>
+        {% endfor %}
+
+        {% if product.cover.media is defined and product.cover.media.url %}<image>{{ rh_imageResize(product.cover.media.url, 500, 0, 'png') }}</image>{% endif %}
+        <categories>
+            {% for category in product.categories %}
+                {% if (category.id ~ '_' ~ domainId) in categoryIdsInFeed and (category.childCount or (category.type == 'page' and category.productAssignmentType == 'product')) %}
+                    <categoryid name="{{ category.translated.name }}" domain="{{ domain.url }}">{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
+                {% endif %}
+            {% endfor %}
+        </categories>
+        {% block feed_item_attributes %}
+            <attributes>
+                {% block feed_item_attributes_inner %}
+                    {% if product.options %}
+                        <attribute>
+                            <name>Selected option</name>
+                            <value>
+                                <![CDATA[
+                                            {% for option in product.options %}
+                                                {{ option.group.translated.name|raw }}: {{ option.translated.name|raw }}
+                                                {% if not loop.last %}|{% endif %}
+                                            {% endfor %}
+                                                    ]]>
+                            </value>
+                        </attribute>
+                    {% endif %}
+
+                    {% set optionGroups = [] %}
+                    {% for option in product.options %}
+                        <attribute>
+                            <name><![CDATA[{{ option.group.translated.name|raw }}]]></name>
+                            <value><![CDATA[{{ option.translated.name|raw }}]]></value>
+                        </attribute>
+                        {% set optionGroups = optionGroups|merge([option.groupId]) %}
+                    {% endfor %}
+                    {% for property in product.properties %}
+                        {% if not (property.groupId in optionGroups) %}
+                            <attribute>
+                                <name><![CDATA[{{ property.group.translated.name|raw }}]]></name>
+                                <value><![CDATA[{{ property.translated.name|raw }}]]></value>
+                            </attribute>
+                        {% endif %}
+                    {% endfor %}
+                    <attribute>
+                        <name>sw-new</name>
+                        <value>{% if product.isNew %}true{% else %}false{% endif %}</value>
+                    </attribute>
+                    <attribute>
+                        <name>sw-has-discount</name>
+                        <value>{% if listPrice %}true{% else %}false{% endif %}</value>
+                    </attribute>
+                    <attribute>
+                        <name>sw-is-topseller</name>
+                        <value>{% if product.markAsTopseller %}true{% else %}false{% endif %}</value>
+                    </attribute>
+                    <attribute>
+                        <name>sw-keywords</name>
+                        <value>{{ product.customSearchKeywords|join(', ') }}</value>
+                    </attribute>
+                    <attribute>
+                        <name>sw-product-number</name>
+                        <value>{{ product.productNumber }}</value>
+                    </attribute>
+                    {% set label = '' %}
+                    {% if (product.markAsTopseller) %}
+                        {% set label = "listing.boxLabelTopseller"|rh_translate(lang)|sw_sanitize %}
+                    {% elseif (listPrice) %}
+                        {% set label = "listing.boxLabelDiscount"|rh_translate(lang)|sw_sanitize %}
+                    {% elseif (product.isNew) %}
+                        {% set label = "listing.boxLabelNew"|rh_translate(lang)|sw_sanitize %}
+                    {% elseif (product.availableStock < 1) %}
+                        {% set label = "listing.boxLabelSoldout"|rh_translate(lang)|sw_sanitize %}
+                    {% endif %}
+                    <attribute>
+                        <name>sw-label</name>
+                        <value>{{ label }}</value>
+                    </attribute>
+                    <attribute>
+                        <name>sw-id</name>
+                        <value>{{ product.id }}</value>
+                    </attribute>
+                    <attribute>
+                        <name>sw-ean</name>
+                        <value>{{ product.ean }}</value>
+                    </attribute>
+                    <attribute>
+                        <name>sw-manufacturer-partnumber</name>
+                        <value>{{ product.manufacturerNumber }}</value>
+                    </attribute>
+                    <attribute>
+                        <name>sw-release-date</name>
+                        <value>{% if product.releaseDate %}{{ product.releaseDate|date('Y-m-d') }}{% endif %}</value>
+                    </attribute>
+                {% endblock %}
+            </attributes>
+        {% endblock %}
+    {% endblock %}
+</item>
+{% endblock %}

@@ -7,6 +7,7 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
@@ -41,6 +42,7 @@ class FeedService
     private ProductListingLoader $listingLoader;
     private FilesystemInterface $filesystem;
     private NavigationLoader $navigationLoader;
+    private int $categoryRank = 1;
 
     public function __construct(
         EntityRepository $salesChannelRepository,
@@ -157,7 +159,6 @@ class FeedService
         }
 
         $content = $this->twig->render($this->resolveView('tweakwise/feed.xml.twig'), [
-            'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
             'categoryData' => $this->categoryData,
         ]);
 
@@ -166,6 +167,31 @@ class FeedService
         }
 
         $this->filesystem->write(self::EXPORT_PATH, $content);
+    }
+
+    private function renderCategory(CategoryEntity $category, SalesChannelDomainEntity $domain): string
+    {
+        return $this->twig->render($this->resolveView('tweakwise/category.xml.twig'), [
+            'domainId' => $domain->getId(),
+            'category' => $category,
+            'rank' => $this->categoryRank
+        ]);
+    }
+
+    private function renderProducts(array $products, SalesChannelDomainEntity $domain): string
+    {
+        $output = '';
+        foreach ($products as $product) {
+            $output .= $this->twig->render($this->resolveView('tweakwise/product.xml.twig'), [
+                'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
+                'domainId' => $domain->getId(),
+                'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
+                'product' => $product,
+                'lang' => $domain->getLanguage()->getTranslationCode()->getCode()
+            ]);
+        }
+
+        return $output;
     }
 
     private function resolveView(string $view): string
@@ -224,7 +250,7 @@ class FeedService
         $result = ProductListingResult::createFrom($entities);
         $result->addState(...$entities->getStates());
 
-        $this->categoryData['salesChannels'][$salesChannel->getId()]['domains'][$domain->getId() ]['products'] = $result->getElements();
+        $this->categoryData['salesChannels'][$salesChannel->getId()]['domains'][$domain->getId() ]['products'] = $this->renderProducts($result->getElements(), $domain);
     }
 
     protected function parseTreeItems(array $categories, array $treeItems, SalesChannelDomainEntity $domainEntity, ProgressBar $categoryProgressBar = null): array
@@ -232,7 +258,8 @@ class FeedService
         /** @var TreeItem $treeItem */
         foreach ($treeItems as $treeItem) {
             $this->uniqueCategoryIds[] = $treeItem->getCategory()->getId() . '_' . $domainEntity->getId();
-            $categories[] = $treeItem->getCategory();
+            $categories[] = $this->renderCategory($treeItem->getCategory(), $domainEntity);
+            $this->categoryRank++;
 
             if ($categoryProgressBar instanceof ProgressBar) {
                 $categoryProgressBar->setMessage($treeItem->getCategory()->getTranslated()['name'] ?: '-', 'category');
