@@ -17,7 +17,7 @@
             <url>{{ domainUrl ~ url.seoPathInfo }}</url>
         {% endfor %}
 
-        {% if product.cover.media is defined %}<image>{{ rh_imageResize(product.cover.media.url, 500, 0, 'png') }}</image>{% endif %}
+        {% if product.cover.media is defined and product.cover.media.url %}<image>{{ rh_imageResize(product.cover.media.url, 500, 0, 'png') }}</image>{% endif %}
         <categories>
             {% for category in product.categories %}
                 {% if (category.id ~ '_' ~ domainId) in categoryIdsInFeed and (category.childCount or (category.type == 'page' and category.productAssignmentType == 'product')) %}
