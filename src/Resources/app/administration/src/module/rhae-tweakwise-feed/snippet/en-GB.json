@@ -5,7 +5,23 @@
             "menuDescription": "Configure your Tweakwise feed"
         },
         "list": {
-            "addButtonText": "Create new feed"
+            "addButtonText": "Create new feed",
+            "refreshButtonText": "Refresh",
+            "columns": {
+                "name": "Feed name"
+            }
+        },
+        "detail": {
+            "cancelButtonText": "Cancel",
+            "saveButtonText": "Save",
+            "section": {
+                "main": "General",
+                "data": "Data"
+            },
+            "label": {
+                "name": "Name",
+                "salesChannelDomains": "Domains"
+            }
         }
     }
 }

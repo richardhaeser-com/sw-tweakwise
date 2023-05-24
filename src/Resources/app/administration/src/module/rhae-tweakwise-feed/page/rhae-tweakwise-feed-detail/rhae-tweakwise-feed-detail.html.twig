@@ -1,0 +1,59 @@
+<sw-page class="rhae-tweakwise-feed-detail">
+    <template slot="smart-bar-actions">
+        <sw-button :routerLink="{ name: 'rhae.tweakwise.feed.list' }">
+            {{ $t('rhae-tweakwise-feed.detail.cancelButtonText') }}
+        </sw-button>
+
+        <sw-button-process
+                :isLoading="isLoading"
+                :processSuccess="processSuccess"
+                variant="primary"
+                @process-finish="saveFinish"
+                @click="onClickSave">
+            {{ $t('rhae-tweakwise-feed.detail.saveButtonText') }}
+        </sw-button-process>
+    </template>
+
+    <template slot="content">
+        <sw-card-view>
+            <sw-card v-if="item" :isLoading="isLoading" :title="$tc('rhae-tweakwise-feed.detail.section.main')">
+                <sw-card-section
+                    slot="toolbar"
+                    :secondary="true"
+                >
+                    <sw-container
+                        class="rhae-tweakwise-feed__card-toolbar"
+                        columns="1fr 1fr"
+                        rows="repeat(2, 40px)"
+                    >
+                            <div>
+                                <p class="rhae-tweakwise-feed__card-toolbar-heading">
+                                    Feed URL
+                                </p>
+                                <p>feed-{{item.id}}.xml</p>
+                            </div>
+                    </sw-container>
+
+
+                </sw-card-section>
+
+                <sw-card-section divider="bottom">
+                    <sw-field :label="$t('rhae-tweakwise-feed.detail.label.name')"
+                              v-model="item.name"
+                              required validation="required" ></sw-field>
+
+                </sw-card-section>
+
+                <sw-card-section>
+                    <sw-entity-multi-select
+                        :label="$t('rhae-tweakwise-feed.detail.label.salesChannelDomains')"
+                        labelProperty="url"
+                        value-property="id"
+                        v-model="item.salesChannelDomains"
+                    />
+                </sw-card-section>
+            </sw-card>
+        </sw-card-view>
+    </template>
+
+</sw-page>

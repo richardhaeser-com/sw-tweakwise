@@ -8,7 +8,9 @@
     {% block feed_item_inner %}
         <id>{{ product.productNumber }} ({{ crc32(domainId) }})</id>
         <price>{{ price.unitPrice }}</price>
+        <price_from>{{ price.listPrice.price }}</price_from>
         <name><![CDATA[{{ product.translated.name|raw }}]]></name>
+        <avg_rating>{% if product.ratingAverage %}{{ product.ratingAverage }}{% endif %}</avg_rating>
         <stock>{{ product.availableStock }}</stock>
         {% if product.manufacturer %}
             <brand><![CDATA[{{ product.manufacturer.translated.name|raw }}]]></brand>

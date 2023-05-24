@@ -2,21 +2,28 @@
 
 namespace RH\Tweakwise\Command;
 
+use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use RH\Tweakwise\Service\FeedService;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use function date;
 
 class GenerateFeedCommand extends Command
 {
     protected static $defaultName = 'tweakwise:generate-feed';
     private FeedService $feedService;
+    private EntityRepositoryInterface $feedRepository;
 
-    public function __construct(FeedService $feedService)
+    public function __construct(FeedService $feedService, EntityRepositoryInterface $feedRepository)
     {
         $this->feedService = $feedService;
+        $this->feedRepository = $feedRepository;
         parent::__construct();
     }
 
@@ -31,31 +38,25 @@ class GenerateFeedCommand extends Command
             throw new \LogicException('This command accepts only an instance of "ConsoleOutputInterface".');
         }
 
-        $section1 = $output->section();
-        $section2 = $output->section();
-        $section3 = $output->section();
-        $section4 = $output->section();
-
-        $progressBarSalesChannels = new ProgressBar($section1);
-        $progressBarSalesChannels->setFormat(sprintf("Sales-channel: <info>%%sales-channel%%</info>\n%s\n\n", $progressBarSalesChannels->getFormatDefinition('normal')));
-
-        $progressBarDomain = new ProgressBar($section2);
-        $progressBarDomain->setFormat(sprintf("Domain: <info>%%domain%%</info>\n%s\n\n", $progressBarDomain->getFormatDefinition('normal')));
-
-        $progressBarCategory = new ProgressBar($section3);
-        $progressBarCategory->setFormat(sprintf("Category: <info>%%category%%</info>\n%s\n\n", $progressBarDomain->getFormatDefinition('normal')));
-
-        $progressBarProducts = new ProgressBar($section4);
-        $progressBarProducts->setFormat(sprintf("Products: <info>%%message%%</info>\n%s\n\n", $progressBarProducts->getFormatDefinition('normal')));
-
         $time_start = microtime(true);
-        $this->feedService->generateFeed($progressBarSalesChannels, $progressBarDomain, $progressBarCategory, $progressBarProducts);
+        $criteria = new Criteria();
+        $criteria->addAssociation('salesChannelDomains');
+        $criteria->addAssociation('salesChannelDomains.salesChannel');
+        $criteria->addAssociation('salesChannelDomains.language');
+        $criteria->addAssociation('salesChannelDomains.language.translationCode');
+        $context = Context::createDefaultContext();
+
+        $feeds = $this->feedRepository->search($criteria, $context)->getEntities();
+        /** @var FeedEntity $feed */
+        foreach ($feeds as $feed) {
+            $this->feedService->generateFeed($feed);
+            $output->writeln('Feed "' . $feed->getName() . '" is created on ' . date('d-m-Y H:i:s', $this->feedService->getTimestampOfFeed($feed)));
+        }
 
         $time_end = microtime(true);
         $execution_time = ceil($time_end - $time_start);
 
-        $output->writeln('Creation of feed took ' . $execution_time . ' sec');
-        $output->writeln('Feed is created on ' . date('d-m-Y H:i:s', $this->feedService->getTimestampOfFeed()));
+        $output->writeln('Creation of feeds took ' . $execution_time . ' sec');
 
         return Command::SUCCESS;
     }

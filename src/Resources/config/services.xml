@@ -9,6 +9,10 @@
             <argument type="service" id="category.repository"/>
             <tag name="twig.extension"/>
         </service>
+        <service id="RH\Tweakwise\Twig\FeedExtension">
+            <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
+            <tag name="twig.extension"/>
+        </service>
         <service id="RH\Tweakwise\Twig\HashExtension">
             <tag name="twig.extension"/>
         </service>
@@ -28,6 +32,7 @@
                 <argument type="service" id="service_container"/>
             </call>
             <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
+            <argument type="service" id="s_plugin_rhae_tweakwise_feed.repository"/>
         </service>
         <service id="RH\Tweakwise\Service\ImageResizeService">
             <argument type="service" id="kernel"/>
@@ -36,6 +41,7 @@
 
         <service id="RH\Tweakwise\Command\GenerateFeedCommand">
             <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
+            <argument type="service" id="s_plugin_rhae_tweakwise_feed.repository"/>
             <tag name="console.command"/>
         </service>
 
@@ -49,5 +55,13 @@
             <argument type="service" id="shopware.filesystem.private"/>
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader" />
         </service>
+
+        <service id="RH\Tweakwise\Core\Content\Feed\FeedDefinition">
+            <tag name="shopware.entity.definition" entity="s_plugin_rhae_tweakwise_feed" />
+        </service>
+        <service id="RH\Tweakwise\Core\Content\Aggregate\FeedSalesChannelDomain\FeedSalesChannelDomainDefinition">
+            <tag name="shopware.entity.definition" entity="s_plugin_rhae_tweakwise_sales_channel_domains" />
+        </service>
+
     </services>
 </container>
