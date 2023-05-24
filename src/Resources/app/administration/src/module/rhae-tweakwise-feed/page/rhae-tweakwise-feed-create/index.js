@@ -15,7 +15,7 @@ Component.extend('rhae-tweakwise-feed-create', 'rhae-tweakwise-feed-detail', {
             this.isLoading = true;
 
             this.repository
-                .save(this.feed, Shopware.Context.api)
+                .save(this.item, Shopware.Context.api)
                 .then(() => {
                     this.isLoading = false;
                     this.$router.push({ name: 'rhae.tweakwise.feed.detail', params: { id: this.item.id } });
