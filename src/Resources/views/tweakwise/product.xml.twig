@@ -81,7 +81,7 @@
                     {% set label = '' %}
                     {% if (product.markAsTopseller) %}
                         {% set label = "listing.boxLabelTopseller"|rh_translate(lang)|sw_sanitize %}
-                    {% elseif (listPrice) %}
+                    {% elseif (price.listPrice.price) %}
                         {% set label = "listing.boxLabelDiscount"|rh_translate(lang)|sw_sanitize %}
                     {% elseif (product.isNew) %}
                         {% set label = "listing.boxLabelNew"|rh_translate(lang)|sw_sanitize %}
