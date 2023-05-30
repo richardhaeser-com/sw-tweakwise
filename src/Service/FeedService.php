@@ -89,9 +89,9 @@ class FeedService
                 $this->categoryData['salesChannels'][$salesChannel->getId()] = [
                     'name' => $salesChannel->getName(),
                 ];
-                $this->defineCategories($salesChannelDomain);
-                $this->defineProducts($salesChannelDomain);
             }
+            $this->defineCategories($salesChannelDomain);
+            $this->defineProducts($salesChannelDomain);
         }
 
         $content = $this->twig->render($this->resolveView('tweakwise/feed.xml.twig'), [
