@@ -1,0 +1,48 @@
+<sw-page class="rhae-tweakwise-frontend-detail">
+    <template slot="smart-bar-actions">
+        <sw-button :routerLink="{ name: 'rhae.tweakwise.frontend.list' }">
+            {{ $t('rhae-tweakwise-frontend.detail.cancelButtonText') }}
+        </sw-button>
+
+        <sw-button-process
+                :isLoading="isLoading"
+                :processSuccess="processSuccess"
+                variant="primary"
+                @process-finish="saveFinish"
+                @click="onClickSave">
+            {{ $t('rhae-tweakwise-frontend.detail.saveButtonText') }}
+        </sw-button-process>
+    </template>
+
+    <template slot="content">
+        <sw-card-view>
+            <sw-card v-if="item" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.main')">
+
+                <sw-card-section>
+                    <sw-field :label="$t('rhae-tweakwise-frontend.detail.label.name')"
+                              v-model="item.name"
+                              required validation="required" ></sw-field>
+
+                    <sw-field :label="$t('rhae-tweakwise-frontend.detail.label.token')"
+                              v-model="item.token"></sw-field>
+
+                    <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.integration')"
+                                     v-model="item.integration">
+                        <option v-for="value in ['no-integration','javascript']" :value="value">
+                            {{ $tc('rhae-tweakwise-frontend.detail.label.integrationOptions.' + value) }}
+                        </option>
+                    </sw-select-field>
+
+                    <sw-entity-multi-select
+                        :label="$t('rhae-tweakwise-frontend.detail.label.salesChannelDomains')"
+                        labelProperty="url"
+                        value-property="id"
+                        v-model="item.salesChannelDomains"
+                    />
+                </sw-card-section>
+
+            </sw-card>
+        </sw-card-view>
+    </template>
+
+</sw-page>

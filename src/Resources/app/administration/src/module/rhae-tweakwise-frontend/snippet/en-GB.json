@@ -1,0 +1,33 @@
+{
+    "rhae-tweakwise-frontend": {
+        "main": {
+            "menuLabel": "Tweakwise frontend",
+            "menuDescription": "Configure your Tweakwise frontend"
+        },
+        "list": {
+            "addButtonText": "Create new frontend",
+            "refreshButtonText": "Refresh",
+            "columns": {
+                "name": "Frontend name"
+            }
+        },
+        "detail": {
+            "cancelButtonText": "Cancel",
+            "saveButtonText": "Save",
+            "section": {
+                "main": "General",
+                "data": "Data"
+            },
+            "label": {
+                "name": "Name",
+                "token": "Authorization key",
+                "integration": "Way of integration",
+                "integrationOptions": {
+                    "no-integration": "No integration",
+                    "javascript": "JavaScript implementation"
+                },
+                "salesChannelDomains": "Domains"
+            }
+        }
+    }
+}

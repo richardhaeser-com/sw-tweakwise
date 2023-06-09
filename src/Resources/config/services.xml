@@ -9,10 +9,6 @@
             <argument type="service" id="category.repository"/>
             <tag name="twig.extension"/>
         </service>
-        <service id="RH\Tweakwise\Twig\FeedExtension">
-            <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
-            <tag name="twig.extension"/>
-        </service>
         <service id="RH\Tweakwise\Twig\HashExtension">
             <tag name="twig.extension"/>
         </service>
@@ -25,6 +21,7 @@
             <tag name="twig.extension"/>
         </service>
         <service id="RH\Tweakwise\Subscriber\StorefrontRenderSubscriber">
+            <argument type="service" id="s_plugin_rhae_tweakwise_frontend.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="RH\Tweakwise\Controller\TweakwiseFeedController" public="true">
@@ -46,14 +43,14 @@
         </service>
 
         <service id="RH\Tweakwise\Service\FeedService" public="true">
-            <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="category.repository"/>
             <argument type="service" id="Twig\Environment"/>
             <argument type="service" id="Shopware\Core\Framework\Adapter\Twig\TemplateFinder"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
-            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
-            <argument type="service" id="shopware.filesystem.private"/>
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader" />
+            <argument type="service" id="s_plugin_rhae_tweakwise_feed.repository"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Price\ProductPriceCalculator"/>
         </service>
 
         <service id="RH\Tweakwise\Core\Content\Feed\FeedDefinition">
@@ -61,6 +58,13 @@
         </service>
         <service id="RH\Tweakwise\Core\Content\Aggregate\FeedSalesChannelDomain\FeedSalesChannelDomainDefinition">
             <tag name="shopware.entity.definition" entity="s_plugin_rhae_tweakwise_sales_channel_domains" />
+        </service>
+
+        <service id="RH\Tweakwise\Core\Content\Frontend\FrontendDefinition">
+            <tag name="shopware.entity.definition" entity="s_plugin_rhae_tweakwise_frontend" />
+        </service>
+        <service id="RH\Tweakwise\Core\Content\Aggregate\FrontendSalesChannelDomain\FrontendSalesChannelDomainDefinition">
+            <tag name="shopware.entity.definition" entity="s_plugin_rhae_tweakwise_frontend_sales_channel_domains" />
         </service>
 
     </services>

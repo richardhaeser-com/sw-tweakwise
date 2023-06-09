@@ -1,0 +1,11 @@
+{
+  "rhae-tweakwise-frontend": {
+    "main": {
+        "menuLabel": "Tweakwise frontend",
+        "menuDescription": "Configureer je Tweakwise frontend"
+    },
+    "list": {
+        "addButtonText": "Maak nieuwe frontend"
+    }
+  }
+}

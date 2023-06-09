@@ -1,7 +1,7 @@
 {% sw_extends '@Storefront/storefront/layout/header/search.html.twig' %}
 
 {% block layout_header_search %}
-    {% if page.extensions.twCustomFields.rh_tweakwise_integration_type == 'js-basic' %}
+    {% if page.extensions.twConfiguration.integration == 'javascript' %}
         <div class="collapse" id="searchCollapse">
             <div class="header-search">
                 <div class="header-search-form">

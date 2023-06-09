@@ -1,6 +1,6 @@
 @import "~scss/variables";
 
-.rhae-tweakwise-feed-detail {
+.rhae-tweakwise-frontend-detail {
     .sw-card .sw-card__content {
         padding-top: 0;
     }
@@ -14,7 +14,7 @@
     }
 }
 
-.rhae-tweakwise-feed__card-toolbar {
+rhae-tweakwise-frontend__card-toolbar {
     row-gap: 25px;
 
     &-heading {

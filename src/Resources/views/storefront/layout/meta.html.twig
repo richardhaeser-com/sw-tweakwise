@@ -4,8 +4,8 @@
     {{ parent() }}
 
     {% block tweakwise_config %}
-        {% if page.extensions.twCustomFields.rh_tweakwise_integration_type == 'js-basic' %}
-            {% set instanceKey = page.extensions.twCustomFields.rh_tweakwise_instancekey|escape %}
+        {% if page.extensions.twConfiguration.integration == 'javascript' %}
+            {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
             {% set languageKey = page.header.activeLanguage.translationCode.code|split('-')[0]|escape %}
 
             {% if instanceKey %}
@@ -14,7 +14,7 @@
                         navigation: {
                             cid: ""
                         },
-                        cid: "{{ md5(page.extensions.twRootCategoryInfo.rootCategoryId ~ '_' ~ page.extensions.twRootCategoryInfo.domainId) }}",
+                        cid: "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}",
                         lang: "{{ languageKey }}",
                         on: {
                             "twn.add-to-cart": function (event) {

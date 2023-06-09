@@ -49,7 +49,7 @@ class GenerateFeedCommand extends Command
         $feeds = $this->feedRepository->search($criteria, $context)->getEntities();
         /** @var FeedEntity $feed */
         foreach ($feeds as $feed) {
-            $this->feedService->generateFeed($feed);
+            $this->feedService->generateFeed($feed, $context);
             $output->writeln('Feed "' . $feed->getName() . '" is created on ' . date('d-m-Y H:i:s', $this->feedService->getTimestampOfFeed($feed)));
         }
 

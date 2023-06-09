@@ -1,26 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace RH\Tweakwise\Core\Content\Feed;
+namespace RH\Tweakwise\Core\Content\Frontend;
 
-use RH\Tweakwise\Core\Content\Aggregate\FeedSalesChannelDomain\FeedSalesChannelDomainDefinition;
-use Shopware\Core\Content\Media\MediaDefinition;
+use RH\Tweakwise\Core\Content\Aggregate\FrontendSalesChannelDomain\FrontendSalesChannelDomainDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainDefinition;
 
-class FeedDefinition extends EntityDefinition
+class FrontendDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 's_plugin_rhae_tweakwise_feed';
+    public const ENTITY_NAME = 's_plugin_rhae_tweakwise_frontend';
 
     public function getEntityName(): string
     {
@@ -29,18 +24,18 @@ class FeedDefinition extends EntityDefinition
 
     public function getEntityClass(): string
     {
-        return FeedEntity::class;
+        return FrontendEntity::class;
     }
 
     public function getCollectionClass(): string
     {
-        return FeedCollection::class;
+        return FrontendCollection::class;
     }
 
     public function getDefaults(): array
     {
         return [
-            'name' => 'Main feed',
+            'name' => 'Main frontend',
         ];
     }
     protected function defineFields(): FieldCollection
@@ -48,9 +43,9 @@ class FeedDefinition extends EntityDefinition
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey(), new ApiAware()),
             (new StringField('name', 'name'))->addFlags(new Required(), new ApiAware()),
-            (new DateTimeField('last_started_at', 'lastStartedAt'))->addFlags(new ApiAware()),
-            (new DateTimeField('last_generated_at', 'lastGeneratedAt'))->addFlags(new ApiAware()),
-            (new ManyToManyAssociationField('salesChannelDomains', SalesChannelDomainDefinition::class, FeedSalesChannelDomainDefinition::class, 'feed_id', 'sales_channel_domain_id'))->addFlags(new ApiAware()),
+            (new StringField('token', 'token'))->addFlags(new ApiAware()),
+            (new StringField('integration', 'integration'))->addFlags(new ApiAware()),
+            (new ManyToManyAssociationField('salesChannelDomains', SalesChannelDomainDefinition::class, FrontendSalesChannelDomainDefinition::class, 'frontend_id', 'sales_channel_domain_id'))->addFlags(new ApiAware()),
         ]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Core\Content\Feed;
 
+use DateTime;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
@@ -16,6 +17,16 @@ class FeedEntity extends Entity
      * @var SalesChannelDomainCollection|null
      */
     protected $salesChannelDomains;
+
+    /**
+     * @var null|\DateTimeInterface
+     */
+    protected ?\DateTimeInterface $lastStartedAt;
+
+    /**
+     * @var null|\DateTimeInterface
+     */
+    protected ?\DateTimeInterface $lastGeneratedAt;
 
     public function getName(): ?string
     {
@@ -35,6 +46,38 @@ class FeedEntity extends Entity
     public function setSalesChannelDomains(?SalesChannelDomainCollection $salesChannelDomains): void
     {
         $this->salesChannelDomains = $salesChannelDomains;
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getLastGeneratedAt(): ?\DateTimeInterface
+    {
+        return $this->lastGeneratedAt;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $lastGeneratedAt
+     */
+    public function setLastGeneratedAt(?\DateTimeInterface $lastGeneratedAt): void
+    {
+        $this->lastGeneratedAt = $lastGeneratedAt;
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getLastStartedAt(): ?\DateTimeInterface
+    {
+        return $this->lastStartedAt;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $lastStartedAt
+     */
+    public function setLastStartedAt(?\DateTimeInterface $lastStartedAt): void
+    {
+        $this->lastStartedAt = $lastStartedAt;
     }
 
 }

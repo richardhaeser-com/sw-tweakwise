@@ -6,8 +6,8 @@
 {% block feed_item %}
 <item>
     {% block feed_item_inner %}
-        <id>{{ product.productNumber }} ({{ crc32(domainId) }})</id>
-        <price>{{ price.unitPrice }}</price>
+        <id>{{ product.productNumber }} ({{ lang }} - {{ crc32(domainId) }})</id>
+        <price>{{ price.unitPrice|round(2, 'common') }}</price>
         <name><![CDATA[{{ product.translated.name|raw }}]]></name>
         <stock>{{ product.availableStock }}</stock>
         {% if product.manufacturer %}
@@ -64,7 +64,7 @@
                     </attribute>
                     <attribute>
                         <name>sw-has-discount</name>
-                        <value>{% if listPrice %}true{% else %}false{% endif %}</value>
+                        <value>{% if price.listPrice %}true{% else %}false{% endif %}</value>
                     </attribute>
                     <attribute>
                         <name>sw-is-topseller</name>
@@ -108,10 +108,12 @@
                         <name>sw-release-date</name>
                         <value>{% if product.releaseDate %}{{ product.releaseDate|date('Y-m-d') }}{% endif %}</value>
                     </attribute>
+                    {% if price.listPrice.price %}
                     <attribute>
                         <name>sw-price-from</name>
-                        <value>{{ price.listPrice.price }}</value>
+                        <value>{{ price.listPrice.price|round(2, 'common') }}</value>
                     </attribute>
+                    {% endif %}
                     <attribute>
                         <name>sw-avg-rating</name>
                         <value>{% if product.ratingAverage %}{{ product.ratingAverage }}{% endif %}</value>

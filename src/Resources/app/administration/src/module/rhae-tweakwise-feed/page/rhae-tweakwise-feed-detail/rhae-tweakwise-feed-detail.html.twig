@@ -6,7 +6,7 @@
 
         <sw-button-process
                 :isLoading="isLoading"
-                :processSuccess="processSuccess"
+                :processSuccess="processSuccess.general"
                 variant="primary"
                 @process-finish="saveFinish"
                 @click="onClickSave">
@@ -24,13 +24,18 @@
                     <sw-container
                         class="rhae-tweakwise-feed__card-toolbar"
                         columns="1fr 1fr"
-                        rows="repeat(2, 40px)"
                     >
                             <div>
                                 <p class="rhae-tweakwise-feed__card-toolbar-heading">
-                                    Feed URL
+                                    {{ $t('rhae-tweakwise-feed.detail.label.feedUrl') }}
                                 </p>
-                                <p>feed-{{item.id}}.xml</p>
+                                <p><a href="{{ item.salesChannelDomains[0].url }}/tweakwise/feed-{{item.id}}.xml" target="_blank">{{ item.salesChannelDomains[0].url }}/tweakwise/feed-{{item.id}}.xml</a></p>
+                            </div>
+                            <div>
+                                <p class="rhae-tweakwise-feed__card-toolbar-heading">
+                                    {{ $t('rhae-tweakwise-feed.detail.label.lastGeneratedAt') }}
+                                </p>
+                                <p>{{ item.lastGeneratedAt|date("d-m-Y H:i") }}</p>
                             </div>
                     </sw-container>
 
@@ -42,15 +47,45 @@
                               v-model="item.name"
                               required validation="required" ></sw-field>
 
-                </sw-card-section>
-
-                <sw-card-section>
                     <sw-entity-multi-select
                         :label="$t('rhae-tweakwise-feed.detail.label.salesChannelDomains')"
                         labelProperty="url"
                         value-property="id"
                         v-model="item.salesChannelDomains"
                     />
+                </sw-card-section>
+
+                <sw-card-section>
+                    <sw-container
+                        align="center"
+                        columns="1fr auto"
+                        gap="20px"
+                    >
+                        <div>
+
+                            {% block sw_settings_cache_content_clear_and_warm_up_cache_row_heading %}
+                                <p class="sw-settings-cache__card-section-heading">
+                                    {{ $tc('rhae-tweakwise-feed.generate.heading') }}
+                                </p>
+                            {% endblock %}
+
+                            {% block sw_settings_cache_content_clear_and_warm_up_cache_row_text %}
+                                <p>{{ $tc('rhae-tweakwise-feed.generate.text') }}</p>
+                            {% endblock %}
+                        </div>
+
+                        {% block sw_settings_cache_content_clear_and_warm_up_cache_row_button %}
+                            <sw-button-process
+                                variant="ghost"
+                                :is-loading="processes.generateFeed"
+                                :process-success="processSuccess.generateFeed"
+                                @process-finish="resetButtons"
+                                @click="generateFeed"
+                            >
+                                {{ $tc('rhae-tweakwise-feed.generate.button') }}
+                            </sw-button-process>
+                        {% endblock %}
+                    </sw-container>
                 </sw-card-section>
             </sw-card>
         </sw-card-view>

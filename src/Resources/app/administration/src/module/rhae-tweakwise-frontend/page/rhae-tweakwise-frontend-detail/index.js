@@ -1,11 +1,11 @@
-import template from './rhae-tweakwise-feed-detail.html.twig';
-import './rhae-tweakwise-feed-detail.scss';
+import template from './rhae-tweakwise-frontend-detail.html.twig';
+import './rhae-tweakwise-frontend-detail.scss';
 
 const { Component, Mixin, Context } = Shopware;
 const { EntityCollection, Criteria } = Shopware.Data;
 const { mapPropertyErrors } = Shopware.Component.getComponentHelper();
 
-Component.register('rhae-tweakwise-feed-detail', {
+Component.register('rhae-tweakwise-frontend-detail', {
     template,
 
     inject: [
@@ -28,20 +28,14 @@ Component.register('rhae-tweakwise-feed-detail', {
             item: null,
             salesChannelDomains: null,
             isLoading: false,
+            processSuccess: false,
             salesChannelDomainIds: [],
-            processes: {
-                generateFeed: false,
-            },
-            processSuccess: {
-                general: false,
-                generateFeed: false,
-            },
         };
     },
 
     computed: {
         repository() {
-            return this.repositoryFactory.create('s_plugin_rhae_tweakwise_feed');
+            return this.repositoryFactory.create('s_plugin_rhae_tweakwise_frontend');
         },
 
         salesChannelDomainRepository() {
@@ -75,15 +69,7 @@ Component.register('rhae-tweakwise-feed-detail', {
                 Context.api,
             );
         },
-        resetButtons() {
-            this.processSuccess = {
-                general: false,
-                generateFeed: false,
-            };
-        },
-        generateFeed() {
-            alert('foo');
-        },
+
         getItem() {
             var criteria = new Criteria();
             criteria.addAssociation('salesChannelDomains');
@@ -106,7 +92,7 @@ Component.register('rhae-tweakwise-feed-detail', {
                 .catch((exception) => {
                     this.isLoading = false;
                     this.createNotificationError({
-                        title: this.$tc('rhae-tweakwise-feed.notification.errorTitle'),
+                        title: this.$tc('rhae-tweakwise-frontend.notification.errorTitle'),
                         message: exception
                     });
                 });
