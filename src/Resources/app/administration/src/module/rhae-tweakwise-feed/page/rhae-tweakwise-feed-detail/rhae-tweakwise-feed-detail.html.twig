@@ -29,7 +29,7 @@
                                 <p class="rhae-tweakwise-feed__card-toolbar-heading">
                                     {{ $t('rhae-tweakwise-feed.detail.label.feedUrl') }}
                                 </p>
-                                <p><a href="{{ item.salesChannelDomains[0].url }}/tweakwise/feed-{{item.id}}.xml" target="_blank">{{ item.salesChannelDomains[0].url }}/tweakwise/feed-{{item.id}}.xml</a></p>
+                                <p>{{ item.salesChannelDomains[0].url }}/tweakwise/feed-{{item.id}}.xml</p>
                             </div>
                             <div>
                                 <p class="rhae-tweakwise-feed__card-toolbar-heading">
@@ -55,6 +55,7 @@
                     />
                 </sw-card-section>
 
+                <div style="display: none">
                 <sw-card-section>
                     <sw-container
                         align="center"
@@ -88,6 +89,7 @@
                     </sw-container>
                 </sw-card-section>
             </sw-card>
+            </div>
         </sw-card-view>
     </template>
 

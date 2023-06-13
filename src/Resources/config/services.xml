@@ -51,6 +51,7 @@
             <argument type="service" id="s_plugin_rhae_tweakwise_feed.repository"/>
             <argument type="service" id="sales_channel.product.repository"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Price\ProductPriceCalculator"/>
+            <argument type="service" id="shopware.filesystem.private"/>
         </service>
 
         <service id="RH\Tweakwise\Core\Content\Feed\FeedDefinition">

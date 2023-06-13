@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Service;
 
+use League\Flysystem\FilesystemInterface;
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\NavigationLoader;
@@ -30,7 +31,10 @@ use function array_unique;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
+use function getcwd;
+use function ltrim;
 use function md5;
+use function pathinfo;
 use function str_replace;
 use function time;
 use function unlink;
@@ -49,6 +53,7 @@ class FeedService
     private EntityRepository $feedRepository;
     private SalesChannelRepositoryInterface $productRepository;
     private AbstractProductPriceCalculator $calculator;
+    private FilesystemInterface $filesystem;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -58,7 +63,8 @@ class FeedService
         NavigationLoader $navigationLoader,
         EntityRepository $feedRepository,
         SalesChannelRepositoryInterface $productRepository,
-        AbstractProductPriceCalculator $calculator
+        AbstractProductPriceCalculator $calculator,
+        FilesystemInterface $filesystem
     )
     {
         $this->categoryRepository = $categoryRepository;
@@ -69,22 +75,22 @@ class FeedService
         $this->feedRepository = $feedRepository;
         $this->productRepository = $productRepository;
         $this->calculator = $calculator;
+        $this->filesystem = $filesystem;
     }
 
     public function readFeed(FeedEntity $feedEntity): ?string
     {
-        $path = $this->getExportPath($feedEntity);
-        if (file_exists($path) || time() - $this->getTimestampOfFeed($feedEntity) > 86400) {
+        $path = ltrim($this->getExportPath($feedEntity, false), 'files/');
+        if (!$this->filesystem->has($path) || time() - $this->getTimestampOfFeed($feedEntity) > 86400) {
             return null;
         }
-
-        return file_get_contents($path);
+        return $this->filesystem->read($path);
     }
 
     public function getTimestampOfFeed(FeedEntity $feedEntity): int
     {
-        $info = new SplFileInfo($this->getExportPath($feedEntity, false));
-        return $info->getCTime();
+        $path = ltrim($this->getExportPath($feedEntity, false), 'files/');
+        return $this->filesystem->getTimestamp($path);
     }
 
     public function generateFeed(FeedEntity $feed, $context)
@@ -123,7 +129,10 @@ class FeedService
 
     private function finishXmlFeed(FeedEntity $feed)
     {
-        unlink($this->getExportPath($feed, false));
+        $path = $this->getExportPath($feed, false);
+        if (file_exists($path)) {
+            unlink($path);
+        }
         rename($this->getExportPath($feed), $this->getExportPath($feed, false));
     }
 
