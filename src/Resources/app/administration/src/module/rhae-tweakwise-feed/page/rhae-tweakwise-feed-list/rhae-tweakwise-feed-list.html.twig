@@ -1,0 +1,39 @@
+<sw-page class="rhae-tweakwise-feed-list">
+    <template slot="smart-bar-header">
+        <h2>
+            {{ $tc('rhae-tweakwise-feed.main.menuLabel') }}
+        </h2>
+    </template>
+
+    <template slot="smart-bar-actions">
+        <sw-button variant="primary" :routerLink="{ name: 'rhae.tweakwise.feed.create' }">
+            {{ $tc('rhae-tweakwise-feed.list.addButtonText') }}
+        </sw-button>
+    </template>
+
+    <sw-sidebar slot="sidebar">
+        <sw-sidebar-item
+            icon="default-arrow-360-left"
+            :title="$t('rhae-tweakwise-feed.list.refreshButtonText')"
+            @click="getList"
+        />
+    </sw-sidebar>
+
+    <template slot="content">
+        <sw-entity-listing
+            v-if="items"
+            :items="items"
+            :repository="repository"
+            :showSelection="true"
+            :columns="columns"
+            detailRoute="rhae.tweakwise.feed.detail"
+            @select-item="updateSelection"
+            @update-records="updateTotal">
+            <template #more-actions="{ item }">
+                <sw-context-menu-item @click="onDuplicate(item)">
+                    {{ $tc('sw-product.list.buttonDuplicate') }}
+                </sw-context-menu-item>
+            </template>
+        </sw-entity-listing>
+    </template>
+</sw-page>

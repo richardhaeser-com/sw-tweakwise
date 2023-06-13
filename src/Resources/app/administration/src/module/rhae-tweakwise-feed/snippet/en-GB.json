@@ -1,0 +1,34 @@
+{
+    "rhae-tweakwise-feed": {
+        "main": {
+            "menuLabel": "Tweakwise Feed",
+            "menuDescription": "Configure your Tweakwise feed"
+        },
+        "list": {
+            "addButtonText": "Create new feed",
+            "refreshButtonText": "Refresh",
+            "columns": {
+                "name": "Feed name"
+            }
+        },
+        "detail": {
+            "cancelButtonText": "Cancel",
+            "saveButtonText": "Save",
+            "section": {
+                "main": "General",
+                "data": "Data"
+            },
+            "label": {
+                "name": "Name",
+                "salesChannelDomains": "Domains",
+                "feedUrl": "Feed URL",
+                "lastGeneratedAt": "Last generated at"
+            },
+            "generate": {
+                "heading": "Generate feed",
+                "text": "The Tweakwise feed is automatically generated periodically. If you want to generate the feed now, you can do this by using the button on the right.",
+                "button": "Generate feed"
+            }
+        }
+    }
+}

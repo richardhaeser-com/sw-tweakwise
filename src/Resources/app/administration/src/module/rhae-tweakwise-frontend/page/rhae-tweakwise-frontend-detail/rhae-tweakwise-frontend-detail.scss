@@ -1,0 +1,23 @@
+@import "~scss/variables";
+
+.rhae-tweakwise-frontend-detail {
+    .sw-card .sw-card__content {
+        padding-top: 0;
+    }
+
+    .sw-card-section {
+        padding: 30px 0;
+
+        &--secondary {
+            padding: 0;
+        }
+    }
+}
+
+rhae-tweakwise-frontend__card-toolbar {
+    row-gap: 25px;
+
+    &-heading {
+        font-weight: 600;
+    }
+}

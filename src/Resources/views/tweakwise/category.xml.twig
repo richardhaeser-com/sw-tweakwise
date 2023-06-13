@@ -1,8 +1,18 @@
 <category>
-    <categoryid>{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
+    {% if not elementId %}
+        {% set elementId %}{{ md5(category.id ~ '_' ~ domainId) }}{% endset %}
+    {% endif %}
+    {% if not parentElementId and category.parentId %}
+        {% set parentElementId %}{{ md5(category.parentId ~ '_' ~ domainId) }}{% endset %}
+    {% endif %}
+
+    <categoryid>{{ elementId }}</categoryid>
     <name>{{ category.translated.name }}</name>
     <rank>{{ rank }}</rank>
+
+    {% if parentElementId %}
     <parents>
-        <categoryid>{{ md5(category.parentId ~ '_' ~ domainId) }}</categoryid>
+        <categoryid>{{ parentElementId }}</categoryid>
     </parents>
+    {% endif %}
 </category>

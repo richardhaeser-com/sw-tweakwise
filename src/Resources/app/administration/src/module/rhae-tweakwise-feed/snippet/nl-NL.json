@@ -1,0 +1,29 @@
+{
+    "rhae-tweakwise-feed": {
+        "main": {
+            "menuLabel": "Tweakwise Feed",
+            "menuDescription": "Configureer je Tweakwise feed"
+        },
+        "list": {
+            "addButtonText": "Maak nieuwe feed",
+            "refreshButtonText": "Vernieuwen",
+            "columns": {
+                "name": "Feed naam"
+            }
+        },
+        "detail": {
+            "cancelButtonText": "Annuleren",
+            "saveButtonText": "Opslaan",
+            "section": {
+                "main": "Algemeen",
+                "data": "Data"
+            },
+            "label": {
+                "name": "Naam",
+                "salesChannelDomains": "Domeinen",
+                "feedUrl": "Feed URL",
+                "lastGeneratedAt": "Laatst gegenereerd op"
+            }
+        }
+    }
+}

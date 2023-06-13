@@ -2,6 +2,10 @@
 
 namespace RH\Tweakwise\Subscriber;
 
+use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Storefront\Event\StorefrontRenderEvent;
 use Shopware\Storefront\Page\Page;
@@ -10,30 +14,48 @@ use function array_key_exists;
 
 class StorefrontRenderSubscriber implements EventSubscriberInterface
 {
+    private EntityRepositoryInterface $frontendRepository;
+
+    public function __construct(EntityRepositoryInterface $frontendRepository)
+    {
+        $this->frontendRepository = $frontendRepository;
+    }
+
     public static function getSubscribedEvents()
     {
         return [
             StorefrontRenderEvent::class => 'getTweakwiseConfig',
         ];
     }
+
     public function getTweakwiseConfig(StorefrontRenderEvent $event): void
     {
-        $salesChannel = $event->getSalesChannelContext()->getSalesChannel();
-        $customFields = $salesChannel->getTranslated()['customFields'] ?: [];
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new EqualsFilter('salesChannelDomains.id', $event->getSalesChannelContext()->getDomainId())
+        );
+
+        /** @var ?FrontendEntity $result */
+        $result = $this->frontendRepository->search($criteria, $event->getContext())->first();
+        if ($result === null) {
+            return;
+        }
+
         $domainId = $event->getSalesChannelContext()->getDomainId();
         $rootCategoryId = $event->getSalesChannelContext()->getSalesChannel()->getNavigationCategoryId();
-        $twRootCategoryInfo = ['domainId' => $domainId, 'rootCategoryId' => $rootCategoryId];
-        $parameters = $event->getParameters();
 
-        if ($customFields && is_array($parameters) && array_key_exists('page', $parameters)) {
-            /** @var Page $page */
-            $page = $event->getParameters()['page'];
-            if ($page instanceof Page) {
-                $page->addExtensions([
-                    'twCustomFields' => new ArrayStruct($customFields),
-                    'twRootCategoryInfo' => new ArrayStruct($twRootCategoryInfo)
-                ]);
-            }
+        $twConfiguration = [
+            'domainId' => $domainId,
+            'rootCategoryId' => $rootCategoryId,
+            'instanceKey' => $result->getToken(),
+            'integration' => $result->getIntegration()
+        ];
+
+        $page = $event->getParameters()['page'];
+        if ($page instanceof Page) {
+            $page->addExtensions([
+                'twConfiguration' => new ArrayStruct($twConfiguration),
+            ]);
         }
     }
 }

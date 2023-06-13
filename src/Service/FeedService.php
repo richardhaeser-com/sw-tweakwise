@@ -3,195 +3,290 @@
 namespace RH\Tweakwise\Service;
 
 use League\Flysystem\FilesystemInterface;
+use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
-use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
+use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Framework\Adapter\Twig\TemplateFinder;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\SalesChannelRepositoryIterator;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Core\System\SalesChannel\SalesChannelCollection;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Symfony\Component\Console\Helper\ProgressBar;
+use SplFileInfo;
 use Twig\Environment;
-use function array_key_exists;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use function array_unique;
+use function file_exists;
+use function file_get_contents;
+use function file_put_contents;
+use function getcwd;
+use function ltrim;
+use function md5;
+use function pathinfo;
+use function str_replace;
 use function time;
+use function unlink;
 
 class FeedService
 {
-    public const EXPORT_PATH = 'tweakwise/feed.xml';
-    private EntityRepository $salesChannelRepository;
+    public const EXPORT_PATH = 'files/tweakwise/feed-{id}.xml';
+    public const TMP_EXPORT_PATH = 'files/tweakwise/feed-{id}-tmp.xml';
     private EntityRepository $categoryRepository;
-    private Context $context;
     private Environment $twig;
     private TemplateFinder $templateFinder;
-    private array $categoryData = [];
     private array $uniqueCategoryIds = [];
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
-    private ProductListingLoader $listingLoader;
-    private FilesystemInterface $filesystem;
     private NavigationLoader $navigationLoader;
     private int $categoryRank = 1;
+    private EntityRepository $feedRepository;
+    private SalesChannelRepositoryInterface $productRepository;
+    private AbstractProductPriceCalculator $calculator;
+    private FilesystemInterface $filesystem;
 
     public function __construct(
-        EntityRepository $salesChannelRepository,
         EntityRepository $categoryRepository,
         Environment $twig,
         TemplateFinder $templateFinder,
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
-        ProductListingLoader $listingLoader,
-        FilesystemInterface $filesystem,
-        NavigationLoader $navigationLoader
+        NavigationLoader $navigationLoader,
+        EntityRepository $feedRepository,
+        SalesChannelRepositoryInterface $productRepository,
+        AbstractProductPriceCalculator $calculator,
+        FilesystemInterface $filesystem
     )
     {
-        $this->salesChannelRepository = $salesChannelRepository;
         $this->categoryRepository = $categoryRepository;
-        $this->context = Context::createDefaultContext();
         $this->twig = $twig;
         $this->templateFinder = $templateFinder;
         $this->salesChannelContextFactory = $salesChannelContextFactory;
-        $this->listingLoader = $listingLoader;
-        $this->filesystem = $filesystem;
         $this->navigationLoader = $navigationLoader;
+        $this->feedRepository = $feedRepository;
+        $this->productRepository = $productRepository;
+        $this->calculator = $calculator;
+        $this->filesystem = $filesystem;
     }
 
-    public function readFeed(): string
+    public function readFeed(FeedEntity $feedEntity): ?string
     {
-        if (!$this->filesystem->has(self::EXPORT_PATH) || time() - $this->getTimestampOfFeed() > 86400) {
-            return '';
+        $path = ltrim($this->getExportPath($feedEntity, false), 'files/');
+        if (!$this->filesystem->has($path) || time() - $this->getTimestampOfFeed($feedEntity) > 86400) {
+            return null;
         }
-        return $this->filesystem->read(self::EXPORT_PATH);
+        return $this->filesystem->read($path);
     }
 
-    public function getTimestampOfFeed(): int
+    public function getTimestampOfFeed(FeedEntity $feedEntity): int
     {
-        return $this->filesystem->getTimestamp(self::EXPORT_PATH);
+        $path = ltrim($this->getExportPath($feedEntity, false), 'files/');
+        return $this->filesystem->getTimestamp($path);
     }
 
-    public function generateFeed(ProgressBar $salesChannelProgressBar = null, ProgressBar $domainProgressBar = null, ProgressBar $categoryProgressBar = null, ProgressBar $productProgressBar = null)
+    public function generateFeed(FeedEntity $feed, $context)
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('active', true));
-        $criteria->addAssociations(['language', 'languages', 'currency', 'currencies', 'domains', 'domains.salesChannel', 'domains.language', 'domains.language.translationCode', 'type', 'customFields']);
-        /** @var SalesChannelCollection $salesChannels */
-        $salesChannels = $this->salesChannelRepository->search($criteria, $this->context)->getEntities();
+        $this->feedRepository->update([
+            [
+                'id' => $feed->getId(),
+                'lastStartedAt' => new \DateTime(),
+            ],
+        ], $context);
 
-        if ($salesChannelProgressBar instanceof ProgressBar) {
-            $salesChannelProgressBar->setMaxSteps($salesChannels->count());
-            $salesChannelProgressBar->start();
+        $this->prepareXmlFeed($feed);
+        $this->generateHeader($feed);
+        $this->generateTopLevelCategories($feed);
+        $this->generateCategories($feed);
+        $this->generateMiddle($feed);
+        $this->generateItems($feed);
+        $this->generateFooter($feed);
+        $this->finishXmlFeed($feed);
+
+        $this->feedRepository->update([
+            [
+                'id' => $feed->getId(),
+                'lastGeneratedAt' => new \DateTime(),
+            ],
+        ], $context);
+    }
+
+    private function prepareXmlFeed(FeedEntity $feed)
+    {
+        $path = $this->getExportPath($feed);
+        if (file_exists($path)) {
+            unlink($path);
         }
+    }
 
+    private function finishXmlFeed(FeedEntity $feed)
+    {
+        $path = $this->getExportPath($feed, false);
+        if (file_exists($path)) {
+            unlink($path);
+        }
+        rename($this->getExportPath($feed), $this->getExportPath($feed, false));
+    }
+
+    private function generateItems(FeedEntity $feed)
+    {
+        foreach ($feed->getSalesChannelDomains() as $salesChannelDomain) {
+            $salesChannel = $salesChannelDomain->getSalesChannel();
+            $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $salesChannelDomain->getLanguageId()]);
+
+            $criteria = new Criteria();
+            $criteria->setLimit(1);
+            $criteria->addAssociation('customFields');
+            $criteria->addAssociation('options');
+            $criteria->addAssociation('options.group');
+            $criteria->addAssociation('properties');
+            $criteria->addAssociation('properties.group');
+            $criteria->addAssociation('manufacturer');
+            $criteria->addAssociation('categories');
+            $criteria->addAssociation('productReviews');
+            $criteria->getAssociation('seoUrls')
+                ->setLimit(1)
+                ->addFilter(new EqualsFilter('isCanonical', true));
+
+            $criteria->addAssociation('seoUrls.url');
+
+            $criteria->addFilter(
+                new ProductAvailableFilter($salesChannel->getId(), ProductVisibilityDefinition::VISIBILITY_ALL)
+            );
+
+            $iterator = new SalesChannelRepositoryIterator($this->productRepository, $salesChannelContext, $criteria);
+            while (($result = $iterator->fetch()) !== null) {
+                $this->calculator->calculate(
+                    $result->getElements(),
+                    $salesChannelContext
+                );
+                $this->renderProducts($result->getElements(), $salesChannelDomain, $feed);
+            }
+
+        }
+    }
+
+    private function generateHeader(FeedEntity $feed): void
+    {
+        $content = $this->twig->render($this->resolveView('tweakwise/header.xml.twig'), []);
+        $this->writeContent($content, $feed);
+    }
+    private function generateMiddle(FeedEntity $feed): void
+    {
+        $content = $this->twig->render($this->resolveView('tweakwise/middle.xml.twig'), []);
+        $this->writeContent($content, $feed);
+    }
+    private function generateFooter(FeedEntity $feed): void
+    {
+        $content = $this->twig->render($this->resolveView('tweakwise/footer.xml.twig'), []);
+        $this->writeContent($content, $feed);
+    }
+
+    private function generateTopLevelCategories(FeedEntity $feed)
+    {
+        $rootCategoryEntity = new CategoryEntity();
+        $rootCategoryEntity->setName('Shopware feed');
+        $rootCategoryEntity->setTranslated(['name' => 'Shopware feed']);
+
+        $content = $this->twig->render($this->resolveView('tweakwise/category.xml.twig'), [
+            'elementId' => 'root',
+            'category' => $rootCategoryEntity,
+            'rank' => $this->categoryRank,
+        ]);
+        $this->categoryRank++;
+
+        $salesChannels = $this->getSalesChannelsFromFeed($feed);
         /** @var SalesChannelEntity $salesChannel */
         foreach ($salesChannels as $salesChannel) {
-            if ($salesChannelProgressBar instanceof ProgressBar) {
-                $salesChannelProgressBar->setMessage($salesChannel->getName(), 'sales-channel');
-                $salesChannelProgressBar->display();
-            }
-            $customFields = $salesChannel->getCustomFields();
-            if ($customFields && array_key_exists('rh_tweakwise_exclude_from_feed', $customFields)) {
-                continue;
-            }
+            $salesChannelCategory = new CategoryEntity();
+            $salesChannelCategory->setName($salesChannel->getName());
+            $salesChannelCategory->setTranslated(['name' => $salesChannel->getName()]);
 
-            $this->categoryData['salesChannels'][$salesChannel->getId()] = [
-                'name' => $salesChannel->getName(),
-            ];
-
-            if ($domainProgressBar instanceof ProgressBar) {
-                $domainProgressBar->setMaxSteps($salesChannel->getDomains()->count());
-                $domainProgressBar->start();
-            }
-
-            /** @var SalesChannelDomainEntity $domain */
-            foreach ($salesChannel->getDomains() as $domain) {
-                if ($domainProgressBar instanceof ProgressBar) {
-                    $domainProgressBar->setMessage($domain->getUrl(), 'domain');
-                    $domainProgressBar->display();
-                }
-
-                if ($categoryProgressBar instanceof ProgressBar) {
-                    $categoryProgressBar->start();
-                    $this->defineCategories($domain, $categoryProgressBar);
-                    $categoryProgressBar->finish();
-                } else {
-                    $this->defineCategories($domain, $categoryProgressBar);
-                }
-
-                if ($productProgressBar instanceof ProgressBar) {
-                    $productProgressBar->setMessage('Generating...');
-                    $productProgressBar->setMaxSteps(1);
-                    $productProgressBar->start();
-                }
-
-                $this->defineProducts($domain);
-                if ($productProgressBar instanceof ProgressBar) {
-                    $productProgressBar->advance();
-                    $productProgressBar->setMessage('Done');
-                    $productProgressBar->finish();
-                    $productProgressBar->clear();
-                }
-
-                if ($domainProgressBar instanceof ProgressBar) {
-                    $domainProgressBar->advance();
-                }
-            }
-
-            if ($domainProgressBar instanceof ProgressBar) {
-                $domainProgressBar->finish();
-            }
-
-            if ($salesChannelProgressBar instanceof ProgressBar) {
-                $salesChannelProgressBar->advance();
-            }
-        }
-        if ($salesChannelProgressBar instanceof ProgressBar) {
-            $salesChannelProgressBar->finish();
+            $content .= $this->twig->render($this->resolveView('tweakwise/category.xml.twig'), [
+                'elementId' => md5($salesChannel->getId()),
+                'category' => $salesChannelCategory,
+                'parentElementId' => 'root',
+                'rank' => $this->categoryRank,
+            ]);
+            $this->categoryRank++;
         }
 
-        $content = $this->twig->render($this->resolveView('tweakwise/feed.xml.twig'), [
-            'categoryData' => $this->categoryData,
-        ]);
+        foreach ($feed->getSalesChannelDomains() as $salesChannelDomain) {
+            $salesChannelDomainCategory = new CategoryEntity();
+            $salesChannelDomainCategory->setName($salesChannelDomain->getLanguage()->getTranslationCode()->getCode());
+            $salesChannelDomainCategory->setTranslated(['name' => $salesChannelDomain->getLanguage()->getTranslationCode()->getCode()]);
 
-        if ($this->filesystem->has(self::EXPORT_PATH)) {
-            $this->filesystem->delete(self::EXPORT_PATH);
+            $content .= $this->twig->render($this->resolveView('tweakwise/category.xml.twig'), [
+                'elementId' => md5($salesChannelDomain->getSalesChannel()->getNavigationCategoryId() . '_' . $salesChannelDomain->getId()),
+                'category' => $salesChannelDomainCategory,
+                'parentElementId' => md5($salesChannelDomain->getSalesChannel()->getId()),
+                'rank' => $this->categoryRank,
+            ]);
+            $this->categoryRank++;
+
         }
-
-        $this->filesystem->write(self::EXPORT_PATH, $content);
+        $this->writeContent($content, $feed);
     }
 
-    private function renderCategory(CategoryEntity $category, SalesChannelDomainEntity $domain): string
+    private function getSalesChannelsFromFeed(FeedEntity $feed): array
     {
-        return $this->twig->render($this->resolveView('tweakwise/category.xml.twig'), [
+        $salesChannels = [];
+        foreach ($feed->getSalesChannelDomains() as $salesChannelDomain) {
+            if (!in_array($salesChannelDomain->getSalesChannel(), $salesChannels)) {
+                $salesChannels[] = $salesChannelDomain->getSalesChannel();
+            }
+        }
+        return $salesChannels;
+    }
+    private function renderCategory(CategoryEntity $category, SalesChannelDomainEntity $domain, FeedEntity $feed)
+    {
+        $content = $this->twig->render($this->resolveView('tweakwise/category.xml.twig'), [
             'domainId' => $domain->getId(),
             'category' => $category,
-            'rank' => $this->categoryRank
+            'rank' => $this->categoryRank,
         ]);
+        $this->writeContent($content, $feed);
     }
 
-    private function renderProducts(array $products, SalesChannelDomainEntity $domain): string
+    private function writeContent(string $content, FeedEntity $feed)
     {
-        $output = '';
+        file_put_contents($this->getExportPath($feed), $content, FILE_APPEND);
+    }
+
+    /**
+     * @param EntityCollection|array $products
+     * @param SalesChannelDomainEntity $domain
+     * @param FeedEntity $feed
+     * @return void
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    private function renderProducts($products, SalesChannelDomainEntity $domain, FeedEntity $feed): void
+    {
+        $content = '';
         foreach ($products as $product) {
-            $output .= $this->twig->render($this->resolveView('tweakwise/product.xml.twig'), [
+            $content .= $this->twig->render($this->resolveView('tweakwise/product.xml.twig'), [
                 'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
                 'domainId' => $domain->getId(),
                 'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
                 'product' => $product,
-                'lang' => $domain->getLanguage()->getTranslationCode()->getCode()
+                'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
             ]);
         }
 
-        return $output;
+        $this->writeContent($content, $feed);
     }
 
     private function resolveView(string $view): string
@@ -199,76 +294,40 @@ class FeedService
         return $this->templateFinder->find('@Storefront/' . $view, true, '@RhTweakwise/' . $view);
     }
 
-
-    public function defineCategories(SalesChannelDomainEntity $domain, ProgressBar $categoryProgressBar = null): void
+    public function generateCategories(FeedEntity $feed)
     {
-        $salesChannel = $domain->getSalesChannel();
-        $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $domain->getLanguageId()]);
+        foreach ($feed->getSalesChannelDomains() as $salesChannelDomain) {
 
-        $context = new Context(new SystemSource(), [], $domain->getCurrencyId(), [$domain->getLanguageId(), $salesChannel->getLanguageId()]);
-        $criteria = new Criteria([$salesChannel->getNavigationCategoryId()]);
-        /** @var CategoryEntity $rootCategory */
-        $rootCategory = $this->categoryRepository->search($criteria, $context)->first();
+            $salesChannel = $salesChannelDomain->getSalesChannel();
+            $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $salesChannelDomain->getLanguageId()]);
 
-        $navigation = $this->navigationLoader->load($rootCategory->getId(), $salesChannelContext, $rootCategory->getId(), 99);
-        $categories = $this->parseTreeItems([], $navigation->getTree(), $domain, $categoryProgressBar);
+            $context = new Context(new SystemSource(), [], $salesChannelDomain->getCurrencyId(), [$salesChannelDomain->getLanguageId(), $salesChannel->getLanguageId()]);
+            $criteria = new Criteria([$salesChannel->getNavigationCategoryId()]);
+            /** @var CategoryEntity $rootCategory */
+            $rootCategory = $this->categoryRepository->search($criteria, $context)->first();
+            $navigation = $this->navigationLoader->load($rootCategory->getId(), $salesChannelContext, $rootCategory->getId(), 99);
 
-        $this->categoryData['salesChannels'][$salesChannel->getId()]['domains'][$domain->getId() ] = [
-            'name' => $domain->getUrl(),
-            'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
-            'url' => rtrim($domain->getUrl(), '/') . '/',
-            'rootCategoryId' => $rootCategory->getId(),
-            'categories' => $categories,
-        ];
+            $this->parseTreeItems([], $navigation->getTree(), $salesChannelDomain, $feed);
+        }
     }
 
-    public function defineProducts(SalesChannelDomainEntity $domain): void
-    {
-        $salesChannel = $domain->getSalesChannel();
-        $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $domain->getLanguageId()]);
-
-        $criteria = new Criteria();
-        $criteria->addAssociation('customFields');
-        $criteria->addAssociation('options');
-        $criteria->addAssociation('options.group');
-        $criteria->addAssociation('properties');
-        $criteria->addAssociation('properties.group');
-        $criteria->addAssociation('manufacturer');
-        $criteria->addAssociation('categories');
-        $criteria->getAssociation('seoUrls')
-            ->setLimit(1)
-            ->addFilter(new EqualsFilter('isCanonical', true));
-
-        $criteria->addAssociation('seoUrls.url');
-
-        $criteria->addFilter(
-            new ProductAvailableFilter($salesChannel->getId(), ProductVisibilityDefinition::VISIBILITY_ALL)
-        );
-
-        $entities = $this->listingLoader->load($criteria, $salesChannelContext);
-
-        $result = ProductListingResult::createFrom($entities);
-        $result->addState(...$entities->getStates());
-
-        $this->categoryData['salesChannels'][$salesChannel->getId()]['domains'][$domain->getId() ]['products'] = $this->renderProducts($result->getElements(), $domain);
-    }
-
-    protected function parseTreeItems(array $categories, array $treeItems, SalesChannelDomainEntity $domainEntity, ProgressBar $categoryProgressBar = null): array
+    protected function parseTreeItems(array $categories, array $treeItems, SalesChannelDomainEntity $domainEntity, FeedEntity $feed): void
     {
         /** @var TreeItem $treeItem */
         foreach ($treeItems as $treeItem) {
             $this->uniqueCategoryIds[] = $treeItem->getCategory()->getId() . '_' . $domainEntity->getId();
-            $categories[] = $this->renderCategory($treeItem->getCategory(), $domainEntity);
+            $this->renderCategory($treeItem->getCategory(), $domainEntity, $feed);
             $this->categoryRank++;
 
-            if ($categoryProgressBar instanceof ProgressBar) {
-                $categoryProgressBar->setMessage($treeItem->getCategory()->getTranslated()['name'] ?: '-', 'category');
-                $categoryProgressBar->advance();
-            }
-
-            $categories = $this->parseTreeItems($categories, $treeItem->getChildren(), $domainEntity, $categoryProgressBar);
+            $this->parseTreeItems($categories, $treeItem->getChildren(), $domainEntity, $feed);
         }
+    }
 
-        return $categories;
+    protected function getExportPath(FeedEntity $feedEntity, bool $temporarily = true)
+    {
+        if ($temporarily) {
+            return str_replace('{id}', $feedEntity->getId(), self::TMP_EXPORT_PATH);
+        }
+        return str_replace('{id}', $feedEntity->getId(), self::EXPORT_PATH);
     }
 }
