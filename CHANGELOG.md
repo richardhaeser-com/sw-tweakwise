@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 13-06-2023
+
+> ### BREAKING
+> **Be aware that this is a breaking change! Besides that you need to reconfigure the frontend (see changed), the URL of your feed will also change. You can find the right URL of the feed in the Feed settingw**
+
+### Added
+- You can now define one or more feeds and decide which sales channel domains should be included. With this option you can make sure only the information that is needed will be exported to Tweakwise.
+- Besides having the option to create one or more feeds, you can also create multiple frontends. These frontends holds the configuration with the instance key as well as the way of frontend implementation. As well as with feeds, you can also select sales channel domains to enable the implementation only for certain languages.
+
+### Changed
+- Some massive performance updates are done. Especially feeds with 25k products or more will benefit from this update
+- The configuration of the plugin is moved from the custom fields in the sales channel properties, to the Settings > Extension module. You will find two new modules there to manage the feeds and the frontends. 
+
 ## [1.0.4] - 24-04-2023
 
 ### Fixed
