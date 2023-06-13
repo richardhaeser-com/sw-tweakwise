@@ -27,6 +27,9 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use SplFileInfo;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use function array_unique;
 use function file_exists;
 use function file_get_contents;
@@ -261,7 +264,16 @@ class FeedService
         file_put_contents($this->getExportPath($feed), $content, FILE_APPEND);
     }
 
-    private function renderProducts(EntityCollection|array $products, SalesChannelDomainEntity $domain, FeedEntity $feed): void
+    /**
+     * @param EntityCollection|array $products
+     * @param SalesChannelDomainEntity $domain
+     * @param FeedEntity $feed
+     * @return void
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    private function renderProducts($products, SalesChannelDomainEntity $domain, FeedEntity $feed): void
     {
         $content = '';
         foreach ($products as $product) {
