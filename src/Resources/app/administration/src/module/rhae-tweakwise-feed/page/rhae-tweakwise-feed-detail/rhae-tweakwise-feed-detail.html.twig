@@ -18,6 +18,7 @@
         <sw-card-view>
             <sw-card v-if="item" :isLoading="isLoading" :title="$tc('rhae-tweakwise-feed.detail.section.main')">
                 <sw-card-section
+                    v-if="!item.isNew()"
                     slot="toolbar"
                     :secondary="true"
                 >
