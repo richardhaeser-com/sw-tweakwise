@@ -114,6 +114,16 @@
                         <value>{{ price.listPrice.price|round(2, 'common') }}</value>
                     </attribute>
                     {% endif %}
+                    {% if price.calculatedTaxes.count > 0 %}
+                        {% set netPrice = price.unitPrice %}
+                        {% for tax in price.calculatedTaxes %}
+                            {% set netPrice = netPrice - tax.tax %}
+                        {% endfor %}
+                        <attribute>
+                            <name>sw-price-net</name>
+                            <value>{{ netPrice|round(2, 'common') }}</value>
+                        </attribute>
+                    {% endif %}
                     <attribute>
                         <name>sw-avg-rating</name>
                         <value>{% if product.ratingAverage %}{{ product.ratingAverage }}{% endif %}</value>
