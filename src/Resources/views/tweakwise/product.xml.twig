@@ -64,7 +64,7 @@
                     </attribute>
                     <attribute>
                         <name>sw-has-discount</name>
-                        <value>{% if price.listPrice %}true{% else %}false{% endif %}</value>
+                        <value>{% if price.listPrice and price.listPrice.price > price.unitPrice %}true{% else %}false{% endif %}</value>
                     </attribute>
                     <attribute>
                         <name>sw-is-topseller</name>
