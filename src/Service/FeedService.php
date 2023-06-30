@@ -318,6 +318,7 @@ class FeedService
     {
         $pathPrefix = '';
         if ($absolute) {
+            /** @phpstan-ignore-next-line */
             $pathPrefix = $this->filesystem->getAdapter()->getPathPrefix();
         }
 
