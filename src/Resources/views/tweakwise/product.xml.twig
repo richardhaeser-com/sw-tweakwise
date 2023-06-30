@@ -79,14 +79,14 @@
                         <value>{{ product.productNumber }}</value>
                     </attribute>
                     {% set label = '' %}
-                    {% if (product.markAsTopseller) %}
+                    {%  if (product.availableStock < 1) %}
+                        {% set label = "listing.boxLabelSoldout"|rh_translate(lang)|sw_sanitize %}
+                    {% elseif (product.markAsTopseller) %}
                         {% set label = "listing.boxLabelTopseller"|rh_translate(lang)|sw_sanitize %}
                     {% elseif (price.listPrice.price) %}
                         {% set label = "listing.boxLabelDiscount"|rh_translate(lang)|sw_sanitize %}
                     {% elseif (product.isNew) %}
                         {% set label = "listing.boxLabelNew"|rh_translate(lang)|sw_sanitize %}
-                    {% elseif (product.availableStock < 1) %}
-                        {% set label = "listing.boxLabelSoldout"|rh_translate(lang)|sw_sanitize %}
                     {% endif %}
                     <attribute>
                         <name>sw-label</name>
