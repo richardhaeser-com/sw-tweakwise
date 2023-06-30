@@ -77,7 +77,7 @@ class FeedService
     public function readFeed(FeedEntity $feedEntity): ?string
     {
         $path = ltrim($this->getExportPath($feedEntity, false), 'files/');
-        if (!$this->filesystem->has($path) || time() - $this->getTimestampOfFeed($feedEntity) > 86400) {
+        if (!$this->filesystem->has($path)) {
             return null;
         }
         return $this->filesystem->read($path);
