@@ -8,8 +8,6 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
-use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
-use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Framework\Adapter\Twig\TemplateFinder;
@@ -25,27 +23,23 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use SplFileInfo;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 use function array_unique;
 use function file_exists;
-use function file_get_contents;
 use function file_put_contents;
-use function getcwd;
 use function ltrim;
 use function md5;
-use function pathinfo;
 use function str_replace;
 use function time;
 use function unlink;
 
 class FeedService
 {
-    public const EXPORT_PATH = 'files/tweakwise/feed-{id}.xml';
-    public const TMP_EXPORT_PATH = 'files/tweakwise/feed-{id}-tmp.xml';
+    public const EXPORT_PATH = 'tweakwise/feed-{id}.xml';
+    public const TMP_EXPORT_PATH = 'tweakwise/feed-{id}-tmp.xml';
     private EntityRepository $categoryRepository;
     private Environment $twig;
     private TemplateFinder $templateFinder;
@@ -68,8 +62,7 @@ class FeedService
         SalesChannelRepositoryInterface $productRepository,
         AbstractProductPriceCalculator $calculator,
         FilesystemInterface $filesystem
-    )
-    {
+    ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
         $this->templateFinder = $templateFinder;
@@ -124,7 +117,7 @@ class FeedService
 
     private function prepareXmlFeed(FeedEntity $feed)
     {
-        $path = $this->getExportPath($feed);
+        $path = $this->getExportPath($feed, true, true);
         if (file_exists($path)) {
             unlink($path);
         }
@@ -132,11 +125,11 @@ class FeedService
 
     private function finishXmlFeed(FeedEntity $feed)
     {
-        $path = $this->getExportPath($feed, false);
+        $path = $this->getExportPath($feed, false, true);
         if (file_exists($path)) {
             unlink($path);
         }
-        rename($this->getExportPath($feed), $this->getExportPath($feed, false));
+        rename($this->getExportPath($feed, true, true), $this->getExportPath($feed, false, true));
     }
 
     private function generateItems(FeedEntity $feed)
@@ -173,7 +166,6 @@ class FeedService
                 );
                 $this->renderProducts($result->getElements(), $salesChannelDomain, $feed);
             }
-
         }
     }
 
@@ -234,7 +226,6 @@ class FeedService
                 'rank' => $this->categoryRank,
             ]);
             $this->categoryRank++;
-
         }
         $this->writeContent($content, $feed);
     }
@@ -261,7 +252,7 @@ class FeedService
 
     private function writeContent(string $content, FeedEntity $feed)
     {
-        file_put_contents($this->getExportPath($feed), $content, FILE_APPEND);
+        file_put_contents($this->getExportPath($feed, true, true), $content, FILE_APPEND);
     }
 
     /**
@@ -323,11 +314,16 @@ class FeedService
         }
     }
 
-    protected function getExportPath(FeedEntity $feedEntity, bool $temporarily = true)
+    protected function getExportPath(FeedEntity $feedEntity, bool $temporarily = true, bool $absolute = false): string
     {
-        if ($temporarily) {
-            return str_replace('{id}', $feedEntity->getId(), self::TMP_EXPORT_PATH);
+        $pathPrefix = '';
+        if ($absolute) {
+            $pathPrefix = $this->filesystem->getAdapter()->getPathPrefix();
         }
-        return str_replace('{id}', $feedEntity->getId(), self::EXPORT_PATH);
+
+        if ($temporarily) {
+            return $pathPrefix . str_replace('{id}', $feedEntity->getId(), self::TMP_EXPORT_PATH);
+        }
+        return $pathPrefix . str_replace('{id}', $feedEntity->getId(), self::EXPORT_PATH);
     }
 }
