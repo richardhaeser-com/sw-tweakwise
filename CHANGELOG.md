@@ -5,10 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 05-07-2023
+
+### Added
+- Add net price as default attribute (thnx @ruudwelten)
+- 
+### Fixed
+- Add absolute feed path for execution from anywhere (thnx @ruudwelten)
+
+### Changed
+- Changed the way the feed is generated and respect the variant listing settings again
+- Check if discount is actually present (thnx @ruudwelten)
+- Remove check on age of feed when rendering in frontend
+
 ## [2.0.1] - 14-06-2023
 
 ### Fixed
 - You can now create new feeds again after fixing a JavaScript error in the admin module.
+
 ## [2.0.0] - 13-06-2023
 
 > ### BREAKING
