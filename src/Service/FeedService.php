@@ -8,12 +8,13 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
+use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
+use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Framework\Adapter\Twig\TemplateFinder;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\SalesChannelRepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -22,6 +23,7 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Twig\Environment;
 use Twig\Error\LoaderError;
@@ -33,7 +35,6 @@ use function file_put_contents;
 use function ltrim;
 use function md5;
 use function str_replace;
-use function time;
 use function unlink;
 
 class FeedService
@@ -48,9 +49,8 @@ class FeedService
     private NavigationLoader $navigationLoader;
     private int $categoryRank = 1;
     private EntityRepository $feedRepository;
-    private SalesChannelRepositoryInterface $productRepository;
-    private AbstractProductPriceCalculator $calculator;
     private FilesystemInterface $filesystem;
+    private ProductListingLoader $listingLoader;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -59,9 +59,8 @@ class FeedService
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
         NavigationLoader $navigationLoader,
         EntityRepository $feedRepository,
-        SalesChannelRepositoryInterface $productRepository,
-        AbstractProductPriceCalculator $calculator,
-        FilesystemInterface $filesystem
+        FilesystemInterface $filesystem,
+        ProductListingLoader $listingLoader
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -69,9 +68,8 @@ class FeedService
         $this->salesChannelContextFactory = $salesChannelContextFactory;
         $this->navigationLoader = $navigationLoader;
         $this->feedRepository = $feedRepository;
-        $this->productRepository = $productRepository;
-        $this->calculator = $calculator;
         $this->filesystem = $filesystem;
+        $this->listingLoader = $listingLoader;
     }
 
     public function readFeed(FeedEntity $feedEntity): ?string
@@ -139,7 +137,8 @@ class FeedService
             $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $salesChannelDomain->getLanguageId()]);
 
             $criteria = new Criteria();
-            $criteria->setLimit(1);
+            $criteria->setOffset(0);
+            $criteria->setLimit(10);
             $criteria->addAssociation('customFields');
             $criteria->addAssociation('options');
             $criteria->addAssociation('options.group');
@@ -158,15 +157,22 @@ class FeedService
                 new ProductAvailableFilter($salesChannel->getId(), ProductVisibilityDefinition::VISIBILITY_ALL)
             );
 
-            $iterator = new SalesChannelRepositoryIterator($this->productRepository, $salesChannelContext, $criteria);
-            while (($result = $iterator->fetch()) !== null) {
-                $this->calculator->calculate(
-                    $result->getElements(),
-                    $salesChannelContext
-                );
+            /** @var ProductListingResult $result */
+            while (($result = $this->loadProducts($criteria, $salesChannelContext)) !== null) {
                 $this->renderProducts($result->getElements(), $salesChannelDomain, $feed);
+                $criteria->setOffset($criteria->getOffset() + $criteria->getLimit());
             }
         }
+    }
+
+    private function loadProducts(Criteria $criteria, SalesChannelContext $salesChannelContext)
+    {
+        $entities = $this->listingLoader->load($criteria, $salesChannelContext);
+        $result = ProductListingResult::createFrom($entities);
+        if ($result->getTotal() > 0)
+            return $result;
+
+        return null;
     }
 
     private function generateHeader(FeedEntity $feed): void
