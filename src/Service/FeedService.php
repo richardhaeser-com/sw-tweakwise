@@ -8,6 +8,7 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
@@ -30,6 +31,7 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 use function array_unique;
+use function crc32;
 use function dirname;
 use function file_exists;
 use function file_put_contents;
@@ -52,6 +54,7 @@ class FeedService
     private EntityRepository $feedRepository;
     private FilesystemInterface $filesystem;
     private ProductListingLoader $listingLoader;
+    private array $uniqueProductIds = [];
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -90,6 +93,7 @@ class FeedService
 
     public function generateFeed(FeedEntity $feed, $context)
     {
+        $this->uniqueProductIds = [];
         $this->feedRepository->update([
             [
                 'id' => $feed->getId(),
@@ -280,14 +284,19 @@ class FeedService
     private function renderProducts($products, SalesChannelDomainEntity $domain, FeedEntity $feed): void
     {
         $content = '';
+        /** @var ProductEntity $product */
         foreach ($products as $product) {
-            $content .= $this->twig->render($this->resolveView('tweakwise/product.xml.twig'), [
-                'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
-                'domainId' => $domain->getId(),
-                'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
-                'product' => $product,
-                'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
-            ]);
+            $productId = $product->getProductNumber() . ' (' . $domain->getLanguage()->getTranslationCode()->getCode() . ' - ' . crc32($domain->getId()) . ')';
+            if (!in_array($productId, $this->uniqueProductIds, true)) {
+                $content .= $this->twig->render($this->resolveView('tweakwise/product.xml.twig'), [
+                    'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
+                    'domainId' => $domain->getId(),
+                    'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
+                    'product' => $product,
+                    'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
+                ]);
+                $this->uniqueProductIds[] = $productId;
+            }
         }
 
         $this->writeContent($content, $feed);
