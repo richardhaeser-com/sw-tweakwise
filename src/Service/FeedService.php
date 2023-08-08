@@ -30,6 +30,7 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 use function array_unique;
+use function dirname;
 use function file_exists;
 use function file_put_contents;
 use function ltrim;
@@ -118,6 +119,12 @@ class FeedService
         $path = $this->getExportPath($feed, true, true);
         if (file_exists($path)) {
             unlink($path);
+        }
+        $exportDirectory = dirname($path);
+        if (!file_exists($exportDirectory)) {
+            if (!mkdir($exportDirectory, 0755, true) && !is_dir($exportDirectory)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $exportDirectory));
+            }
         }
     }
 
