@@ -51,7 +51,8 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
             'integration' => $result->getIntegration()
         ];
 
-        $page = $event->getParameters()['page'];
+        $parameters = $event->getParameters();
+        $page = $parameters['page'] ?? null;
         if ($page instanceof Page) {
             $page->addExtensions([
                 'twConfiguration' => new ArrayStruct($twConfiguration),
