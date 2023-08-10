@@ -43,13 +43,31 @@
                     {% endif %}
 
                     {% set optionGroups = [] %}
+                    {% set optionIds = [] %}
                     {% for option in product.options %}
-                        <attribute>
-                            <name><![CDATA[{{ option.group.translated.name|raw }}]]></name>
-                            <value><![CDATA[{{ option.translated.name|raw }}]]></value>
-                        </attribute>
-                        {% set optionGroups = optionGroups|merge([option.groupId]) %}
+                        {% if not (option.id in optionIds) %}
+                            <attribute>
+                                <name><![CDATA[{{ option.group.translated.name|raw }}]]></name>
+                                <value><![CDATA[{{ option.translated.name|raw }}]]></value>
+                            </attribute>
+                            {% set optionGroups = optionGroups|merge([option.groupId]) %}
+                            {% set optionIds = optionIds|merge([option.id]) %}
+                        {% endif %}
                     {% endfor %}
+                    {% if otherVariants %}
+                        {% for variant in otherVariants %}
+                            {% for option in variant.options %}
+                                {% if not (option.id in optionIds) %}
+                                    <attribute>
+                                        <name><![CDATA[{{ option.group.translated.name|raw }}]]></name>
+                                        <value><![CDATA[{{ option.translated.name|raw }}]]></value>
+                                    </attribute>
+                                    {% set optionGroups = optionGroups|merge([option.groupId]) %}
+                                    {% set optionIds = optionIds|merge([option.id]) %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
                     {% for property in product.properties %}
                         {% if not (property.groupId in optionGroups) %}
                             <attribute>

@@ -55,6 +55,7 @@ class FeedService
     private FilesystemInterface $filesystem;
     private ProductListingLoader $listingLoader;
     private array $uniqueProductIds = [];
+    private EntityRepository $productRepository;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -64,7 +65,8 @@ class FeedService
         NavigationLoader $navigationLoader,
         EntityRepository $feedRepository,
         FilesystemInterface $filesystem,
-        ProductListingLoader $listingLoader
+        ProductListingLoader $listingLoader,
+        EntityRepository $productRepository
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -74,6 +76,7 @@ class FeedService
         $this->feedRepository = $feedRepository;
         $this->filesystem = $filesystem;
         $this->listingLoader = $listingLoader;
+        $this->productRepository = $productRepository;
     }
 
     public function readFeed(FeedEntity $feedEntity): ?string
@@ -288,11 +291,25 @@ class FeedService
         foreach ($products as $product) {
             $productId = $product->getProductNumber() . ' (' . $domain->getLanguage()->getTranslationCode()->getCode() . ' - ' . crc32($domain->getId()) . ')';
             if (!in_array($productId, $this->uniqueProductIds, true)) {
+                $otherVariants = null;
+                if ($product->getMainVariantId() && $product->getParentId()) {
+                    // only 1 variant is shown in listing
+                    $context = new Context(new SystemSource(), [], $domain->getCurrencyId(), [$domain->getLanguageId(), $domain->getLanguageId()]);
+                    $criteria = new Criteria([$product->getParentId()]);
+                    $criteria->addAssociation('children');
+                    $criteria->addAssociation('children.options');
+                    $criteria->addAssociation('children.options.group');
+
+                    /** @var ProductEntity $parent */
+                    $parent = $this->productRepository->search($criteria, $context)->first();
+                    $otherVariants = $parent->getChildren();
+                }
                 $content .= $this->twig->render($this->resolveView('tweakwise/product.xml.twig'), [
                     'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
                     'domainId' => $domain->getId(),
                     'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
                     'product' => $product,
+                    'otherVariants' => $otherVariants,
                     'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
                 ]);
                 $this->uniqueProductIds[] = $productId;
