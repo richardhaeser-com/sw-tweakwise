@@ -5,11 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 28-08-2023
+
+### Fixed
+- Export right variants of products based on the settings of the products
+
 ## [2.1.0] - 05-07-2023
 
 ### Added
 - Add net price as default attribute (thnx @ruudwelten)
-- 
+
 ### Fixed
 - Add absolute feed path for execution from anywhere (thnx @ruudwelten)
 
