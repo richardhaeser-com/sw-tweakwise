@@ -36,6 +36,7 @@ use function crc32;
 use function dirname;
 use function file_exists;
 use function file_put_contents;
+use function key_exists;
 use function ltrim;
 use function md5;
 use function str_replace;
@@ -324,7 +325,7 @@ class FeedService
                         $getVariants = true;
                         if (!$parent->getMainVariantId()) {
                             foreach ($configurationGroupConfigArray as $configurationGroupConfig) {
-                                if ($configurationGroupConfig['expressionForListings'] === true) {
+                                if (is_array($configurationGroupConfig) && key_exists('expressionForListings', $configurationGroupConfig) && $configurationGroupConfig['expressionForListings'] === true) {
                                     $getVariants = false;
                                     break;
                                 }
