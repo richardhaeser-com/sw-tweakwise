@@ -23,4 +23,5 @@ parameters:
         - '#Constant STARTTIME#'
 
     reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
     tipsOfTheDay: false

@@ -328,8 +328,7 @@ class FeedService
                         if (!$parent->getMainVariantId()) {
                             foreach ($configurationGroupConfigArray as $configurationGroupConfig) {
                                 if (
-                                    !is_string($configurationGroupConfig)
-                                    && is_array($configurationGroupConfig)
+                                    is_array($configurationGroupConfig)
                                     && array_key_exists('expressionForListings', $configurationGroupConfig)
                                     && $configurationGroupConfig['expressionForListings'] === true
                                 ) {
@@ -338,7 +337,7 @@ class FeedService
                                 }
                             }
                         }
-                        if ($getVariants) {
+                        if ($getVariants === true) {
                             $otherVariants = $parent->getChildren();
                         }
 
