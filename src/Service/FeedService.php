@@ -13,6 +13,7 @@ use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Adapter\Twig\TemplateFinder;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
@@ -39,6 +40,7 @@ use function ltrim;
 use function md5;
 use function str_replace;
 use function unlink;
+use function version_compare;
 
 class FeedService
 {
@@ -56,6 +58,7 @@ class FeedService
     private ProductListingLoader $listingLoader;
     private array $uniqueProductIds = [];
     private EntityRepository $productRepository;
+    private string $shopwareVersion;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -66,7 +69,8 @@ class FeedService
         EntityRepository $feedRepository,
         FilesystemInterface $filesystem,
         ProductListingLoader $listingLoader,
-        EntityRepository $productRepository
+        EntityRepository $productRepository,
+        string $shopwareVersion
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -77,6 +81,7 @@ class FeedService
         $this->filesystem = $filesystem;
         $this->listingLoader = $listingLoader;
         $this->productRepository = $productRepository;
+        $this->shopwareVersion = $shopwareVersion;
     }
 
     public function readFeed(FeedEntity $feedEntity): ?string
@@ -161,6 +166,9 @@ class FeedService
             $criteria->addAssociation('manufacturer');
             $criteria->addAssociation('categories');
             $criteria->addAssociation('productReviews');
+            $criteria->addAssociation('children');
+            $criteria->addAssociation('children.options');
+            $criteria->addAssociation('children.options.group');
             $criteria->getAssociation('seoUrls')
                 ->setLimit(1)
                 ->addFilter(new EqualsFilter('isCanonical', true));
@@ -292,7 +300,7 @@ class FeedService
             $productId = $product->getProductNumber() . ' (' . $domain->getLanguage()->getTranslationCode()->getCode() . ' - ' . crc32($domain->getId()) . ')';
             if (!in_array($productId, $this->uniqueProductIds, true)) {
                 $otherVariants = null;
-                if ($product->getMainVariantId() && $product->getParentId()) {
+                if ($product->getParentId()) {
                     // only 1 variant is shown in listing
                     $context = new Context(new SystemSource(), [], $domain->getCurrencyId(), [$domain->getLanguageId(), $domain->getLanguageId()]);
                     $criteria = new Criteria([$product->getParentId()]);
@@ -302,8 +310,34 @@ class FeedService
 
                     /** @var ProductEntity $parent */
                     $parent = $this->productRepository->search($criteria, $context)->first();
-                    $otherVariants = $parent->getChildren();
+                    if ($parent->getChildCount() > 0) {
+                        $configurationGroupConfigArray = [];
+                        if (version_compare($this->shopwareVersion, '6.4.15', '>=')) {
+                            $listingConfig = $parent->getVariantListingConfig();
+                            if ($listingConfig) {
+                                $configurationGroupConfigArray = $listingConfig->getConfiguratorGroupConfig();
+                            }
+                        } else {
+                            $configurationGroupConfigArray = $parent->getConfiguratorGroupConfig();
+                        }
+
+                        $getVariants = true;
+                        foreach ($configurationGroupConfigArray as $configurationGroupConfig) {
+                            if ($configurationGroupConfig['expressionForListings'] === true) {
+                                $getVariants = false;
+                                break;
+                            }
+                        }
+                        if ($getVariants) {
+                            $otherVariants = $parent->getChildren();
+                        }
+
+                    }
                 }
+                if ($product->getChildCount() > 0) {
+                    $otherVariants = $product->getChildren();
+                }
+
                 $content .= $this->twig->render($this->resolveView('tweakwise/product.xml.twig'), [
                     'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
                     'domainId' => $domain->getId(),

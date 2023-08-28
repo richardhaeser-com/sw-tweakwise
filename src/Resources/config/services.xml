@@ -52,6 +52,7 @@
             <argument type="service" id="shopware.filesystem.private"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
             <argument type="service" id="product.repository"/>
+            <argument>%kernel.shopware_version%</argument>
         </service>
 
         <service id="RH\Tweakwise\Core\Content\Feed\FeedDefinition">
