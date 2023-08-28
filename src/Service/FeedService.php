@@ -31,6 +31,7 @@ use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
+use function array_key_exists;
 use function array_unique;
 use function crc32;
 use function dirname;
@@ -314,6 +315,7 @@ class FeedService
                     if ($parent->getChildCount() > 0) {
                         $configurationGroupConfigArray = [];
                         if (version_compare($this->shopwareVersion, '6.4.15', '>=')) {
+                            /** @phpstan-ignore-next-line */
                             $listingConfig = $parent->getVariantListingConfig();
                             if ($listingConfig) {
                                 $configurationGroupConfigArray = $listingConfig->getConfiguratorGroupConfig();
@@ -325,7 +327,12 @@ class FeedService
                         $getVariants = true;
                         if (!$parent->getMainVariantId()) {
                             foreach ($configurationGroupConfigArray as $configurationGroupConfig) {
-                                if (is_array($configurationGroupConfig) && key_exists('expressionForListings', $configurationGroupConfig) && $configurationGroupConfig['expressionForListings'] === true) {
+                                if (
+                                    !is_string($configurationGroupConfig)
+                                    && is_array($configurationGroupConfig)
+                                    && array_key_exists('expressionForListings', $configurationGroupConfig)
+                                    && $configurationGroupConfig['expressionForListings'] === true
+                                ) {
                                     $getVariants = false;
                                     break;
                                 }
