@@ -322,10 +322,12 @@ class FeedService
                         }
 
                         $getVariants = true;
-                        foreach ($configurationGroupConfigArray as $configurationGroupConfig) {
-                            if ($configurationGroupConfig['expressionForListings'] === true) {
-                                $getVariants = false;
-                                break;
+                        if (!$parent->getMainVariantId()) {
+                            foreach ($configurationGroupConfigArray as $configurationGroupConfig) {
+                                if ($configurationGroupConfig['expressionForListings'] === true) {
+                                    $getVariants = false;
+                                    break;
+                                }
                             }
                         }
                         if ($getVariants) {
