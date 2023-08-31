@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.3] - 31-08-2023
+
+### Changed
+- Added check if variants are active before adding it to the feed
+
 ## [2.1.2] - 28-08-2023
 
 ### Changed
