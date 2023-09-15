@@ -171,6 +171,7 @@ class FeedService
             $criteria->addAssociation('children');
             $criteria->addAssociation('children.options');
             $criteria->addAssociation('children.options.group');
+            $criteria->addAssociation('tags');
             $criteria->getAssociation('seoUrls')
                 ->setLimit(1)
                 ->addFilter(new EqualsFilter('isCanonical', true));

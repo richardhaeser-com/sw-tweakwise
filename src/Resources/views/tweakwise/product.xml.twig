@@ -97,6 +97,10 @@
                         <value>{{ product.customSearchKeywords|join(', ') }}</value>
                     </attribute>
                     <attribute>
+                        <name>sw-tags</name>
+                        <value>{% for tag in product.tags %}{{ tag.name }}, {% endfor %}</value>
+                    </attribute>
+                    <attribute>
                         <name>sw-product-number</name>
                         <value>{{ product.productNumber }}</value>
                     </attribute>
