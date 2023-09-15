@@ -168,6 +168,7 @@ class FeedService
             $criteria->addAssociation('manufacturer');
             $criteria->addAssociation('categories');
             $criteria->addAssociation('productReviews');
+            $criteria->addAssociation('cover.media.thumbnails');
             $criteria->addAssociation('children');
             $criteria->addAssociation('children.options');
             $criteria->addAssociation('children.options.group');

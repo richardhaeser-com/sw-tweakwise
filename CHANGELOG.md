@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Not released yet]
 
+### Changed
+- Removed own way of generating thumbnails and fall back on generated thumbnails of Shopware
+
 ### Added
 - Added tags of product in feed property sw-tags. This is a comma seperated list of all tags assigned to the product.
 

@@ -18,7 +18,18 @@
         {% endfor %}
 
         {% block feed_item_image %}
-            {% if product.cover.media is defined and product.cover.media.url %}<image>{{ rh_imageResize(product.cover.media.url, 500, 0, 'png') }}</image>{% endif %}
+            {% if product.cover.media is defined and product.cover.media.url %}
+                {% set width = 0 %}
+                {% set thumbUrl = product.cover.media.url %}
+
+                {% for thumbnail in product.cover.media.thumbnails %}
+                    {% if thumbnail.width > width %}
+                        {% set thumbUrl = thumbnail.url %}
+                        {% set width = thumbnail.width %}
+                    {% endif %}
+                {% endfor %}
+                <image>{{ thumbUrl }}</image>
+            {% endif %}
         {% endblock %}
         <categories>
             {% for category in product.categories %}
