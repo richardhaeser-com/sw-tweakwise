@@ -29,9 +29,7 @@ at the moment, but things you can expect are:
 
 ## Support
 This is an opensource extension and the development of this extension is on a voluntary basis. Therefor I can't provide you
-free support. If you want any kind of support you can buy my support-package. For € 1000 (excl VAT), I will help you implementing
-the extension and can get support from me for 1 year. After 9 months, I will reach out to discuss your needs for the following year.
-If you want this support, please [contact me](mailto:support@richardhaeser.com).
+free support. If you need any assistance please [contact me](mailto:support@richardhaeser.com) to discuss the possibilities.
 
 If you want a specific feature in the extension which is not (yet) implemented, please [reach out](mailto:support@richardhaeser.com) and I can make a proposal to get it
 in as soon as possible.
