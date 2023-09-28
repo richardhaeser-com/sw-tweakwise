@@ -169,7 +169,7 @@ class FeedService
                 return $rule->getPayload()->match($scope);
             });
 
-            $salesChannelContext->setRuleIds($rules->filterForContext()->getIds());
+            $salesChannelContext->setRuleIds($rules->getIds());
 
             $criteria = new Criteria();
             $criteria->setOffset(0);
