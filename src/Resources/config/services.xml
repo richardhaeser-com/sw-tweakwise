@@ -45,6 +45,7 @@
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
             <argument type="service" id="product.repository"/>
             <argument>%kernel.shopware_version%</argument>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\RuleLoader"/>
         </service>
 
         <service id="RH\Tweakwise\Core\Content\Feed\FeedDefinition">

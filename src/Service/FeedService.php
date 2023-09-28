@@ -4,6 +4,8 @@ namespace RH\Tweakwise\Service;
 
 use League\Flysystem\FilesystemInterface;
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
+use Shopware\Core\Checkout\Cart\AbstractRuleLoader;
+use Shopware\Core\Checkout\CheckoutRuleScope;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
@@ -11,9 +13,7 @@ use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityD
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
-use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Adapter\Twig\TemplateFinder;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
@@ -21,10 +21,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Twig\Environment;
@@ -37,7 +37,6 @@ use function crc32;
 use function dirname;
 use function file_exists;
 use function file_put_contents;
-use function key_exists;
 use function ltrim;
 use function md5;
 use function str_replace;
@@ -61,6 +60,7 @@ class FeedService
     private array $uniqueProductIds = [];
     private EntityRepository $productRepository;
     private string $shopwareVersion;
+    private AbstractRuleLoader $ruleLoader;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -72,7 +72,8 @@ class FeedService
         FilesystemInterface $filesystem,
         ProductListingLoader $listingLoader,
         EntityRepository $productRepository,
-        string $shopwareVersion
+        string $shopwareVersion,
+        AbstractRuleLoader $ruleLoader
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -84,6 +85,7 @@ class FeedService
         $this->listingLoader = $listingLoader;
         $this->productRepository = $productRepository;
         $this->shopwareVersion = $shopwareVersion;
+        $this->ruleLoader = $ruleLoader;
     }
 
     public function readFeed(FeedEntity $feedEntity): ?string
@@ -153,9 +155,21 @@ class FeedService
 
     private function generateItems(FeedEntity $feed)
     {
+        /** @var SalesChannelDomainEntity $salesChannelDomain */
         foreach ($feed->getSalesChannelDomains() as $salesChannelDomain) {
+
+            /** @var SalesChannelEntity $salesChannel */
             $salesChannel = $salesChannelDomain->getSalesChannel();
-            $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $salesChannelDomain->getLanguageId()]);
+            $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $salesChannelDomain->getLanguageId()]);
+
+            $rules = $this->ruleLoader->load($salesChannelContext->getContext());
+            $scope = new CheckoutRuleScope($salesChannelContext);
+
+            $rules = $rules->filter(function ($rule) use ($scope) {
+                return $rule->getPayload()->match($scope);
+            });
+
+            $salesChannelContext->setRuleIds($rules->filterForContext()->getIds());
 
             $criteria = new Criteria();
             $criteria->setOffset(0);
@@ -185,7 +199,7 @@ class FeedService
 
             /** @var ProductListingResult $result */
             while (($result = $this->loadProducts($criteria, $salesChannelContext)) !== null) {
-                $this->renderProducts($result->getElements(), $salesChannelDomain, $feed);
+                $this->renderProducts($result->getElements(), $salesChannelDomain, $feed, $salesChannelContext->getContext());
                 $criteria->setOffset($criteria->getOffset() + $criteria->getLimit());
             }
         }
@@ -195,8 +209,10 @@ class FeedService
     {
         $entities = $this->listingLoader->load($criteria, $salesChannelContext);
         $result = ProductListingResult::createFrom($entities);
-        if ($result->getTotal() > 0)
+        if ($result->getTotal() > 0) {
+            $result->addState(...$entities->getStates());
             return $result;
+        }
 
         return null;
     }
@@ -296,7 +312,7 @@ class FeedService
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    private function renderProducts($products, SalesChannelDomainEntity $domain, FeedEntity $feed): void
+    private function renderProducts($products, SalesChannelDomainEntity $domain, FeedEntity $feed, Context $context): void
     {
         $content = '';
         /** @var ProductEntity $product */
@@ -306,7 +322,7 @@ class FeedService
                 $otherVariants = null;
                 if ($product->getParentId()) {
                     // only 1 variant is shown in listing
-                    $context = new Context(new SystemSource(), [], $domain->getCurrencyId(), [$domain->getLanguageId(), $domain->getLanguageId()]);
+//                    $context = new Context(new SystemSource(), [], $domain->getCurrencyId(), [$domain->getLanguageId(), $domain->getLanguageId()]);
                     $criteria = new Criteria([$product->getParentId()]);
                     $criteria->addAssociation('children');
                     $criteria->addAssociation('children.options');
