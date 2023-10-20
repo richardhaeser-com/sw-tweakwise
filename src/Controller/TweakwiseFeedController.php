@@ -4,10 +4,10 @@ namespace RH\Tweakwise\Controller;
 
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use RH\Tweakwise\Service\FeedService;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Uuid\Exception\InvalidUuidException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
@@ -16,14 +16,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"storefront"})
+ * @Route(defaults={"_routeScope"={"storefront"}})
  */
 class TweakwiseFeedController extends StorefrontController
 {
     private FeedService $feedService;
-    private EntityRepositoryInterface $feedRepository;
+    private EntityRepository $feedRepository;
 
-    public function __construct(FeedService $feedService, EntityRepositoryInterface $feedRepository)
+    public function __construct(FeedService $feedService, EntityRepository $feedRepository)
     {
         $this->feedService = $feedService;
         $this->feedRepository = $feedRepository;

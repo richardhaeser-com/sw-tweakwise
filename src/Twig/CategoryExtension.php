@@ -5,7 +5,7 @@ namespace RH\Tweakwise\Twig;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Context\CachedSalesChannelContextFactory;
@@ -18,9 +18,9 @@ use Twig\TwigFunction;
 class CategoryExtension extends AbstractExtension
 {
     private array $categories = [];
-    private EntityRepositoryInterface $categoryRepository;
+    private EntityRepository $categoryRepository;
 
-    public function __construct(EntityRepositoryInterface $categoryRepository)
+    public function __construct(EntityRepository $categoryRepository)
     {
         $this->categoryRepository = $categoryRepository;
     }

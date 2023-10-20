@@ -2,7 +2,8 @@
 
 namespace RH\Tweakwise\Service;
 
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
+use Symfony\Component\Filesystem\Filesystem;
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use Shopware\Core\Checkout\Cart\AbstractRuleLoader;
 use Shopware\Core\Checkout\CheckoutRuleScope;
@@ -55,7 +56,7 @@ class FeedService
     private NavigationLoader $navigationLoader;
     private int $categoryRank = 1;
     private EntityRepository $feedRepository;
-    private FilesystemInterface $filesystem;
+    private FilesystemOperator $filesystem;
     private ProductListingLoader $listingLoader;
     private array $uniqueProductIds = [];
     private EntityRepository $productRepository;
@@ -69,7 +70,7 @@ class FeedService
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
         NavigationLoader $navigationLoader,
         EntityRepository $feedRepository,
-        FilesystemInterface $filesystem,
+        FilesystemOperator $filesystem,
         ProductListingLoader $listingLoader,
         EntityRepository $productRepository,
         string $shopwareVersion,
@@ -343,7 +344,7 @@ class FeedService
                         }
 
                         $getVariants = true;
-                        if (!$parent->getMainVariantId()) {
+//                        if (!$parent->getMainVariantId()) {
                             foreach ($configurationGroupConfigArray as $configurationGroupConfig) {
                                 if (
                                     is_array($configurationGroupConfig)
@@ -354,7 +355,7 @@ class FeedService
                                     break;
                                 }
                             }
-                        }
+//                        }
                         if ($getVariants === true) {
                             $otherVariants = $parent->getChildren();
                         }
@@ -418,8 +419,7 @@ class FeedService
     {
         $pathPrefix = '';
         if ($absolute) {
-            /** @phpstan-ignore-next-line */
-            $pathPrefix = $this->filesystem->getAdapter()->getPathPrefix();
+            $pathPrefix = 'files/';
         }
 
         if ($temporarily) {
