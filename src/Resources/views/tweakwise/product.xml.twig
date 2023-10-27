@@ -154,7 +154,7 @@
                     {% if price.calculatedTaxes.count > 0 %}
                         {% set netPrice = price.unitPrice %}
                         {% for tax in price.calculatedTaxes %}
-                            {% set netPrice = netPrice - tax.tax %}
+                            {% set netPrice = netPrice - (tax.tax / price.quantity) %}
                         {% endfor %}
                         <attribute>
                             <name>sw-price-net</name>
