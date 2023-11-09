@@ -6,15 +6,15 @@ use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use RH\Tweakwise\Service\FeedService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use function date;
 
+#[AsCommand(name: 'tweakwise:generate-feed')]
 class GenerateFeedCommand extends Command
 {
     protected static $defaultName = 'tweakwise:generate-feed';
