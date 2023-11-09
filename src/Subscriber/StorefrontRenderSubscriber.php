@@ -3,6 +3,7 @@
 namespace RH\Tweakwise\Subscriber;
 
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -14,9 +15,9 @@ use function array_key_exists;
 
 class StorefrontRenderSubscriber implements EventSubscriberInterface
 {
-    private EntityRepositoryInterface $frontendRepository;
+    private EntityRepository $frontendRepository;
 
-    public function __construct(EntityRepositoryInterface $frontendRepository)
+    public function __construct(EntityRepository $frontendRepository)
     {
         $this->frontendRepository = $frontendRepository;
     }

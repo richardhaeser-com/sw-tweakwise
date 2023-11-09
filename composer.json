@@ -3,14 +3,14 @@
   "description": "Tweakwise for Shopware 6",
   "type": "shopware-platform-plugin",
   "license": "proprietary",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "autoload": {
     "psr-4": {
       "RH\\Tweakwise\\": "src/"
     }
   },
   "require": {
-    "shopware/core": ">=6.4.6 <6.5",
+    "shopware/core": ">=6.4.6 <6.6",
     "shopware/administration": "*",
     "shopware/storefront": "*"
   },

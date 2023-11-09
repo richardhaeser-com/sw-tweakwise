@@ -21,7 +21,6 @@
                                 let addToCartEvent = new CustomEvent('twAddToCart', {
                                     detail: {
                                         addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
-                                        csrfToken: '{{ sw_csrf('frontend.checkout.line-item.add', {"mode": "token"}) }}',
                                         data: event.data
                                     }
                                 });
