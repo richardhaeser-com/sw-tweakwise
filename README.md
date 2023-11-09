@@ -10,6 +10,8 @@ This extension is still in development. I will add more and more features over t
 At the moment the following features are supported:
 
 - Fully customizable product feed which out-of-the-box gives you a valid feed for Tweakwise (multi-channel, multi-language)
+- Advanced pricing
+- Variants
 - Instant search (JS)
 - Merchandise (JS)
 
@@ -27,9 +29,12 @@ at the moment, but things you can expect are:
 - With the **Standard Site Search based on the API** you will be able to use Tweakwise without the need to include the JavaScript library of Tweakwise. 
 - The **Autocomplete** feature will also be included.
 
+## Documentation
+[Checkout the documentation](DOC.md)
+
+
 ## Support
-This is an opensource extension and the development of this extension is on a voluntary basis. Therefor I can't provide you
-free support. If you need any assistance please [contact me](mailto:support@richardhaeser.com) to discuss the possibilities.
+If you have any question regarding the plugin or do you think you found a bug? Please contact Tweakwise. They will provide the first level of support. 
 
 If you want a specific feature in the extension which is not (yet) implemented, please [reach out](mailto:support@richardhaeser.com) and I can make a proposal to get it
 in as soon as possible.
