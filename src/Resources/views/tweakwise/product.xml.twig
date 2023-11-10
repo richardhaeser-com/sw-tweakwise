@@ -138,7 +138,7 @@
                         <value>{{ product.ean }}</value>
                     </attribute>
                     <attribute>
-                        <name>sw-manufacturer-partnumber</name>
+                        <name>sw-manufacturer-productnumber</name>
                         <value>{{ product.manufacturerNumber }}</value>
                     </attribute>
                     <attribute>
@@ -148,6 +148,12 @@
                     {% if price.listPrice.price %}
                     <attribute>
                         <name>sw-price-from</name>
+                        <value>{{ price.listPrice.price|round(2, 'common') }}</value>
+                    </attribute>
+                    {% endif %}
+                    {% if price.listPrice.price %}
+                    <attribute>
+                        <name>sw-price-list</name>
                         <value>{{ price.listPrice.price|round(2, 'common') }}</value>
                     </attribute>
                     {% endif %}
@@ -165,6 +171,60 @@
                         <name>sw-avg-rating</name>
                         <value>{% if product.ratingAverage %}{{ product.ratingAverage }}{% endif %}</value>
                     </attribute>
+                    {% block feed_item_weight %}
+                        <attribute>
+                            <name>sw-weight</name>
+                            <value>{{ product.weight }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_width %}
+                        <attribute>
+                            <name>sw-width</name>
+                            <value>{{ product.width }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_height %}
+                        <attribute>
+                            <name>sw-height</name>
+                            <value>{{ product.height }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_length %}
+                        <attribute>
+                            <name>sw-length</name>
+                            <value>{{ product.length }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_closeout %}
+                        <attribute>
+                            <name>sw-is-closeout</name>
+                            <value>{% if product.isCloseout %}true{% else %}false{% endif %}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_delivery_time %}
+                        <attribute>
+                            <name>sw-delivery-time</name>
+                            <value>{{ product.deliveryTime.translated.name }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_description %}
+                        <attribute>
+                            <name>sw-description</name>
+                            <value>{{ product.translated.description|striptags|slice(0,400) }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_purchase_unit %}
+                        <attribute>
+                            <name>sw-purchase-unit</name>
+                            <value>{{ product.purchaseUnit }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_reference_unit %}
+                        <attribute>
+                            <name>sw-reference-unit</name>
+                            <value>{{ product.referenceUnit }}</value>
+                        </attribute>
+                    {% endblock %}
                 {% endblock %}
             </attributes>
         {% endblock %}
