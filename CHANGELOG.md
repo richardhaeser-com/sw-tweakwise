@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- The following fields are added to the feed: `sw-weight`, `sw-width`, `sw-height`, `sw-length`, `sw-is-closeout`, `sw-delivery-time`, `sw-description`, `sw-purchase-unit`, `sw-reference-unit` 
+
 ## [2.1.6] - 09-11-2023
 
 ### Changed
