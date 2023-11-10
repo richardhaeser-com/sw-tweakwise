@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - The following fields are added to the feed: `sw-weight`, `sw-width`, `sw-height`, `sw-length`, `sw-is-closeout`, `sw-delivery-time`, `sw-description`, `sw-purchase-unit`, `sw-reference-unit` 
 
+### Changed
+- Made it more clear in the docs which fields are in the feed. It will now show both label as in the admin as well as the name of the field how it will be exported to Tweakwise.
+
 ## [2.1.6] - 09-11-2023
 
 ### Changed
