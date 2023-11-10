@@ -201,6 +201,12 @@
                             <value>{{ product.deliveryTime.translated.name }}</value>
                         </attribute>
                     {% endblock %}
+                    {% block feed_item_description %}
+                        <attribute>
+                            <name>sw-description</name>
+                            <value>{{ product.translated.description|striptags|slice(0,400) }}</value>
+                        </attribute>
+                    {% endblock %}
                 {% endblock %}
             </attributes>
         {% endblock %}
