@@ -41,30 +41,30 @@ By default, the feed contains all the basic fields and all set properties of a p
 For categories, the feed contains all included sales channels and languages you have chosen in the feed configuration. Of each category the name and rank (sorting) will be included in the feed.
 
 ### Products
-For each product in the feed the following fields are in the feed by default:
-- name
-- unit price
-- available stock
-- manufacturer name
-- canonical url of product
-- link to cover image (largest thumbnail)
-- categories (one or more)
-- selected options (if you have a variant with choosen option size L and color Black, it will return Size: L | Color: black)
-- all given attributes
-- attributes of other variants (if there are more variants available but you only show 1 variant, the attributes of the other variants will be added as well)
-- is new yes / no (based on the settings in Shopware)
-- has discount yes / no (if listPrice and unitPrice differs)
-- is topseller yes / no (based on the popular checkbox of Shopware)
-- search keywords
-- tags
-- product number
-- label (sold out, topseller, discount or new in that order)
-- ean
-- manufacturer number
-- release date
-- list price (price from ...)
-- net price
-- average rating
+For each product in the feed the following fields are in the feed by default. The marked `fieldnames` are the names used in Tweakwise:
+- Name `name`
+- Price `price` (based on setting of Shopware, it will show the gross or net price)
+- Available stock `stock`
+- Manufacturer `brand`
+- Url `url` (canonical url)
+- Cover image `image` (link to largest thumbnail) 
+- Categories `categories` (one or more)
+- Selected options `Selected option` (if you have a variant with choosen option size L and color Black, it will return Size: L | Color: black)
+- All given attributes `all with their own name`
+- Attributes of other variants `all with their own name` (if there are more variants available but you only show 1 variant, the attributes of the other variants will be added as well)
+- New product yes / no `sw-new` (based on the settings in Shopware)
+- Has discount yes / no `sw-has-discount` (if listPrice and unitPrice differs)
+- Popular product yes / no `sw-is-topseller` (based on the popular checkbox of Shopware)
+- Search keywords `sw-keywords`
+- Tags `sw-tags`
+- Product number `sw-product-number`
+- Label `sw-label` (sold out, topseller, discount or new in that order)
+- GTIN/EAN `sw-ean`
+- Manufacturer product number `sw-manufacturer-productnumber` 
+- Release date `sw-release-date`
+- List price `sw-price-from` (price from ...)
+- Net price `sw-price-net`
+- Average rating `sw-avg-rating`
 - Weight `sw-weight`
 - Width `sw-width`
 - Height `sw-height`

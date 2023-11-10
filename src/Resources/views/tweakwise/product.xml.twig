@@ -138,7 +138,7 @@
                         <value>{{ product.ean }}</value>
                     </attribute>
                     <attribute>
-                        <name>sw-manufacturer-partnumber</name>
+                        <name>sw-manufacturer-productnumber</name>
                         <value>{{ product.manufacturerNumber }}</value>
                     </attribute>
                     <attribute>
@@ -148,6 +148,12 @@
                     {% if price.listPrice.price %}
                     <attribute>
                         <name>sw-price-from</name>
+                        <value>{{ price.listPrice.price|round(2, 'common') }}</value>
+                    </attribute>
+                    {% endif %}
+                    {% if price.listPrice.price %}
+                    <attribute>
+                        <name>sw-price-list</name>
                         <value>{{ price.listPrice.price|round(2, 'common') }}</value>
                     </attribute>
                     {% endif %}
