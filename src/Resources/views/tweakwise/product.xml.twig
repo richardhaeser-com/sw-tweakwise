@@ -165,6 +165,42 @@
                         <name>sw-avg-rating</name>
                         <value>{% if product.ratingAverage %}{{ product.ratingAverage }}{% endif %}</value>
                     </attribute>
+                    {% block feed_item_weight %}
+                        <attribute>
+                            <name>sw-weight</name>
+                            <value>{{ product.weight }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_width %}
+                        <attribute>
+                            <name>sw-width</name>
+                            <value>{{ product.width }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_height %}
+                        <attribute>
+                            <name>sw-height</name>
+                            <value>{{ product.height }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_length %}
+                        <attribute>
+                            <name>sw-length</name>
+                            <value>{{ product.length }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_closeout %}
+                        <attribute>
+                            <name>sw-is-closeout</name>
+                            <value>{% if product.isCloseout %}true{% else %}false{% endif %}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_delivery_time %}
+                        <attribute>
+                            <name>sw-delivery-time</name>
+                            <value>{{ product.deliveryTime.translated.name }}</value>
+                        </attribute>
+                    {% endblock %}
                 {% endblock %}
             </attributes>
         {% endblock %}
