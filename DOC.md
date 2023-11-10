@@ -65,6 +65,15 @@ For each product in the feed the following fields are in the feed by default:
 - list price (price from ...)
 - net price
 - average rating
+- Weight `sw-weight`
+- Width `sw-width`
+- Height `sw-height`
+- Length `sw-length`
+- Selling unit `sw-purchase-unit`
+- Basic unit `sw-reference-unit`
+- Clearance sale `sw-is-closeout`
+- Delivery time `sw-delivery-time`
+- Description `sw-description` (html stripped, only first 400 chars)
 
 As said, you can add your own fields, but always think about do I need that information in my listings or within filtering.
 

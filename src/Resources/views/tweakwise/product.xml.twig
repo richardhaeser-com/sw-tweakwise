@@ -207,6 +207,18 @@
                             <value>{{ product.translated.description|striptags|slice(0,400) }}</value>
                         </attribute>
                     {% endblock %}
+                    {% block feed_item_purchase_unit %}
+                        <attribute>
+                            <name>sw-purchase-unit</name>
+                            <value>{{ product.purchaseUnit }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_reference_unit %}
+                        <attribute>
+                            <name>sw-reference-unit</name>
+                            <value>{{ product.referenceUnit }}</value>
+                        </attribute>
+                    {% endblock %}
                 {% endblock %}
             </attributes>
         {% endblock %}
