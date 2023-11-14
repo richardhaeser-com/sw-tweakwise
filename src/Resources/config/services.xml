@@ -41,7 +41,6 @@
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader" />
             <argument type="service" id="s_plugin_rhae_tweakwise_feed.repository"/>
-            <argument type="service" id="shopware.filesystem.private"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
             <argument type="service" id="product.repository"/>
             <argument>%kernel.shopware_version%</argument>

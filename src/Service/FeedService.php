@@ -38,12 +38,22 @@ use function array_unique;
 use function crc32;
 use function dirname;
 use function file_exists;
+use function file_get_contents;
 use function file_put_contents;
+use function getcwd;
+use function in_array;
+use function is_array;
+use function is_dir;
 use function ltrim;
 use function md5;
+use function mkdir;
+use function rename;
+use function rtrim;
+use function sprintf;
 use function str_replace;
 use function unlink;
 use function version_compare;
+use const FILE_APPEND;
 
 class FeedService
 {
@@ -57,7 +67,6 @@ class FeedService
     private NavigationLoader $navigationLoader;
     private int $categoryRank = 1;
     private EntityRepository $feedRepository;
-    private FilesystemOperator $filesystem;
     private ProductListingLoader $listingLoader;
     private array $uniqueProductIds = [];
     private EntityRepository $productRepository;
@@ -71,7 +80,6 @@ class FeedService
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
         NavigationLoader $navigationLoader,
         EntityRepository $feedRepository,
-        FilesystemOperator $filesystem,
         ProductListingLoader $listingLoader,
         EntityRepository $productRepository,
         string $shopwareVersion,
@@ -83,7 +91,6 @@ class FeedService
         $this->salesChannelContextFactory = $salesChannelContextFactory;
         $this->navigationLoader = $navigationLoader;
         $this->feedRepository = $feedRepository;
-        $this->filesystem = $filesystem;
         $this->listingLoader = $listingLoader;
         $this->productRepository = $productRepository;
         $this->shopwareVersion = $shopwareVersion;
@@ -92,17 +99,12 @@ class FeedService
 
     public function readFeed(FeedEntity $feedEntity): ?string
     {
-        $path = ltrim($this->getExportPath($feedEntity, false), 'files/');
-        if (!$this->filesystem->has($path)) {
+        $path = '../' . $this->getExportPath($feedEntity, false, true);
+        if (!file_exists($path)) {
             return null;
         }
-        return $this->filesystem->read($path);
-    }
 
-    public function getTimestampOfFeed(FeedEntity $feedEntity): int
-    {
-        $path = ltrim($this->getExportPath($feedEntity, false), 'files/');
-        return $this->filesystem->getTimestamp($path);
+        return (string)file_get_contents($path);
     }
 
     public function generateFeed(FeedEntity $feed, $context)
@@ -189,7 +191,6 @@ class FeedService
             $criteria->addAssociation('children.options');
             $criteria->addAssociation('children.options.group');
             $criteria->addAssociation('tags');
-            $criteria->addAssociation('deliveryTime');
             $criteria->getAssociation('seoUrls')
                 ->setLimit(1)
                 ->addFilter(new EqualsFilter('isCanonical', true));
@@ -339,24 +340,25 @@ class FeedService
                             /** @phpstan-ignore-next-line */
                             $listingConfig = $parent->getVariantListingConfig();
                             if ($listingConfig) {
-                                $configurationGroupConfigArray = $listingConfig->getConfiguratorGroupConfig();
+                                $configurationGroupConfigArray = $listingConfig->getConfiguratorGroupConfig() ?: [];
                             }
                         } else {
-                            $configurationGroupConfigArray = $parent->getConfiguratorGroupConfig();
+                            /** @phpstan-ignore-next-line */
+                            $configurationGroupConfigArray = $parent->getConfiguratorGroupConfig() ?: [];
                         }
 
                         $getVariants = true;
 //                        if (!$parent->getMainVariantId()) {
-                            foreach ($configurationGroupConfigArray as $configurationGroupConfig) {
-                                if (
-                                    is_array($configurationGroupConfig)
-                                    && array_key_exists('expressionForListings', $configurationGroupConfig)
-                                    && $configurationGroupConfig['expressionForListings'] === true
-                                ) {
-                                    $getVariants = false;
-                                    break;
-                                }
+                        foreach ($configurationGroupConfigArray as $configurationGroupConfig) {
+                            if (
+                                is_array($configurationGroupConfig)
+                                && array_key_exists('expressionForListings', $configurationGroupConfig)
+                                && $configurationGroupConfig['expressionForListings'] === true
+                            ) {
+                                $getVariants = false;
+                                break;
                             }
+                        }
 //                        }
                         if ($getVariants === true) {
                             $otherVariants = $parent->getChildren();
