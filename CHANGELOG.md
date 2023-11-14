@@ -5,13 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.7] - 14-11-2023
 
 ### Added
 - The following fields are added to the feed: `sw-weight`, `sw-width`, `sw-height`, `sw-length`, `sw-is-closeout`, `sw-delivery-time`, `sw-description`, `sw-purchase-unit`, `sw-reference-unit` 
 
 ### Changed
 - Made it more clear in the docs which fields are in the feed. It will now show both label as in the admin as well as the name of the field how it will be exported to Tweakwise.
+
+### Fixed
+- Fixed the compatibility with 6.4. You can now use this version again in your Shopware 6.5 installation.
 
 ## [2.1.6] - 09-11-2023
 
