@@ -74,6 +74,15 @@ For each product in the feed the following fields are in the feed by default. Th
 - Clearance sale `sw-is-closeout`
 - Delivery time `sw-delivery-time`
 - Description `sw-description` (html stripped, only first 400 chars)
+- Lowest price net `sw-price-lowest-net`
+- Lowest price gross `sw-price-lowest-gross`
+- Lowest price start quantity `sw-price-lowest-quantity-start`
+- Lowest price end quantity `sw-price-lowest-quantity-end`
+- Highest price net `sw-price-highest-net`
+- Highest price gross `sw-price-highest-gross`
+- Highest price start quantity `sw-price-highest-quantity-start`
+- Highest price end quantity `sw-price-highest-quantity-end`
+- Media `sw-media-1` (link to the largest thumbnail of all media starting with number 1. So if you have 2 images for your product, you will have `sw-media-1` and `sw-media-2`. Be aware that the cover image is also one of those images).
 
 As said, you can add your own fields, but always think about do I need that information in my listings or within filtering.
 
