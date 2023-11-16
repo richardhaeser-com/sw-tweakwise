@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.8] - 16-11-2023
+
+### Added
+- The following fields are added to the feed: `sw-price-lowest-net`, `sw-price-lowest-gross`, `sw-price-lowest-quantity-start`, `sw-price-lowest-quantity-end`, `sw-price-highest-net`, `sw-price-highest-gross`, `sw-price-highest-quantity-start`, `sw-price-lowest-highest-end`, `sw-media-1`. See [docs](DOC.md) for more information.
+
 ## [2.1.7] - 14-11-2023
 
 ### Added
