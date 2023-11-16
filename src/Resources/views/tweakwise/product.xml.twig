@@ -225,6 +225,73 @@
                             <value>{{ product.referenceUnit }}</value>
                         </attribute>
                     {% endblock %}
+                    {% block feed_item_price_lowest_net %}
+                        <attribute>
+                            <name>sw-price-lowest-net</name>
+                            <value>{{ prices.lowest.price_net|round(2, 'common') }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_price_lowest_gross %}
+                        <attribute>
+                            <name>sw-price-lowest-gross</name>
+                            <value>{{ prices.lowest.price_gross|round(2, 'common') }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_price_lowest_quantity_start %}
+                        <attribute>
+                            <name>sw-price-lowest-quantity-start</name>
+                            <value>{{ prices.lowest.quantity_start }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_price_lowest_quantity_end %}
+                        <attribute>
+                            <name>sw-price-lowest-quantity-end</name>
+                            <value>{{ prices.lowest.quantity_end }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_price_highest_net %}
+                        <attribute>
+                            <name>sw-price-highest-net</name>
+                            <value>{{ prices.highest.price_net|round(2, 'common') }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_price_highest_gross %}
+                        <attribute>
+                            <name>sw-price-highest-gross</name>
+                            <value>{{ prices.highest.price_gross|round(2, 'common') }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_price_highest_quantity_start %}
+                        <attribute>
+                            <name>sw-price-highest-quantity-start</name>
+                            <value>{{ prices.highest.quantity_start }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_price_highest_quantity_end %}
+                        <attribute>
+                            <name>sw-price-highest-quantity-end</name>
+                            <value>{{ prices.highest.quantity_end }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% for image in product.media %}
+                        {% block feed_item_media_item %}
+                            {% if image.media is defined and image.media.url %}
+                            <attribute>
+                                <name>sw-media-{{ loop.index }}</name>
+                                {% set width = 0 %}
+                                {% set thumbUrl = image.media.url %}
+
+                                {% for thumbnail in image.media.thumbnails %}
+                                    {% if thumbnail.width > width %}
+                                        {% set thumbUrl = thumbnail.url %}
+                                        {% set width = thumbnail.width %}
+                                    {% endif %}
+                                {% endfor %}
+                                <value>{{ thumbUrl }}</value>
+                            </attribute>
+                            {% endif %}
+                        {% endblock %}
+                    {% endfor %}
                 {% endblock %}
             </attributes>
         {% endblock %}

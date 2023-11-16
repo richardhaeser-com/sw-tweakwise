@@ -3,6 +3,7 @@
 namespace RH\Tweakwise\Service;
 
 use League\Flysystem\FilesystemOperator;
+use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceEntity;
 use Symfony\Component\Filesystem\Filesystem;
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use Shopware\Core\Checkout\Cart\AbstractRuleLoader;
@@ -185,6 +186,7 @@ class FeedService
             $criteria->addAssociation('properties.group');
             $criteria->addAssociation('manufacturer');
             $criteria->addAssociation('categories');
+            $criteria->addAssociation('media');
             $criteria->addAssociation('productReviews');
             $criteria->addAssociation('cover.media.thumbnails');
             $criteria->addAssociation('children');
@@ -375,6 +377,7 @@ class FeedService
                     'domainId' => $domain->getId(),
                     'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
                     'product' => $product,
+                    'prices' => $this->getLowestAndHighestPrice($product),
                     'otherVariants' => $otherVariants,
                     'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
                 ]);
@@ -383,6 +386,64 @@ class FeedService
         }
 
         $this->writeContent($content, $feed);
+    }
+
+    private function getLowestAndHighestPrice(ProductEntity $product): array
+    {
+        $prices = $product->getPrices();
+        if (count($prices) < 2) {
+            // no lowest and highest price when just 1 price is available
+            return [
+                'lowest' => [
+                    'price_net' => 0,
+                    'price_gross' => 0,
+                    'quantity_start' => '',
+                    'quantity_end' => ''
+                ],
+                'highest' => [
+                    'price_net' => 0,
+                    'price_gross' => 0,
+                    'quantity_start' => '',
+                    'quantity_end' => ''
+                ]
+            ];
+        }
+
+        $lowest = $highest = null;
+
+        /** @var ProductPriceEntity $price */
+        foreach ($prices as $price) {
+            if ($lowest === null) {
+                $lowest = $price;
+            } else {
+                if ($price->getPrice()->first()->getNet() < $lowest->getPrice()->first()->getNet()) {
+                    $lowest = $price;
+                }
+            }
+
+            if ($highest === null) {
+                $highest = $price;
+            } else {
+                if ($price->getPrice()->first()->getNet() > $highest->getPrice()->first()->getNet()) {
+                    $highest = $price;
+                }
+            }
+        }
+
+        return [
+            'lowest' => [
+                'price_net' => $lowest->getPrice()->first()->getNet(),
+                'price_gross' => $lowest->getPrice()->first()->getGross(),
+                'quantity_start' => $lowest->getQuantityStart(),
+                'quantity_end' => $lowest->getQuantityEnd()
+            ],
+            'highest' => [
+                'price_net' => $highest->getPrice()->first()->getNet(),
+                'price_gross' => $highest->getPrice()->first()->getGross(),
+                'quantity_start' => $highest->getQuantityStart(),
+                'quantity_end' => $highest->getQuantityEnd()
+            ]
+        ];
     }
 
     private function resolveView(string $view): string
