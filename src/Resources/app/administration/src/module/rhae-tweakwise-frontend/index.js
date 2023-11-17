@@ -1,6 +1,7 @@
 import './page/rhae-tweakwise-frontend-list';
 import './page/rhae-tweakwise-frontend-create';
 import './page/rhae-tweakwise-frontend-detail';
+import '../components/rhae-tweakwise-settings-icon';
 import nlNL from './snippet/nl-NL.json';
 import enGB from './snippet/en-GB.json';
 
@@ -10,7 +11,7 @@ Shopware.Module.register('rhae-tweakwise-frontend', {
     title: 'rhae-tweakwise-frontend.main.menuLabel',
     description: 'rhae-tweakwise-frontend.main.menuDescription',
     color: '#01b7cd',
-    icon: 'default-symbol-content',
+    iconComponent: 'rhae-tweakwise-settings-icon',
 
     snippets: {
         'nl-NL': nlNL,
@@ -46,6 +47,6 @@ Shopware.Module.register('rhae-tweakwise-frontend', {
         to: 'rhae.tweakwise.frontend.list',
         label: 'rhae-tweakwise-frontend.main.menuLabel',
         group: 'plugins',
-        icon: 'default-symbol-content'
+        iconComponent: 'rhae-tweakwise-settings-icon',
     }
 });

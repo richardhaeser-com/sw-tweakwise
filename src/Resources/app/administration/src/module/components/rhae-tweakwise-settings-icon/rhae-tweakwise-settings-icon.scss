@@ -1,0 +1,9 @@
+#rhae-tweakwise-feed, #rhae-tweakwise-frontend {
+    .sw-settings-item__icon.background--enabled {
+        background-color: #00b7cd;
+    }
+
+    &:hover {
+        background-color: initial;
+    }
+}
