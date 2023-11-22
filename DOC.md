@@ -117,8 +117,9 @@ If you have a good feed, it is imported in Tweakwise and you want to use the Jav
 4. You can give the frontend a name. This will be only used in the overview of frontends within Shopware and will not be shown anywhere.
 5. Next field is the Authorization key. You can ask this to your Tweakwise onboarding specialist, or if you can already login to Tweakwise, you can find this key in Tweakwise > Connectivity > Endpoints.
 6. Next thing is to select the way of integration. At the moment, the only supported integration is the JavaScript version. If you want an own implementation, you can just use no integration.
-7. Select the domains you want to include. The domains you can select are the domains that are connected to a sales channel. The integration will only be activated on the selected domains.
-8. Click on Save in the top right corner. 
-9. If you go to the frontend, the search should be replaced by Tweakwise search *
+7. You can choose which way of search you would like to activate. With instant search, you get an overview of the results directly. With suggestions, you get an overview of possible options and a dedicated search page.  
+8. Select the domains you want to include. The domains you can select are the domains that are connected to a sales channel. The integration will only be activated on the selected domains.
+9. Click on Save in the top right corner. 
+10. If you go to the frontend, the search should be replaced by Tweakwise search *
 
 * Please be aware that the search is based on the default templates of Shopware. If you currently have a highly customized search, it might be the case that it is not working out of the box. Please make sure the code in `src/Resources/views/storefront/layout/header/search.html.twig` is incorporated in your own templates in that case.

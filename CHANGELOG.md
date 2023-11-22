@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 22-11-2023
+
+### Added
+- Added the option to use suggestions. You can configure the way of search in your Tweakwise Frontend configuration.
+
+### Fixed
+- Fixed issue with not-showing icons in the admin.
+
 ## [2.1.8] - 16-11-2023
 
 ### Added
