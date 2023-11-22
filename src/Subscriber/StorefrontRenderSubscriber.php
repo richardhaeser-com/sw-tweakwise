@@ -49,7 +49,8 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
             'domainId' => $domainId,
             'rootCategoryId' => $rootCategoryId,
             'instanceKey' => $result->getToken(),
-            'integration' => $result->getIntegration()
+            'integration' => $result->getIntegration(),
+            'wayOfSearch' => $result->getWayOfSearch(),
         ];
 
         $parameters = $event->getParameters();

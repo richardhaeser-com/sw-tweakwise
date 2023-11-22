@@ -16,6 +16,8 @@ class FrontendEntity extends Entity
 
     protected ?string $integration;
 
+    protected ?string $wayOfSearch;
+
     /**
      * @var SalesChannelDomainCollection|null
      */
@@ -61,5 +63,13 @@ class FrontendEntity extends Entity
         $this->integration = $integration;
     }
 
+    public function getWayOfSearch(): ?string
+    {
+        return $this->wayOfSearch;
+    }
 
+    public function setWayOfSearch(?string $wayOfSearch): void
+    {
+        $this->wayOfSearch = $wayOfSearch;
+    }
 }

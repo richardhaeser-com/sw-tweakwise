@@ -2,13 +2,12 @@
 
 {% block layout_header_search %}
     {% if page.extensions.twConfiguration.integration == 'javascript' %}
-        <div class="collapse" id="searchCollapse">
-            <div class="header-search">
-                <div class="header-search-form">
-                    <div class="input-group">
+        {% if page.extensions.twConfiguration.wayOfSearch == 'suggestions' %}
+            <div class="collapse" id="searchCollapse">
+                <div class="header-search">
+                    <div class="header-search-form header-search-form-suggestions">
                         <input type="search"
-                               name="tn_q"
-                               id="tweakwise-input"
+                               id="tweakwise-suggestions"
                                class="form-control header-search-input"
                                autocomplete="off"
                                autocapitalize="off"
@@ -16,19 +15,39 @@
                                aria-label="{{ "header.searchPlaceholder"|trans|striptags }}"
                                value="{{ page.searchTerm }}"
                         >
-                        <div class="input-group-append">
-                            <button type="submit"
-                                    class="btn header-search-btn"
-                                    aria-label="{{ "header.searchButton"|trans|striptags }}">
-                        <span class="header-search-icon">
-                            {% sw_icon 'search' style {'size': 'sm'} %}
-                        </span>
-                            </button>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="tweakwise-input" name="tn_q">
+        {% else %}
+            <div class="collapse" id="searchCollapse">
+                <div class="header-search">
+                    <div class="header-search-form">
+                        <div class="input-group">
+                            <input type="search"
+                                   name="tn_q"
+                                   id="tweakwise-input"
+                                   class="form-control header-search-input"
+                                   autocomplete="off"
+                                   autocapitalize="off"
+                                   placeholder="{{ "header.searchPlaceholder"|trans|striptags }}"
+                                   aria-label="{{ "header.searchPlaceholder"|trans|striptags }}"
+                                   value="{{ page.searchTerm }}"
+                            >
+                            <div class="input-group-append">
+                                <button type="submit"
+                                        class="btn header-search-btn"
+                                        aria-label="{{ "header.searchButton"|trans|striptags }}">
+                            <span class="header-search-icon">
+                                {% sw_icon 'search' style {'size': 'sm'} %}
+                            </span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        {% endif %}
     {% else %}
         {{ parent() }}
     {% endif %}

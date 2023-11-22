@@ -27,7 +27,15 @@
             <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
             <argument type="service" id="s_plugin_rhae_tweakwise_feed.repository"/>
         </service>
-
+        <service id="RH\Tweakwise\Controller\TweakwiseSearchController" public="true">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <call method="setTwig">
+                <argument type="service" id="twig"/>
+            </call>
+            <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
+        </service>
         <service id="RH\Tweakwise\Command\GenerateFeedCommand">
             <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
             <argument type="service" id="s_plugin_rhae_tweakwise_feed.repository"/>

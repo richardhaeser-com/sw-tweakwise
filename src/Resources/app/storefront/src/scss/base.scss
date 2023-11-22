@@ -1,0 +1,20 @@
+.twn-suggestions-context {
+  z-index: 9999;
+}
+
+.header-search-form-suggestions {
+  .header-search-input {
+    border-right-width: 1px;
+    border-right-style: solid;
+  }
+
+  .twn-product-suggestion__title-match {
+    font-weight: bolder;
+  }
+}
+
+.is-ctl-tweakwisesearch {
+  .twn-starter__header {
+    display: none;
+  }
+}

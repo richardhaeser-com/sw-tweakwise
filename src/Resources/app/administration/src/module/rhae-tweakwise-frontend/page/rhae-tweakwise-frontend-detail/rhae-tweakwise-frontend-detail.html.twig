@@ -33,12 +33,20 @@
                         </option>
                     </sw-select-field>
 
+                    <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.wayOfSearch')"
+                                     v-model="item.wayOfSearch">
+                        <option v-for="value in ['instant-search','suggestions']" :value="value">
+                            {{ $tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.' + value) }}
+                        </option>
+                    </sw-select-field>
+
                     <sw-entity-multi-select
                         :label="$t('rhae-tweakwise-frontend.detail.label.salesChannelDomains')"
                         labelProperty="url"
                         value-property="id"
                         v-model="item.salesChannelDomains"
                     />
+
                 </sw-card-section>
 
             </sw-card>

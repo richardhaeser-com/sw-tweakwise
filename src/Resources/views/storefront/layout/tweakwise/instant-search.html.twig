@@ -1,0 +1,49 @@
+<script>
+    window["twn-starter-config"] = {
+        navigation: {
+            cid: ""
+        },
+        cid: "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}",
+        lang: "{{ languageKey }}",
+        on: {
+            "twn.add-to-cart": function (event) {
+                let addToCartEvent = new CustomEvent('twAddToCart', {
+                    detail: {
+                        addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
+                        data: event.data
+                    }
+                });
+                window.dispatchEvent(addToCartEvent);
+            },
+            "twn.request.navigation.completed": function (event) {
+                let navSuccessEvent = new CustomEvent('twNavigationSuccess', {
+                    detail: {}
+                });
+                window.dispatchEvent(navSuccessEvent);
+            },
+            "twn.request.completed'": function (event) {
+                let navSuccessEvent = new CustomEvent('twSuccess', {
+                    detail: {}
+                });
+                window.dispatchEvent(navSuccessEvent);
+            },
+        }
+    };
+</script>
+
+<script>
+    window.tweakwiseFailover = function (src) {
+        var script = document.createElement("script");
+        script.async = true;
+        script.src = src;
+        document.head.appendChild(script);
+    };
+</script>
+<link
+        rel="preload"
+        href="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"
+        as="script"
+        data-failover-src="https://gateway.tweakwisenavigator.com/js/{{ instanceKey }}/tweakwise.js"
+        onerror="tweakwiseFailover(this.dataset.failoverSrc);"
+/>
+<script async src="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"></script>

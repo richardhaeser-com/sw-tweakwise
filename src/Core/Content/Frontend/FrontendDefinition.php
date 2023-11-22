@@ -45,6 +45,7 @@ class FrontendDefinition extends EntityDefinition
             (new StringField('name', 'name'))->addFlags(new Required(), new ApiAware()),
             (new StringField('token', 'token'))->addFlags(new ApiAware()),
             (new StringField('integration', 'integration'))->addFlags(new ApiAware()),
+            (new StringField('wayOfSearch', 'wayOfSearch'))->addFlags(new ApiAware()),
             (new ManyToManyAssociationField('salesChannelDomains', SalesChannelDomainDefinition::class, FrontendSalesChannelDomainDefinition::class, 'frontend_id', 'sales_channel_domain_id'))->addFlags(new ApiAware()),
         ]);
     }

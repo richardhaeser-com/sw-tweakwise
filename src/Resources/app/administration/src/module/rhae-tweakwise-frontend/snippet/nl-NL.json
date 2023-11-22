@@ -1,11 +1,38 @@
 {
   "rhae-tweakwise-frontend": {
     "main": {
-        "menuLabel": "Tweakwise frontend",
-        "menuDescription": "Configureer je Tweakwise frontend"
+      "menuLabel": "Tweakwise frontend",
+      "menuDescription": "Configureer je Tweakwise frontend"
     },
     "list": {
-        "addButtonText": "Maak nieuwe frontend"
+      "addButtonText": "Maak nieuwe frontend",
+      "refreshButtonText": "Vernieuwen",
+      "columns": {
+        "name": "Frontend naam"
+      }
+    },
+    "detail": {
+      "cancelButtonText": "Annuleren",
+      "saveButtonText": "Opslaan",
+      "section": {
+        "main": "Algemeen",
+        "data": "Data"
+      },
+      "label": {
+        "name": "Naam",
+        "token": "Authorisatie sleutel",
+        "integration": "Manier van integreren",
+        "integrationOptions": {
+          "no-integration": "Geen integratie",
+          "javascript": "JavaScript integratie"
+        },
+        "wayOfSearch": "Manier van zoeken",
+        "wayOfSearchOptions": {
+          "instant-search": "Direct zoeken",
+          "suggestions": "Suggesties + aparte zoekpagina"
+        },
+        "salesChannelDomains": "Domains"
+      }
     }
   }
 }

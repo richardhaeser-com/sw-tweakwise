@@ -1,0 +1,34 @@
+<link rel="preload" as="script" href="https://gateway.tweakwisenavigator.net/js/suggestions.js" />
+<script>
+    window.tweakwiseFailover = function (src) {
+        var script = document.createElement("script");
+        script.async = true;
+        script.src = src;
+        document.head.appendChild(script);
+    };
+</script>
+<script
+        src="https://gateway.tweakwisenavigator.net/js/suggestions.js"
+        data-failover="https://gateway.tweakwisenavigator.com/js/suggestions.js"
+        onerror="window.tweakwiseFailover(this.dataset.failover)"
+></script>
+
+
+{% block tweakwise_suggestions_config %}
+<script>
+    window.addEventListener("DOMContentLoaded", function () {
+        window.tweakwiseSuggestions({
+            input: "#tweakwise-suggestions",
+            instancekey: "{{ instanceKey }}",
+            cid: "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}",
+            searchPhrases: {
+                handle: function (event) {
+                    var suggestion = event.data;
+
+                    window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=" + encodeURIComponent(suggestion.match);
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

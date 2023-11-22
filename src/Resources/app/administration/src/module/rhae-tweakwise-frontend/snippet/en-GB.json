@@ -26,6 +26,11 @@
                     "no-integration": "No integration",
                     "javascript": "JavaScript implementation"
                 },
+                "wayOfSearch": "Way of search",
+                "wayOfSearchOptions": {
+                    "instant-search": "Instant search",
+                    "suggestions": "Suggestions + Dedicated search page"
+                },
                 "salesChannelDomains": "Domains"
             }
         }
