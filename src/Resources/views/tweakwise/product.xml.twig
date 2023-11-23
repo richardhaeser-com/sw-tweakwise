@@ -111,24 +111,28 @@
                         <name>sw-tags</name>
                         <value>{% for tag in product.tags %}{{ tag.name }}, {% endfor %}</value>
                     </attribute>
-                    <attribute>
-                        <name>sw-product-number</name>
-                        <value>{{ product.productNumber }}</value>
-                    </attribute>
-                    {% set label = '' %}
-                    {%  if (product.availableStock < 1) %}
-                        {% set label = "listing.boxLabelSoldout"|rh_translate(lang)|sw_sanitize %}
-                    {% elseif (product.markAsTopseller) %}
-                        {% set label = "listing.boxLabelTopseller"|rh_translate(lang)|sw_sanitize %}
-                    {% elseif (price.listPrice.price) %}
-                        {% set label = "listing.boxLabelDiscount"|rh_translate(lang)|sw_sanitize %}
-                    {% elseif (product.isNew) %}
-                        {% set label = "listing.boxLabelNew"|rh_translate(lang)|sw_sanitize %}
-                    {% endif %}
-                    <attribute>
-                        <name>sw-label</name>
-                        <value>{{ label }}</value>
-                    </attribute>
+                    {% block feed_item_product_number %}
+                        <attribute>
+                            <name>sw-product-number</name>
+                            <value>{{ product.productNumber }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_label %}
+                        {% set label = '' %}
+                        {%  if (product.availableStock < 1) %}
+                            {% set label = "listing.boxLabelSoldout"|rh_translate(lang)|sw_sanitize %}
+                        {% elseif (product.markAsTopseller) %}
+                            {% set label = "listing.boxLabelTopseller"|rh_translate(lang)|sw_sanitize %}
+                        {% elseif (price.listPrice.price) %}
+                            {% set label = "listing.boxLabelDiscount"|rh_translate(lang)|sw_sanitize %}
+                        {% elseif (product.isNew) %}
+                            {% set label = "listing.boxLabelNew"|rh_translate(lang)|sw_sanitize %}
+                        {% endif %}
+                        <attribute>
+                            <name>sw-label</name>
+                            <value>{{ label }}</value>
+                        </attribute>
+                    {% endblock %}
                     <attribute>
                         <name>sw-id</name>
                         <value>{{ product.id }}</value>
