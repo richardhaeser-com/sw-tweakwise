@@ -1,11 +1,23 @@
 # Tweakwise for Shopware 6 - Documentation
 This document will help you to setup the plugin for the default features of Shopware. Please be aware that if you have custom code, you might need to alter the data that will be passed to Tweakwise. Check the  
 
+- [Installation](#installation)
 - [Create feed config](#feed-config)
 - [Generate feed](#generate-feed)
 - [Content of feed](#content-feed)
 - [Customize feed](#customize-feed)
 - [Create frontend config](#frontend-config)
+- [Tweakwise Merchandise / Product Listing Page](#merchandise)
+
+<a name="installation"></a>
+## Installation
+The preferred way to install this plugin is by using [Composer](https://getcomposer.org/). You can easily install the plugin with the following command:
+
+```shell
+composer require richardhaeser/sw-tweakwise
+```
+
+After you have included the plugin, you can either install and enable the plugin by CLI or by using the admin interface for extension management.
 
 <a name="feed-config"></a>
 ## Create feed config
@@ -123,3 +135,9 @@ If you have a good feed, it is imported in Tweakwise and you want to use the Jav
 10. If you go to the frontend, the search should be replaced by Tweakwise search *
 
 * Please be aware that the search is based on the default templates of Shopware. If you currently have a highly customized search, it might be the case that it is not working out of the box. Please make sure the code in `src/Resources/views/storefront/layout/header/search.html.twig` is incorporated in your own templates in that case.
+
+<a name="merchandise"></a>
+## Tweakwise Merchandise / Product Listing Page
+To enable the Tweakwise Merchandise feature on your product listing page, you need to alter the Layout in the Shopping Experience module of Shopware. As you can not alter the out-of-the-box product listing page, you need to make a duplicate of the default (or create one from scratch). 
+
+On the product listing page, you have an element called Category listing. If you go to the settings of this element, you see the option `Layout type`. Select the option `Tweakwise Merchandise` and save the element and layout. If you go to the frontend (and you have configured a frontend like described in the paragraph above) you will get the results from Tweakwise. For sure this only works when the products are already imported into Tweakwise. 
