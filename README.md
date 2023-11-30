@@ -9,13 +9,17 @@ about Tweakwise can be found on their [website](https://www.tweakwise.com).
 This extension is still in development. I will add more and more features over time.
 At the moment the following features are supported:
 
+### Feed
 - Fully customizable product feed which out-of-the-box gives you a valid feed for Tweakwise (multi-channel, multi-language)
 - Advanced pricing
 - Variants
-- Instant search (JS)
-- Merchandise (JS)
 
-_All features are tested on a default Shopware 6.4 installation and in a real-life webshop._
+### JavaScript implementation
+- Instant search
+- Suggestions (including search phrases, categories and facets)
+- Merchandise
+
+_All features are tested on a default Shopware 6.4 and 6.5 installation and in a real-life webshop._
 
 ## Changelog
 Do you want an overview of all changes in the past versions? Just have a look at the [changelog](CHANGELOG.md).
