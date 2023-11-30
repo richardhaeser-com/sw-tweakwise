@@ -1,4 +1,11 @@
 {% sw_extends '@Storefront/storefront/base.html.twig' %}
 
 {% block base_content %}
+    <script>
+        window["twn-starter-config"]["output"] = 'tweakwise-output-listing';
+        window["twn-starter-config"]["navigation"]["output"] = 'tweakwise-output-listing';
+        window["twn-starter-config"]["navigation"]["cid"] = '{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}';
+    </script>
+
+    <div id="tweakwise-output-listing"></div>
 {% endblock %}
