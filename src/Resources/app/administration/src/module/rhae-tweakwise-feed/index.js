@@ -47,6 +47,7 @@ Shopware.Module.register('rhae-tweakwise-feed', {
         to: 'rhae.tweakwise.feed.list',
         label: 'rhae-tweakwise-feed.main.menuLabel',
         group: 'plugins',
+        icon: 'default-symbol-content',
         iconComponent: 'rhae-tweakwise-settings-icon',
     }
 });
