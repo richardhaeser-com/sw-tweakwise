@@ -6,10 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [2.3.0] - 01-12-2023
 
 ### Added
 - Added category and facet options to the suggestions
+- Added sales channel information to product feed
+
+### Changed
+- The template of the dedicated search page is changed a bit 
+
+### Fixed
+- Now the right domain of a category is showing up in the feed
 
 ## [2.2.1] - 23-11-2023
 
