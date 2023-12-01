@@ -48,7 +48,6 @@
                 handle: function (event) {
                     var suggestion = event.data;
 
-                    console.log(event);
                     window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=&tn_fk_" + suggestion.navigationLink.context.facetFilters[0].key + "=" + encodeURIComponent(suggestion.navigationLink.context.facetFilters[0].values[0]);
                 }
             }
