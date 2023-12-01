@@ -34,7 +34,7 @@
         <categories>
             {% for category in product.categories %}
                 {% if (category.id ~ '_' ~ domainId) in categoryIdsInFeed and (category.childCount or (category.type == 'page' and category.productAssignmentType == 'product')) %}
-                    <categoryid name="{{ category.translated.name }}" domain="{{ domain.url }}">{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
+                    <categoryid name="{{ category.translated.name }}" domain="{{ domainUrl }}">{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
                 {% endif %}
             {% endfor %}
         </categories>

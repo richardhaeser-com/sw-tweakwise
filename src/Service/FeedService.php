@@ -380,6 +380,7 @@ class FeedService
                     'prices' => $this->getLowestAndHighestPrice($product),
                     'otherVariants' => $otherVariants,
                     'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
+                    'salesChannel' => $domain->getSalesChannel()
                 ]);
                 $this->uniqueProductIds[] = $productId;
             }
