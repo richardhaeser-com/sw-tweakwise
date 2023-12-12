@@ -113,8 +113,9 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
                             $product = $this->productRepository->search($criteria, $event->getContext())->first();
                         }
                     }
+                    /** @phpstan-ignore-next-line */
                     $productNumber = $product->getProductNumber();
-                    $twConfiguration['crossSellProductId'] = sprintf('%s (%s - %x)', $productNumber, $event->getRequest()->getLocale(), crc32($domainId));;
+                    $twConfiguration['crossSellProductId'] = sprintf('%s (%s - %x)', $productNumber, $event->getRequest()->getLocale(), crc32($domainId));
                 }
             }
         }
