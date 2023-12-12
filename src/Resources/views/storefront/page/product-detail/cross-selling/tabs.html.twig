@@ -1,0 +1,81 @@
+{% sw_extends '@Storefront/storefront/page/product-detail/cross-selling/tabs.html.twig' %}
+
+
+{% block page_product_detail_cross_selling_tabs_content_container %}
+    <div class="tab-content">
+        {% for item in crossSellings|filter(item => item.total > 0 and item.crossSelling.active == true) %}
+            {% set id = item.crossSelling.id %}
+            <div class="tab-pane fade show{% if loop.first %} active{% endif %}"
+                 id="cs-{{ id }}-tab-pane"
+                 role="tabpanel"
+                 aria-labelledby="cs-{{ id }}-tab">
+
+                {% if page.extensions.twConfiguration.integration == 'javascript' and item.crossSelling.type == "tweakwiseRecommendation" %}
+                    {% if item.crossSelling.extensions.tweakwise.groupKey %}
+                        {% set groupKey = item.crossSelling.extensions.tweakwise.groupKey %}
+                    {% else %}
+                        {% set groupKey = "sw-cross-sell" %}
+                    {% endif %}
+
+                    <div id="related-recommendations-{{ id }}"></div>
+
+                    <script>
+                        window.addEventListener("DOMContentLoaded", function () {
+                            window.tweakwiseRecommendations({
+                                output: "#related-recommendations-{{ id }}",
+                                instancekey: "{{ page.extensions.twConfiguration.instanceKey|escape }}",
+                                related: {
+                                    productId: "{{ page.extensions.twConfiguration.crossSellProductId }}",
+                                    groupKey: "{{ groupKey }}"
+                                }
+                            });
+                        });
+                    </script>
+                {% else %}
+                    {% set config = {
+                        'title': {
+                            'value': item.crossSelling.name ?: item.crossSelling.translated.name
+                        },
+                        'border': {
+                            'value': false
+                        },
+                        'rotate': {
+                            'value': false
+                        },
+                        'products': {
+                            'value': item.getProducts()
+                        },
+                        'boxLayout': {
+                            'value': 'standard'
+                        },
+                        'elMinWidth': {
+                            'value': '300px'
+                        },
+                        'navigation': {
+                            'value': true
+                        },
+                        'displayMode': {
+                            'value': 'minimal'
+                        },
+                        'verticalAlign': {
+                            'value': 'top'
+                        },
+                    } %}
+
+                    {% sw_include "@Storefront/storefront/element/cms-element-product-slider.html.twig" with {
+                        sliderConfig: config,
+                        element: {
+                            'data': {
+                                'products': {
+                                    elements: item.getProducts()
+                                }
+                            },
+                            type: 'product-slider'
+                        }
+                    } %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

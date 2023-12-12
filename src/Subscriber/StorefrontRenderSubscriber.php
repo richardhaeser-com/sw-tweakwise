@@ -6,6 +6,7 @@ use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Seo\SeoUrlGenerator;
 use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -16,22 +17,27 @@ use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Event\StorefrontRenderEvent;
 use Shopware\Storefront\Page\Page;
+use Shopware\Storefront\Page\Product\ProductPage;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use function array_key_exists;
+use function crc32;
 use function json_encode;
 
 class StorefrontRenderSubscriber implements EventSubscriberInterface
 {
     private EntityRepository $frontendRepository;
     private NavigationLoader $navigationLoader;
+    private EntityRepository $productRepository;
 
     public function __construct(
         EntityRepository $frontendRepository,
+        EntityRepository $productRepository,
         NavigationLoader $navigationLoader
     )
     {
         $this->frontendRepository = $frontendRepository;
         $this->navigationLoader = $navigationLoader;
+        $this->productRepository = $productRepository;
     }
 
     public static function getSubscribedEvents()
@@ -75,6 +81,27 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
 
         $parameters = $event->getParameters();
         $page = $parameters['page'] ?? null;
+        if ($page instanceof ProductPage) {
+            $product = $page->getProduct();
+
+            if ($product->getParentId()) {
+                $criteria = new Criteria([$product->getParentId()]);
+                /** @var ProductEntity $parentProduct */
+                $parentProduct = $this->productRepository->search($criteria, $event->getContext())->first();
+                if ($parentProduct->getVariantListingConfig()->getDisplayParent()) {
+                    $product = $parentProduct;
+                } elseif ($parentProduct->getVariantListingConfig()->getMainVariantId()) {
+                    $product = $this->productRepository->search(new Criteria([$parentProduct->getVariantListingConfig()->getMainVariantId()]), $event->getContext())->first();
+                } else {
+                    $criteria = new Criteria();
+                    $criteria->addFilter(
+                        new EqualsFilter('parentId', $product->getParentId())
+                    );
+                    $product = $this->productRepository->search($criteria, $event->getContext())->first();
+                }
+            }
+            $twConfiguration['crossSellProductId'] = sprintf('%s (%s - %x)', $product->getProductNumber(), $event->getRequest()->getLocale(), crc32($domainId));;
+        }
         if ($page instanceof Page) {
             $page->addExtensions([
                 'twConfiguration' => new ArrayStruct($twConfiguration),

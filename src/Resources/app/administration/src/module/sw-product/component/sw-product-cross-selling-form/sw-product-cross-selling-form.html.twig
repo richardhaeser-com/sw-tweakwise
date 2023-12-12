@@ -1,0 +1,33 @@
+{% block sw_prduct_cross_selling_form_product_stream_field %}
+<div v-if="!useTweakwise">
+    {% parent %}
+</div>
+
+    <div v-if="useTweakwise">
+        <sw-text-field
+            v-model="crossSelling.extensions.tweakwise.groupKey"
+            :label="$tc('sw-product.crossselling.tweakwiseGroupKey')"
+            required
+            placeholder="Default is sw-cross-sell"
+            :disabled="!allowEdit"
+        />
+    </div>
+{% endblock %}
+
+{% block sw_prduct_cross_selling_form_sort_field %}
+    <div v-if="!useTweakwise">
+        {% parent %}
+    </div>
+{% endblock %}
+
+{% block sw_prduct_cross_selling_form_limit_field %}
+    <div v-if="!useTweakwise">
+        {% parent %}
+    </div>
+{% endblock %}
+
+{% block sw_prduct_cross_selling_form_preview_link %}
+    <div v-if="!useTweakwise">
+        {% parent %}
+    </div>
+{% endblock %}

@@ -8,6 +8,7 @@ This document will help you to setup the plugin for the default features of Shop
 - [Customize feed](#customize-feed)
 - [Create frontend config](#frontend-config)
 - [Tweakwise Merchandise / Product Listing Page](#merchandise)
+- [Cross-sell recommendations](#cross-sell)
 
 <a name="installation"></a>
 ## Installation
@@ -141,3 +142,7 @@ If you have a good feed, it is imported in Tweakwise and you want to use the Jav
 To enable the Tweakwise Merchandise feature on your product listing page, you need to alter the Layout in the Shopping Experience module of Shopware. As you can not alter the out-of-the-box product listing page, you need to make a duplicate of the default (or create one from scratch). 
 
 On the product listing page, you have an element called Category listing. If you go to the settings of this element, you see the option `Layout type`. Select the option `Tweakwise Merchandise` and save the element and layout. If you go to the frontend (and you have configured a frontend like described in the paragraph above) you will get the results from Tweakwise. For sure this only works when the products are already imported into Tweakwise. 
+
+<a name="cross-sell"></a>
+## Cross-sell
+It is possible to use the cross-sell recommendations of Tweakwise in your Shopware shop. To do so, you can create a cross-sell in your product as you would normally do. When adding a cross selling, you can choose for the type `Tweakwise recommendations`. If you have choosen that type, you will get the possibility to add the `Tweakwise Group key` which can be obtained from the Tweakwise app. Be aware that you need to configure the recommendations in Tweakwise first. The output of the cross-sells needs to be styled by the implementation partner as well. 

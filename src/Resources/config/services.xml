@@ -18,6 +18,7 @@
         </service>
         <service id="RH\Tweakwise\Subscriber\StorefrontRenderSubscriber">
             <argument type="service" id="s_plugin_rhae_tweakwise_frontend.repository"/>
+            <argument type="service" id="product.repository"/>
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader" />
             <tag name="kernel.event_subscriber"/>
         </service>
@@ -68,6 +69,12 @@
         </service>
         <service id="RH\Tweakwise\Core\Content\Aggregate\FrontendSalesChannelDomain\FrontendSalesChannelDomainDefinition">
             <tag name="shopware.entity.definition" entity="s_plugin_rhae_tweakwise_frontend_sales_channel_domains" />
+        </service>
+        <service id="RH\Tweakwise\Core\Content\Product\Aggregate\ProductCrossSelling\ProductCrossSellingEntityExtension">
+            <tag name="shopware.entity.extension" />
+        </service>
+        <service id="RH\Tweakwise\Core\Content\Product\Aggregate\ProductCrossSelling\ProductCrossSellingTweakwiseEntityDefinition">
+            <tag name="shopware.entity.definition" entity="product_cross_selling_tweakwise" />
         </service>
 
     </services>

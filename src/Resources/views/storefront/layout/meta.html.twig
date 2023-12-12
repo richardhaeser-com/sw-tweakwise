@@ -18,5 +18,11 @@
 
             {% endif %}
         {% endif %}
+
+        <script
+                src="https://gateway.tweakwisenavigator.net/js/recommendations.js"
+                data-failover="https://gateway.tweakwisenavigator.com/js/recommendations.js"
+                onerror="window.tweakwiseFailover(this.dataset.failover)"
+        ></script>
     {% endblock %}
 {% endblock %}
