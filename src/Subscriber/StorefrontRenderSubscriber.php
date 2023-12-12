@@ -22,22 +22,27 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use function array_key_exists;
 use function crc32;
 use function json_encode;
+use function sprintf;
+use function version_compare;
 
 class StorefrontRenderSubscriber implements EventSubscriberInterface
 {
     private EntityRepository $frontendRepository;
     private NavigationLoader $navigationLoader;
     private EntityRepository $productRepository;
+    private string $shopwareVersion;
 
     public function __construct(
         EntityRepository $frontendRepository,
         EntityRepository $productRepository,
-        NavigationLoader $navigationLoader
+        NavigationLoader $navigationLoader,
+        string $shopwareVersion,
     )
     {
         $this->frontendRepository = $frontendRepository;
         $this->navigationLoader = $navigationLoader;
         $this->productRepository = $productRepository;
+        $this->shopwareVersion = $shopwareVersion;
     }
 
     public static function getSubscribedEvents()
@@ -84,23 +89,32 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         if ($page instanceof ProductPage) {
             $product = $page->getProduct();
 
-            if ($product->getParentId()) {
-                $criteria = new Criteria([$product->getParentId()]);
-                /** @var ProductEntity $parentProduct */
-                $parentProduct = $this->productRepository->search($criteria, $event->getContext())->first();
-                if ($parentProduct->getVariantListingConfig()->getDisplayParent()) {
-                    $product = $parentProduct;
-                } elseif ($parentProduct->getVariantListingConfig()->getMainVariantId()) {
-                    $product = $this->productRepository->search(new Criteria([$parentProduct->getVariantListingConfig()->getMainVariantId()]), $event->getContext())->first();
-                } else {
-                    $criteria = new Criteria();
-                    $criteria->addFilter(
-                        new EqualsFilter('parentId', $product->getParentId())
-                    );
-                    $product = $this->productRepository->search($criteria, $event->getContext())->first();
+            if ($product instanceof ProductEntity) {
+                if (version_compare($this->shopwareVersion, '6.5.0', '>=')) {
+                    if ($product->getParentId()) {
+                        $criteria = new Criteria([$product->getParentId()]);
+                        /** @var ProductEntity $parentProduct */
+                        $parentProduct = $this->productRepository->search($criteria, $event->getContext())->first();
+                        if ($parentProduct->getVariantListingConfig()->getDisplayParent()) {
+                            $product = $parentProduct;
+                        } elseif ($parentProduct->getVariantListingConfig()->getMainVariantId()) {
+                            $product = $this->productRepository->search(
+                                new Criteria([$parentProduct->getVariantListingConfig()->getMainVariantId()]),
+                                $event->getContext()
+                            )->first();
+                        } else {
+                            $criteria = new Criteria();
+                            $criteria->addFilter(
+                                new EqualsFilter('parentId', $product->getParentId())
+                            );
+                            /** @phpstan-ignore-next-line */
+                            $product = $this->productRepository->search($criteria, $event->getContext())->first();
+                        }
+                    }
+                    $productNumber = $product->getProductNumber();
+                    $twConfiguration['crossSellProductId'] = sprintf('%s (%s - %x)', $productNumber, $event->getRequest()->getLocale(), crc32($domainId));;
                 }
             }
-            $twConfiguration['crossSellProductId'] = sprintf('%s (%s - %x)', $product->getProductNumber(), $event->getRequest()->getLocale(), crc32($domainId));;
         }
         if ($page instanceof Page) {
             $page->addExtensions([

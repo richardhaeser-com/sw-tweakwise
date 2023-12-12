@@ -20,6 +20,7 @@
             <argument type="service" id="s_plugin_rhae_tweakwise_frontend.repository"/>
             <argument type="service" id="product.repository"/>
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader" />
+            <argument>%kernel.shopware_version%</argument>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="RH\Tweakwise\Controller\TweakwiseFeedController" public="true">
