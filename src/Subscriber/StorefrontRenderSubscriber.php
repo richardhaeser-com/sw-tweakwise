@@ -95,10 +95,12 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
                         $criteria = new Criteria([$product->getParentId()]);
                         /** @var ProductEntity $parentProduct */
                         $parentProduct = $this->productRepository->search($criteria, $event->getContext())->first();
+                        /** @phpstan-ignore-next-line */
                         if ($parentProduct->getVariantListingConfig()->getDisplayParent()) {
                             $product = $parentProduct;
                         } elseif ($parentProduct->getVariantListingConfig()->getMainVariantId()) {
                             $product = $this->productRepository->search(
+                                /** @phpstan-ignore-next-line */
                                 new Criteria([$parentProduct->getVariantListingConfig()->getMainVariantId()]),
                                 $event->getContext()
                             )->first();
