@@ -20,7 +20,7 @@ class ProductCrossSellingTweakwiseEntityDefinition extends EntityDefinition
 
     public function getCollectionClass(): string
     {
-        return ProductCrossSellingTweakwiseEntity::class;
+        return ProductCrossSellingTweakwiseCollection::class;
     }
 
     public function getEntityClass(): string
