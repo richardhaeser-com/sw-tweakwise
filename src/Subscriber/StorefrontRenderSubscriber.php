@@ -38,7 +38,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         EntityRepository $frontendRepository,
         EntityRepository $productRepository,
         NavigationLoader $navigationLoader,
-        string $shopwareVersion,
+        string $shopwareVersion
     )
     {
         $this->frontendRepository = $frontendRepository;
