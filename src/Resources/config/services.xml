@@ -23,6 +23,9 @@
             <argument>%kernel.shopware_version%</argument>
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="RH\Tweakwise\Subscriber\CrossSellingSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="RH\Tweakwise\Controller\TweakwiseFeedController" public="true">
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
