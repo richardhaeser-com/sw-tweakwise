@@ -11,7 +11,7 @@ Shopware.Module.register('rhae-tweakwise-frontend', {
     title: 'rhae-tweakwise-frontend.main.menuLabel',
     description: 'rhae-tweakwise-frontend.main.menuDescription',
     color: '#01b7cd',
-    iconComponent: 'rhae-tweakwise-settings-icon',
+    icon: 'default-avatar-multiple',
 
     snippets: {
         'nl-NL': nlNL,

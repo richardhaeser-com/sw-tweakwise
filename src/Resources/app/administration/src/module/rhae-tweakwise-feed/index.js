@@ -11,7 +11,7 @@ Shopware.Module.register('rhae-tweakwise-feed', {
     title: 'rhae-tweakwise-feed.main.menuLabel',
     description: 'rhae-tweakwise-feed.main.menuDescription',
     color: '#01b7cd',
-    iconComponent: 'rhae-tweakwise-settings-icon',
+    icon: 'default-avatar-multiple',
 
     snippets: {
         'nl-NL': nlNL,
