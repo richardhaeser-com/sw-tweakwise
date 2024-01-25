@@ -398,12 +398,20 @@ class FeedService
                 'lowest' => [
                     'price_net' => 0,
                     'price_gross' => 0,
+                    'list_price_net' => 0,
+                    'list_price_gross' => 0,
+                    'cheapest_price_net' => 0,
+                    'cheapest_price_gross' => 0,
                     'quantity_start' => '',
                     'quantity_end' => ''
                 ],
                 'highest' => [
                     'price_net' => 0,
                     'price_gross' => 0,
+                    'list_price_net' => 0,
+                    'list_price_gross' => 0,
+                    'cheapest_price_net' => 0,
+                    'cheapest_price_gross' => 0,
                     'quantity_start' => '',
                     'quantity_end' => ''
                 ]
@@ -435,12 +443,20 @@ class FeedService
             'lowest' => [
                 'price_net' => $lowest->getPrice()->first()->getNet(),
                 'price_gross' => $lowest->getPrice()->first()->getGross(),
+                'list_price_net' => $lowest->getPrice()->first()->getListPrice()?->getNet() ?: 0,
+                'list_price_gross' => $lowest->getPrice()->first()->getListPrice()?->getGross() ?: 0,
+                'cheapest_price_net' => $lowest->getPrice()->first()->getRegulationPrice()?->getNet() ?: 0,
+                'cheapest_price_gross' => $lowest->getPrice()->first()->getRegulationPrice()?->getGross() ?: 0,
                 'quantity_start' => $lowest->getQuantityStart(),
                 'quantity_end' => $lowest->getQuantityEnd()
             ],
             'highest' => [
                 'price_net' => $highest->getPrice()->first()->getNet(),
                 'price_gross' => $highest->getPrice()->first()->getGross(),
+                'list_price_net' => $highest->getPrice()->first()->getListPrice()?->getNet() ?: 0,
+                'list_price_gross' => $highest->getPrice()->first()->getListPrice()?->getGross() ?: 0,
+                'cheapest_price_net' => $highest->getPrice()->first()->getRegulationPrice()?->getNet() ?: 0,
+                'cheapest_price_gross' => $highest->getPrice()->first()->getRegulationPrice()?->getGross() ?: 0,
                 'quantity_start' => $highest->getQuantityStart(),
                 'quantity_end' => $highest->getQuantityEnd()
             ]
