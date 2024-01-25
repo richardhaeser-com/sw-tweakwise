@@ -192,6 +192,8 @@ class FeedService
             $criteria->addAssociation('children');
             $criteria->addAssociation('children.options');
             $criteria->addAssociation('children.options.group');
+            $criteria->addAssociation('children.properties');
+            $criteria->addAssociation('children.properties.group');
             $criteria->addAssociation('tags');
             $criteria->getAssociation('seoUrls')
                 ->setLimit(1)
@@ -333,6 +335,8 @@ class FeedService
                     $criteria->addAssociation('children');
                     $criteria->addAssociation('children.options');
                     $criteria->addAssociation('children.options.group');
+                    $criteria->addAssociation('children.properties');
+                    $criteria->addAssociation('children.properties.group');
 
                     /** @var ProductEntity $parent */
                     $parent = $this->productRepository->search($criteria, $context)->first();
