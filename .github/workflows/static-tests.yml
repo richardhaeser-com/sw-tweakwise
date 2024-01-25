@@ -17,10 +17,6 @@ jobs:
         dependencies: ['lowest', 'highest']
         include:
           - os: 'ubuntu-20.04'
-            php: 'php7.4'
-            experimental: false
-            dependencies: highest
-          - os: 'ubuntu-20.04'
             php: 'php8.0'
             experimental: false
             dependencies: highest

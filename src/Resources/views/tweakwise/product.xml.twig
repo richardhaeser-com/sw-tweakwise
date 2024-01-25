@@ -241,6 +241,30 @@
                             <value>{{ prices.lowest.price_gross|round(2, 'common') }}</value>
                         </attribute>
                     {% endblock %}
+                    {% block feed_item_price_lowest_listprice_net %}
+                        <attribute>
+                            <name>sw-price-lowest-listprice-net</name>
+                            <value>{{ prices.lowest.list_price_net|round(2, 'common') }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_price_lowest_listprice_gross %}
+                        <attribute>
+                            <name>sw-price-lowest-listprice-gross</name>
+                            <value>{{ prices.lowest.list_price_gross|round(2, 'common') }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_price_lowest_cheapestprice_net %}
+                        <attribute>
+                            <name>sw-price-lowest-cheapestprice-net</name>
+                            <value>{{ prices.lowest.cheapest_price_net|round(2, 'common') }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_price_lowest_cheapestprice_gross %}
+                        <attribute>
+                            <name>sw-price-lowest-cheapestprice-gross</name>
+                            <value>{{ prices.lowest.cheapest_price_gross|round(2, 'common') }}</value>
+                        </attribute>
+                    {% endblock %}
                     {% block feed_item_price_lowest_quantity_start %}
                         <attribute>
                             <name>sw-price-lowest-quantity-start</name>
@@ -265,6 +289,31 @@
                             <value>{{ prices.highest.price_gross|round(2, 'common') }}</value>
                         </attribute>
                     {% endblock %}
+                    {% block feed_item_price_highest_listprice_net %}
+                        <attribute>
+                            <name>sw-price-highest-listprice-net</name>
+                            <value>{{ prices.highest.list_price_net|round(2, 'common') }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_price_highest_listprice_gross %}
+                        <attribute>
+                            <name>sw-price-highest-listprice-gross</name>
+                            <value>{{ prices.highest.list_price_gross|round(2, 'common') }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_price_highest_cheapestprice_net %}
+                        <attribute>
+                            <name>sw-price-highest-cheapestprice-net</name>
+                            <value>{{ prices.highest.cheapest_price_net|round(2, 'common') }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_price_highest_cheapestprice_gross %}
+                        <attribute>
+                            <name>sw-price-highest-cheapestprice-gross</name>
+                            <value>{{ prices.highest.cheapest_price_gross|round(2, 'common') }}</value>
+                        </attribute>
+                    {% endblock %}
+
                     {% block feed_item_price_highest_quantity_start %}
                         <attribute>
                             <name>sw-price-highest-quantity-start</name>
