@@ -1,0 +1,16 @@
+{
+  "sw-cms": {
+    "elements": {
+      "tweakwiseFeaturedProducts": {
+        "label": "Tweakwise Featured Products",
+        "config": {
+          "groupId": {
+            "label": "Group ID",
+            "helpText": "You can find the group ID on the tab Implementation of the selected featured products group in the Tweakwise app. Can't find this id? Contact customer service of Tweakwise to retrieve this ID.",
+            "placeHolder": "Enter the group ID"
+          }
+        }
+      }
+    }
+  }
+}
