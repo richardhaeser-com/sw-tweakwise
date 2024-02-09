@@ -1,10 +1,20 @@
 import Plugin from 'src/plugin-system/plugin.class';
+import PluginManager from 'src/plugin-system/plugin.manager';
+import Iterator from 'src/helper/iterator.helper';
+import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 
 export default class TwAddToCartPlugin extends Plugin {
     init() {
-        window.addEventListener('twAddToCart', this.addToCart);
+        this._registerEvents();
     }
-    addToCart(e) {
+
+    _registerEvents() {
+        const twAddToCart = this._addToCart.bind(this);
+
+        window.addEventListener('twAddToCart', twAddToCart);
+    }
+
+    _addToCart(e) {
         let shopwareIdAttribute = e.detail.data.attributes.find(attribute => {
             return attribute.name === 'product_id'
         });
@@ -19,11 +29,12 @@ export default class TwAddToCartPlugin extends Plugin {
         form.setAttribute('action', e.detail.addToCartAction);
         form.setAttribute('method', 'post');
         form.setAttribute('id', 'twn-add-to-cart-form');
+        form.setAttribute('data-add-to-cart', 'true');
 
         let redirectToField = document.createElement('input');
         redirectToField.setAttribute('type', 'hidden');
         redirectToField.setAttribute('name', 'redirectTo');
-        redirectToField.setAttribute('value', 'frontend.detail.page');
+        redirectToField.setAttribute('value', 'frontend.cart.offcanvas');
 
         let redirectParametersField = document.createElement('input');
         redirectParametersField.setAttribute('type', 'hidden');
@@ -76,7 +87,21 @@ export default class TwAddToCartPlugin extends Plugin {
         form.appendChild(lineItemQuantityField);
         form.appendChild(csrfTokenField);
 
-        document.body.appendChild(form);
-        form.submit();
+        const requestUrl = e.detail.addToCartAction;
+        const formData = FormSerializeUtil.serialize(form);
+
+        this.$emitter.publish('beforeFormSubmit', formData);
+        this._openOffCanvasCarts(requestUrl, formData);
+    }
+
+    _openOffCanvasCarts(requestUrl, formData) {
+        const offCanvasCartInstances = PluginManager.getPluginInstances('OffCanvasCart');
+        Iterator.iterate(offCanvasCartInstances, instance => this._openOffCanvasCart(instance, requestUrl, formData));
+    }
+
+    _openOffCanvasCart(instance, requestUrl, formData) {
+        instance.openOffCanvas(requestUrl, formData, () => {
+            this.$emitter.publish('openOffCanvasCart');
+        });
     }
 }
