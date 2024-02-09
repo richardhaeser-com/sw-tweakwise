@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - You can now use the CMS element Tweakwise Featured Products in the Shopping Experience. With this element you can show featured products as specified in the Tweakwise App in your shop.
 
+### Changed
+- The add to cart button is now using the offcanvas cart instead of forwarding to the PDP after adding the product to the shopping cart.
+
 ## [2.4.3] - 25-01-2024
 
 > ### Important
