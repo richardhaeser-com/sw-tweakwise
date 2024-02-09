@@ -1,0 +1,18 @@
+{% block tweakwise_featured_products %}
+    {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
+    {% if element.config.groupId.value and instanceKey %}
+
+        <div id="tweakwise-featured-recommendations-{{ element.id }}"></div>
+        <script type="text/javascript">
+            window.addEventListener("DOMContentLoaded", function () {
+                tweakwiseRecommendations({
+                    instancekey: "{{ instanceKey }}",
+                    output: "#tweakwise-featured-recommendations-{{ element.id }}",
+                    featured: {
+                        id: "{{ element.config.groupId.value }}"
+                    }
+                });
+            });
+        </script>
+    {% endif %}
+{% endblock %}

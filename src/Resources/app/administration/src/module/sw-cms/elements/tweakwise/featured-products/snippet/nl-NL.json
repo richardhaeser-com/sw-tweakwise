@@ -1,0 +1,16 @@
+{
+  "sw-cms": {
+    "elements": {
+      "tweakwiseFeaturedProducts": {
+        "label": "Tweakwise Uitgelichte Producten",
+        "config": {
+          "groupId": {
+            "label": "Groep ID",
+            "helpText": "Je kunt het groep-id vinden op het tabblad implementatie van de betreffende Uitgelichte Producten groep in de Tweakwise app. Kom je er niet uit? Neem contact op met de customer service van Tweakwise.",
+            "placeHolder": "Geef het groep ID op"
+          }
+        }
+      }
+    }
+  }
+}

@@ -9,6 +9,7 @@ This document will help you to setup the plugin for the default features of Shop
 - [Create frontend config](#frontend-config)
 - [Tweakwise Merchandise / Product Listing Page](#merchandise)
 - [Cross-sell recommendations](#cross-sell)
+- [Featured products](#featured-products)
 
 <a name="installation"></a>
 ## Installation
@@ -146,3 +147,7 @@ On the product listing page, you have an element called Category listing. If you
 <a name="cross-sell"></a>
 ## Cross-sell
 It is possible to use the cross-sell recommendations of Tweakwise in your Shopware shop. To do so, you can create a cross-sell in your product as you would normally do. When adding a cross selling, you can choose for the type `Tweakwise recommendations`. If you have choosen that type, you will get the possibility to add the `Tweakwise Group key` which can be obtained from the Tweakwise app. Be aware that you need to configure the recommendations in Tweakwise first. The output of the cross-sells needs to be styled by the implementation partner as well. 
+
+<a name="featured-products"></a>
+## Featured products
+If you have configured featured products in your Tweakwise app, you can show those featured products by adding a CMS element called Tweakwise Featured Products. You only have to give the group ID, which can be found in the Tweakwise app, and you are ready to go. The styling of the products, is done by either Tweakwise or you can do it yourselves. You can not change the HTML template though.
