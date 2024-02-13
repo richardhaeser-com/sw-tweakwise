@@ -18,20 +18,12 @@ At the moment the following features are supported:
 - Instant search
 - Suggestions (including search phrases, categories and facets)
 - Merchandise
+- Recommendations (featured products and cross-selling)
 
 _All features are tested on a default Shopware 6.4 and 6.5 installation and in a real-life webshop._
 
 ## Changelog
 Do you want an overview of all changes in the past versions? Just have a look at the [changelog](CHANGELOG.md).
-
-## Roadmap
-Tweakwise offers a lot of really nice features. Those features don't work out-of-the-box on your site
-and therefor those features needs to be integrated into the extension. I don't have an exact roadmap 
-at the moment, but things you can expect are:
-
-- **Basic JavaScript implementation** so you can be up-and-running in a matter of minutes
-- With the **Standard Site Search based on the API** you will be able to use Tweakwise without the need to include the JavaScript library of Tweakwise. 
-- The **Autocomplete** feature will also be included.
 
 ## Documentation
 [Checkout the documentation](DOC.md)
