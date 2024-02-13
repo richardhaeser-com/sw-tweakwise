@@ -207,7 +207,7 @@ class FeedService
 
             /** @var ProductListingResult $result */
             while (($result = $this->loadProducts($criteria, $salesChannelContext)) !== null) {
-                $this->renderProducts($result->getElements(), $salesChannelDomain, $feed, $salesChannelContext->getContext());
+                $this->renderProducts($result->getElements(), $salesChannelDomain, $feed, $salesChannelContext);
                 $criteria->setOffset($criteria->getOffset() + $criteria->getLimit());
             }
         }
@@ -320,7 +320,7 @@ class FeedService
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    private function renderProducts($products, SalesChannelDomainEntity $domain, FeedEntity $feed, Context $context): void
+    private function renderProducts($products, SalesChannelDomainEntity $domain, FeedEntity $feed, SalesChannelContext $salesChannelContext): void
     {
         $content = '';
         /** @var ProductEntity $product */
@@ -339,7 +339,7 @@ class FeedService
                     $criteria->addAssociation('children.properties.group');
 
                     /** @var ProductEntity $parent */
-                    $parent = $this->productRepository->search($criteria, $context)->first();
+                    $parent = $this->productRepository->search($criteria, $salesChannelContext->getContext())->first();
                     if ($parent->getChildCount() > 0) {
                         $configurationGroupConfigArray = [];
                         if (version_compare($this->shopwareVersion, '6.4.15', '>=')) {
@@ -381,7 +381,7 @@ class FeedService
                     'domainId' => $domain->getId(),
                     'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
                     'product' => $product,
-                    'prices' => $this->getLowestAndHighestPrice($product),
+                    'prices' => $this->getLowestAndHighestPrice($product, $salesChannelContext),
                     'otherVariants' => $otherVariants,
                     'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
                     'salesChannel' => $domain->getSalesChannel()
@@ -393,7 +393,7 @@ class FeedService
         $this->writeContent($content, $feed);
     }
 
-    private function getLowestAndHighestPrice(ProductEntity $product): array
+    private function getLowestAndHighestPrice(ProductEntity $product, SalesChannelContext $salesChannelContext): array
     {
         $prices = $product->getPrices();
         if (count($prices) < 2) {
@@ -421,11 +421,20 @@ class FeedService
                 ]
             ];
         }
+        $rules = $this->ruleLoader->load($salesChannelContext->getContext());
+        $scope = new CheckoutRuleScope($salesChannelContext);
+
+        $rules = $rules->filter(function ($rule) use ($scope) {
+            return $rule->getPayload()->match($scope);
+        });
 
         $lowest = $highest = null;
 
         /** @var ProductPriceEntity $price */
         foreach ($prices as $price) {
+            if (!$price->getRuleId() || !in_array($price->getRuleId(), $rules->getIds())) {
+                continue;
+            }
             if ($lowest === null) {
                 $lowest = $price;
             } else {

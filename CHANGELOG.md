@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - The add to cart button is now using the offcanvas cart instead of forwarding to the PDP after adding the product to the shopping cart.
+ 
+### Fixed
+- Rules will now be applied to advanced pricing options when generating the feed
 
 ## [2.4.3] - 25-01-2024
 
