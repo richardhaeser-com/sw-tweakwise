@@ -1,38 +1,48 @@
 {
-    "rhae-tweakwise-frontend": {
-        "main": {
-            "menuLabel": "Tweakwise frontend",
-            "menuDescription": "Configure your Tweakwise frontend"
+  "rhae-tweakwise-frontend": {
+    "main": {
+      "menuLabel": "Tweakwise frontend",
+      "menuDescription": "Configure your Tweakwise frontend"
+    },
+    "list": {
+      "addButtonText": "Create new frontend",
+      "refreshButtonText": "Refresh",
+      "columns": {
+        "name": "Frontend name"
+      }
+    },
+    "detail": {
+      "cancelButtonText": "Cancel",
+      "saveButtonText": "Save",
+      "section": {
+        "main": "General",
+        "data": "Data",
+        "checkoutSales": "Checkout sales",
+        "search": "Search"
+      },
+      "label": {
+        "name": "Name",
+        "token": "Authorization key",
+        "integration": "Way of integration",
+        "integrationOptions": {
+          "no-integration": "No integration",
+          "javascript": "JavaScript implementation"
         },
-        "list": {
-            "addButtonText": "Create new frontend",
-            "refreshButtonText": "Refresh",
-            "columns": {
-                "name": "Frontend name"
-            }
+        "wayOfSearch": "Way of search",
+        "wayOfSearchOptions": {
+          "instant-search": "Instant search",
+          "suggestions": "Suggestions + Dedicated search page"
         },
-        "detail": {
-            "cancelButtonText": "Cancel",
-            "saveButtonText": "Save",
-            "section": {
-                "main": "General",
-                "data": "Data"
-            },
-            "label": {
-                "name": "Name",
-                "token": "Authorization key",
-                "integration": "Way of integration",
-                "integrationOptions": {
-                    "no-integration": "No integration",
-                    "javascript": "JavaScript implementation"
-                },
-                "wayOfSearch": "Way of search",
-                "wayOfSearchOptions": {
-                    "instant-search": "Instant search",
-                    "suggestions": "Suggestions + Dedicated search page"
-                },
-                "salesChannelDomains": "Domains"
-            }
-        }
+        "checkoutSales": "Checkout sales",
+        "checkoutSalesOptions": {
+          "no-checkout-sales": "No checkout sales",
+          "featured-products": "Show featured products",
+          "recommendations": "Show recommendations based on last item in cart"
+        },
+        "checkoutSalesFeaturedProductsId": "ID of Featured Products group",
+        "checkoutSalesRecommendationsGroupKey": "Group key used for cross-sell",
+        "salesChannelDomains": "Domains"
+      }
     }
+  }
 }

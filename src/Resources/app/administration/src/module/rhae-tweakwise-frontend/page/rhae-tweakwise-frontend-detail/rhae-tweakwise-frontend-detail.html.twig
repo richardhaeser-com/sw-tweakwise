@@ -19,6 +19,13 @@
             <sw-card v-if="item" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.main')">
 
                 <sw-card-section>
+                    <sw-entity-multi-select
+                            :label="$t('rhae-tweakwise-frontend.detail.label.salesChannelDomains')"
+                            labelProperty="url"
+                            value-property="id"
+                            v-model="item.salesChannelDomains"
+                    />
+
                     <sw-field :label="$t('rhae-tweakwise-frontend.detail.label.name')"
                               v-model="item.name"
                               required validation="required" ></sw-field>
@@ -33,22 +40,38 @@
                         </option>
                     </sw-select-field>
 
+                </sw-card-section>
+
+            </sw-card>
+            <sw-card v-if="item.integration === 'javascript'" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.search')">
+                <sw-card-section>
                     <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.wayOfSearch')"
-                                     v-model="item.wayOfSearch">
+                                     v-model="item.wayOfSearch"
+                                     v-if="item.integration === 'javascript'">
                         <option v-for="value in ['instant-search','suggestions']" :value="value">
                             {{ $tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.' + value) }}
                         </option>
                     </sw-select-field>
-
-                    <sw-entity-multi-select
-                        :label="$t('rhae-tweakwise-frontend.detail.label.salesChannelDomains')"
-                        labelProperty="url"
-                        value-property="id"
-                        v-model="item.salesChannelDomains"
-                    />
-
                 </sw-card-section>
+            </sw-card>
+            <sw-card v-if="item.integration === 'javascript'" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.checkoutSales')">
+                <sw-card-section>
+                    <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSales')"
+                                     v-model="item.checkoutSales"
+                                     v-if="item.integration === 'javascript'">
+                        <option v-for="value in ['no-checkout-sales','featured-products','recommendations']" :value="value">
+                            {{ $tc('rhae-tweakwise-frontend.detail.label.checkoutSalesOptions.' + value) }}
+                        </option>
+                    </sw-select-field>
 
+                    <sw-field :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSalesFeaturedProductsId')"
+                              v-if="item.integration === 'javascript' && item.checkoutSales === 'featured-products'"
+                              v-model="item.checkoutSalesFeaturedProductsId"></sw-field>
+
+                    <sw-field :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSalesRecommendationsGroupKey')"
+                              v-if="item.integration === 'javascript' && item.checkoutSales === 'recommendations'"
+                              v-model="item.checkoutSalesRecommendationsGroupKey"></sw-field>
+                </sw-card-section>
             </sw-card>
         </sw-card-view>
     </template>

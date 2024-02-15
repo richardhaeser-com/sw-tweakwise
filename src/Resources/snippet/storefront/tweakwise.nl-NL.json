@@ -1,5 +1,10 @@
 {
   "listing": {
     "boxLabelSoldout": "Uitverkocht"
+  },
+  "tweakwise": {
+    "checkoutSales": {
+      "title": "Misschien ook interessant"
+    }
   }
 }

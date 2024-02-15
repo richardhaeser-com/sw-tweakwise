@@ -16,7 +16,9 @@
       "saveButtonText": "Opslaan",
       "section": {
         "main": "Algemeen",
-        "data": "Data"
+        "data": "Data",
+        "checkoutSales": "Kassakoopjes",
+        "search": "Zoeken"
       },
       "label": {
         "name": "Naam",
@@ -31,7 +33,15 @@
           "instant-search": "Direct zoeken",
           "suggestions": "Suggesties + aparte zoekpagina"
         },
-        "salesChannelDomains": "Domains"
+        "checkoutSales": "Kassakoopjes",
+        "checkoutSalesOptions": {
+          "no-checkout-sales": "Geen kassakoopjes",
+          "featured-products": "Toon uitgelichte producten",
+          "recommendations": "Toon aanbevelingen gebaseerd op het laatst toegevoegde product"
+        },
+        "checkoutSalesFeaturedProductsId": "ID van uitegelichte producten groep",
+        "checkoutSalesRecommendationsGroupKey": "Groep sleutel gebruikt voor cross-sell",
+        "salesChannelDomains": "Domeinen"
       }
     }
   }

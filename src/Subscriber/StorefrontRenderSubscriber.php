@@ -3,6 +3,7 @@
 namespace RH\Tweakwise\Subscriber;
 
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
+use RH\Tweakwise\Service\ProductDataService;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
@@ -33,11 +34,13 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
     private NavigationLoader $navigationLoader;
     private EntityRepository $productRepository;
     private string $shopwareVersion;
+    private ProductDataService $productDataService;
 
     public function __construct(
         EntityRepository $frontendRepository,
         EntityRepository $productRepository,
         NavigationLoader $navigationLoader,
+        ProductDataService $productDataService,
         string $shopwareVersion
     )
     {
@@ -45,6 +48,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         $this->navigationLoader = $navigationLoader;
         $this->productRepository = $productRepository;
         $this->shopwareVersion = $shopwareVersion;
+        $this->productDataService = $productDataService;
     }
 
     public static function getSubscribedEvents()
@@ -83,13 +87,18 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
             'instanceKey' => $result->getToken(),
             'integration' => $result->getIntegration(),
             'wayOfSearch' => $result->getWayOfSearch(),
+            'checkoutSales' => [
+                'type' => $result->getCheckoutSales(),
+                'featuredProductsId' => $result->getCheckoutSalesFeaturedProductsId(),
+                'recommendationsGroupKey' => $result->getCheckoutSalesRecommendationsGroupKey(),
+            ],
             'categoryData' => $categoryData
         ];
 
         $parameters = $event->getParameters();
         $page = $parameters['page'] ?? null;
         if ($page instanceof ProductPage) {
-            $product = $this->getProductShownInListing($page->getProduct(), $event->getContext());
+            $product = $this->productDataService->getProductShownInListing($page->getProduct(), $event->getContext());
 
             /** @phpstan-ignore-next-line */
             $productNumber = $product->getProductNumber();
@@ -102,76 +111,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         }
     }
 
-    private function getProductShownInListing(ProductEntity $product, Context $context): ProductEntity
-    {
-        if (version_compare($this->shopwareVersion, '6.5.0', '>=')) {
-            if ($product->getParentId()) {
-                $criteria = new Criteria([$product->getParentId()]);
-                /** @var ProductEntity $parentProduct */
-                $parentProduct = $this->productRepository->search($criteria, $context)->first();
-                if ($parentProduct instanceof ProductEntity) {
-                    $configurationGroupConfigArray = [];
-                    if (version_compare($this->shopwareVersion, '6.4.15', '>=')) {
-                        /** @phpstan-ignore-next-line */
-                        $listingConfig = $parentProduct->getVariantListingConfig();
 
-                        if ($listingConfig) {
-                            if ($listingConfig->getDisplayParent()) {
-                                return $parentProduct;
-                            }
-
-                            if ($listingConfig->getMainVariantId()) {
-                                /** @var ProductEntity $mainVariant */
-                                $mainVariant = $this->productRepository->search(
-                                /** @phpstan-ignore-next-line */
-                                    new Criteria([$listingConfig->getMainVariantId()]),
-                                    $context
-                                )->first();
-
-                                 return $mainVariant;
-                            }
-
-                            $configurationGroupConfigArray = $listingConfig->getConfiguratorGroupConfig() ?: [];
-                        }
-                    } else {
-                        /** @phpstan-ignore-next-line */
-                        $configurationGroupConfigArray = $parentProduct->getConfiguratorGroupConfig() ?: [];
-                    }
-
-                    $useParentProduct = true;
-                    foreach ($configurationGroupConfigArray as $configurationGroupConfig) {
-                        if (
-                            is_array($configurationGroupConfig)
-                            && array_key_exists('expressionForListings', $configurationGroupConfig)
-                            && $configurationGroupConfig['expressionForListings'] === true
-                        ) {
-                            $useParentProduct = false;
-                            break;
-                        }
-                    }
-                    if ($useParentProduct) {
-                        if (version_compare($this->shopwareVersion, '6.4.15', '>=')) {
-                            $criteria = new Criteria();
-                            $criteria->addFilter(
-                                new EqualsFilter('parentId', $parentProduct->getId())
-                            );
-
-                            /** @var ProductEntity $firstVariant */
-                            $firstVariant = $this->productRepository->search(
-                                $criteria,
-                                $context
-                            )->first();
-                            return $firstVariant;
-                        }
-
-                        return $parentProduct;
-                    }
-                }
-            }
-        }
-
-        return $product;
-    }
 
     private function parseCategoryData(&$categoryData, $domainId, TreeItem $treeItem): void
     {

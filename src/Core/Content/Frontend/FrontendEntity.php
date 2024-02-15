@@ -18,6 +18,12 @@ class FrontendEntity extends Entity
 
     protected ?string $wayOfSearch;
 
+    protected ?string $checkoutSales;
+
+    protected ?string $checkoutSalesFeaturedProductsId;
+
+    protected ?string $checkoutSalesRecommendationsGroupKey;
+
     /**
      * @var SalesChannelDomainCollection|null
      */
@@ -71,5 +77,35 @@ class FrontendEntity extends Entity
     public function setWayOfSearch(?string $wayOfSearch): void
     {
         $this->wayOfSearch = $wayOfSearch;
+    }
+
+    public function getCheckoutSales(): ?string
+    {
+        return $this->checkoutSales;
+    }
+
+    public function setCheckoutSales(?string $checkoutSales): void
+    {
+        $this->checkoutSales = $checkoutSales;
+    }
+
+    public function getCheckoutSalesFeaturedProductsId(): ?string
+    {
+        return $this->checkoutSalesFeaturedProductsId;
+    }
+
+    public function setCheckoutSalesFeaturedProductsId(?string $checkoutSalesFeaturedProductsId): void
+    {
+        $this->checkoutSalesFeaturedProductsId = $checkoutSalesFeaturedProductsId;
+    }
+
+    public function getCheckoutSalesRecommendationsGroupKey(): ?string
+    {
+        return $this->checkoutSalesRecommendationsGroupKey;
+    }
+
+    public function setCheckoutSalesRecommendationsGroupKey(?string $checkoutSalesRecommendationsGroupKey): void
+    {
+        $this->checkoutSalesRecommendationsGroupKey = $checkoutSalesRecommendationsGroupKey;
     }
 }

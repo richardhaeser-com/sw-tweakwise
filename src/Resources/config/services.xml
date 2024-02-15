@@ -9,6 +9,10 @@
             <argument type="service" id="category.repository"/>
             <tag name="twig.extension"/>
         </service>
+        <service id="RH\Tweakwise\Twig\ProductDataExtension">
+            <argument type="service" id="RH\Tweakwise\Service\ProductDataService" />
+            <tag name="twig.extension"/>
+        </service>
         <service id="RH\Tweakwise\Twig\HashExtension">
             <tag name="twig.extension"/>
         </service>
@@ -20,6 +24,7 @@
             <argument type="service" id="s_plugin_rhae_tweakwise_frontend.repository"/>
             <argument type="service" id="product.repository"/>
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader" />
+            <argument type="service" id="RH\Tweakwise\Service\ProductDataService" />
             <argument>%kernel.shopware_version%</argument>
             <tag name="kernel.event_subscriber"/>
         </service>
@@ -59,6 +64,11 @@
             <argument type="service" id="product.repository"/>
             <argument>%kernel.shopware_version%</argument>
             <argument type="service" id="Shopware\Core\Checkout\Cart\RuleLoader"/>
+        </service>
+
+        <service id="RH\Tweakwise\Service\ProductDataService" public="true">
+            <argument type="service" id="product.repository"/>
+            <argument>%kernel.shopware_version%</argument>
         </service>
 
         <service id="RH\Tweakwise\Core\Content\Feed\FeedDefinition">

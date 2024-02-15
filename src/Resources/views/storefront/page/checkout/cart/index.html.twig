@@ -1,0 +1,66 @@
+{% sw_extends '@Storefront/storefront/page/checkout/cart/index.html.twig' %}
+
+{% block page_checkout_main_content %}
+    {{ parent() }}
+
+    {% if page.extensions.twConfiguration.integration == 'javascript' %}
+        {% if page.extensions.twConfiguration.checkoutSales.type == 'featured-products' and page.extensions.twConfiguration.checkoutSales.featuredProductsId %}
+            {% block page_checkout_main_content_checkout_sales_featured_products %}
+                {% block page_checkout_main_content_checkout_sales_featured_products_inner %}
+                <div class="tweakwise-checkout-sales tweakwise-checkout-sales-featured-products">
+                    <h2>{{ "tweakwise.checkoutSales.title"|trans }}</h2>
+                    <div id="tweakwise-checkout-sales-featured-products"></div>
+                </div>
+                {% endblock %}
+
+                <script type="text/javascript">
+                    window.addEventListener("DOMContentLoaded", function () {
+                        tweakwiseRecommendations({
+                            instancekey: "{{ page.extensions.twConfiguration.instanceKey }}",
+                            output: "#tweakwise-checkout-sales-featured-products",
+                            featured: {
+                                id: "{{ page.extensions.twConfiguration.checkoutSales.featuredProductsId }}"
+                            }
+                        });
+                    });
+                </script>
+            {% endblock %}
+        {% endif %}
+
+        {% if page.extensions.twConfiguration.checkoutSales.type == 'recommendations' and page.extensions.twConfiguration.checkoutSales.recommendationsGroupKey %}
+            {% block page_checkout_main_content_checkout_sales_recommendations %}
+                {% set lastItem = null %}
+                {% for lineItem in page.cart.lineItems %}
+                    {% if lineItem.type == 'product' %}
+                        {% set lastItem = lineItem %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if lastItem %}
+                    {% set lastProduct = tweakwise_product_from_product_number(lastItem.payload.productNumber) %}
+
+                    {% block page_checkout_main_content_checkout_sales_recommendations_inner %}
+                    <div class="tweakwise-checkout-sales tweakwise-checkout-sales-recommendations">
+                        <h2>{{ "tweakwise.checkoutSales.title"|trans }}</h2>
+                        <div id="tweakwise-checkout-sales-recommendations"></div>
+                    </div>
+                    {% endblock %}
+
+
+                    <script type="text/javascript">
+                        window.addEventListener("DOMContentLoaded", function () {
+                            tweakwiseRecommendations({
+                                instancekey: "{{ page.extensions.twConfiguration.instanceKey }}",
+                                output: "#tweakwise-checkout-sales-recommendations",
+                                related: {
+                                    productId: "{{ tweakwise_cross_sell_product_id(tweakwise_product_number(lastProduct), app.request.locale, context.domainId) }}",
+                                    groupKey: "{{ page.extensions.twConfiguration.checkoutSales.recommendationsGroupKey }}"
+                                }
+                            });
+                        });
+                    </script>
+                {% endif %}
+            {% endblock %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
