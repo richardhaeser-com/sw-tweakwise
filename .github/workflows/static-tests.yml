@@ -33,7 +33,7 @@ jobs:
 
       - name: Update Composer
         run: |
-          sudo composer self-update
+          composer self-update
           composer --version
           composer config --no-plugins allow-plugins.symfony/runtime true
 
