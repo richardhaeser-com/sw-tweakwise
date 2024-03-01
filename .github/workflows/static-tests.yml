@@ -6,7 +6,8 @@ jobs:
   build:
     name: Build PHP
     runs-on: ${{ matrix.os }}
-
+    container:
+      image: php:${{ matrix.php }}
     strategy:
       max-parallel: 6
       fail-fast: false
