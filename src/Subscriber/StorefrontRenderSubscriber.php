@@ -32,22 +32,16 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
 {
     private EntityRepository $frontendRepository;
     private NavigationLoader $navigationLoader;
-    private EntityRepository $productRepository;
-    private string $shopwareVersion;
     private ProductDataService $productDataService;
 
     public function __construct(
         EntityRepository $frontendRepository,
-        EntityRepository $productRepository,
         NavigationLoader $navigationLoader,
         ProductDataService $productDataService,
-        string $shopwareVersion
     )
     {
         $this->frontendRepository = $frontendRepository;
         $this->navigationLoader = $navigationLoader;
-        $this->productRepository = $productRepository;
-        $this->shopwareVersion = $shopwareVersion;
         $this->productDataService = $productDataService;
     }
 
@@ -87,6 +81,11 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
             'instanceKey' => $result->getToken(),
             'integration' => $result->getIntegration(),
             'wayOfSearch' => $result->getWayOfSearch(),
+            'products' => [
+                'desktop' => $result->getProductsDesktop(),
+                'tablet' => $result->getProductsTablet(),
+                'mobile' => $result->getProductsMobile(),
+            ],
             'checkoutSales' => [
                 'type' => $result->getCheckoutSales(),
                 'featuredProductsId' => $result->getCheckoutSalesFeaturedProductsId(),

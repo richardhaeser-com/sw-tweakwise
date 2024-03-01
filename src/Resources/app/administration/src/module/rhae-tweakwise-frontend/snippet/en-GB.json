@@ -41,7 +41,10 @@
         },
         "checkoutSalesFeaturedProductsId": "ID of Featured Products group",
         "checkoutSalesRecommendationsGroupKey": "Group key used for cross-sell",
-        "salesChannelDomains": "Domains"
+        "salesChannelDomains": "Domains",
+        "productsDesktop": "Products per row on desktop",
+        "productsTablet": "Products per row on tablet",
+        "productsMobile": "Products per row on mobile"
       }
     }
   }

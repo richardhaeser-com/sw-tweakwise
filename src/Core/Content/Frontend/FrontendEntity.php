@@ -24,6 +24,11 @@ class FrontendEntity extends Entity
 
     protected ?string $checkoutSalesRecommendationsGroupKey;
 
+    protected int $productsDesktop = 3;
+    protected int $productsTablet = 2;
+    protected int $productsMobile = 1;
+
+
     /**
      * @var SalesChannelDomainCollection|null
      */
@@ -107,5 +112,35 @@ class FrontendEntity extends Entity
     public function setCheckoutSalesRecommendationsGroupKey(?string $checkoutSalesRecommendationsGroupKey): void
     {
         $this->checkoutSalesRecommendationsGroupKey = $checkoutSalesRecommendationsGroupKey;
+    }
+
+    public function getProductsDesktop(): int
+    {
+        return $this->productsDesktop;
+    }
+
+    public function setProductsDesktop(int $productsDesktop): void
+    {
+        $this->productsDesktop = $productsDesktop;
+    }
+
+    public function getProductsTablet(): int
+    {
+        return $this->productsTablet;
+    }
+
+    public function setProductsTablet(int $productsTablet): void
+    {
+        $this->productsTablet = $productsTablet;
+    }
+
+    public function getProductsMobile(): int
+    {
+        return $this->productsMobile;
+    }
+
+    public function setProductsMobile(int $productsMobile): void
+    {
+        $this->productsMobile = $productsMobile;
     }
 }

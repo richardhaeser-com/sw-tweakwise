@@ -3,6 +3,7 @@
         navigation: {
             cid: ""
         },
+        products: {},
         cid: "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}",
         lang: "{{ languageKey }}",
         on: {
@@ -29,6 +30,16 @@
             },
         }
     };
+
+    {% if page.extensions.twConfiguration.products.desktop %}
+    window["twn-starter-config"]["products"]["desktop"] = {{ page.extensions.twConfiguration.products.desktop }};
+    {% endif %}
+    {% if page.extensions.twConfiguration.products.tablet %}
+    window["twn-starter-config"]["products"]["tablet"] = {{ page.extensions.twConfiguration.products.tablet }};
+    {% endif %}
+    {% if page.extensions.twConfiguration.products.mobile %}
+    window["twn-starter-config"]["products"]["mobile"] = {{ page.extensions.twConfiguration.products.mobile }};
+    {% endif %}
 </script>
 
 <script>

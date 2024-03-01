@@ -41,7 +41,10 @@
         },
         "checkoutSalesFeaturedProductsId": "ID van uitegelichte producten groep",
         "checkoutSalesRecommendationsGroupKey": "Groep sleutel gebruikt voor cross-sell",
-        "salesChannelDomains": "Domeinen"
+        "salesChannelDomains": "Domeinen",
+        "productsDesktop": "Aantal producten per rij op desktop",
+        "productsTablet": "Aantal producten per rij op tablet",
+        "productsMobile": "Aantal producten per rij op mobiel"
       }
     }
   }
