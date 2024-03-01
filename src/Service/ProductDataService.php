@@ -28,7 +28,10 @@ class ProductDataService
         $criteria->addFilter(
             new EqualsFilter('productNumber', $productNumber)
         );
-        return $this->productRepository->search($criteria, $context)->first();
+
+        /** @var ProductEntity $product */
+        $product = $this->productRepository->search($criteria, $context)->first();
+        return $product;
     }
 
     public function getProductShownInListing(ProductEntity $product, Context $context): ProductEntity

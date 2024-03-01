@@ -8,6 +8,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
@@ -47,6 +48,9 @@ class FrontendDefinition extends EntityDefinition
             (new StringField('integration', 'integration'))->addFlags(new ApiAware()),
             (new StringField('wayOfSearch', 'wayOfSearch'))->addFlags(new ApiAware()),
             (new StringField('checkoutSales', 'checkoutSales'))->addFlags(new ApiAware()),
+            (new IntField('productsDesktop', 'productsDesktop'))->addFlags(new ApiAware()),
+            (new IntField('productsTablet', 'productsTablet'))->addFlags(new ApiAware()),
+            (new IntField('productsMobile', 'productsMobile'))->addFlags(new ApiAware()),
             (new StringField('checkoutSalesFeaturedProductsId', 'checkoutSalesFeaturedProductsId'))->addFlags(new ApiAware()),
             (new StringField('checkoutSalesRecommendationsGroupKey', 'checkoutSalesRecommendationsGroupKey'))->addFlags(new ApiAware()),
             (new ManyToManyAssociationField('salesChannelDomains', SalesChannelDomainDefinition::class, FrontendSalesChannelDomainDefinition::class, 'frontend_id', 'sales_channel_domain_id'))->addFlags(new ApiAware()),

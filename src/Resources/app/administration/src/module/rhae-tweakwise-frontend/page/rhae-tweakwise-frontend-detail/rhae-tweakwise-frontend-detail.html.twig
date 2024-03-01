@@ -52,6 +52,21 @@
                             {{ $tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.' + value) }}
                         </option>
                     </sw-select-field>
+
+                    <sw-container
+                            columns="2fr 2fr 2fr"
+                            gap="0px 30px"
+                    >
+                        <sw-number-field numberType="int" :label="$t('rhae-tweakwise-frontend.detail.label.productsDesktop')"
+                                         v-model="item.productsDesktop">
+                        </sw-number-field>
+                        <sw-number-field numberType="int" :label="$t('rhae-tweakwise-frontend.detail.label.productsTablet')"
+                                         v-model="item.productsTablet">
+                        </sw-number-field>
+                        <sw-number-field numberType="int" :label="$t('rhae-tweakwise-frontend.detail.label.productsMobile')"
+                                         v-model="item.productsMobile">
+                        </sw-number-field>
+                    </sw-container>
                 </sw-card-section>
             </sw-card>
             <sw-card v-if="item.integration === 'javascript'" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.checkoutSales')">
