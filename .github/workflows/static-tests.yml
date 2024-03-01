@@ -6,34 +6,37 @@ jobs:
   build:
     name: Build PHP
     runs-on: ${{ matrix.os }}
-    container:
-      image: php:${{ matrix.php }}
+
     strategy:
       max-parallel: 6
       fail-fast: false
       matrix:
         os: ['ubuntu-latest']
-        php: ['8.1', '8.2', '8.3']
+        php: ['php8.1']
         experimental: [false]
         dependencies: ['lowest', 'highest']
         include:
           - os: 'ubuntu-20.04'
-            php: '8.0'
+            php: 'php8.0'
             experimental: false
             dependencies: highest
           - os: 'ubuntu-20.04'
-            php: '8.1'
+            php: 'php8.1'
             experimental: false
             dependencies: highest
 
     continue-on-error: ${{ matrix.experimental }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v1
+      - name: Set up PHP Version
+        run: |
+          sudo update-alternatives --set php /usr/bin/${{ matrix.php }}
+          php -v
 
       - name: Update Composer
         run: |
-          composer self-update
+          sudo composer self-update
           composer --version
           composer config --no-plugins allow-plugins.symfony/runtime true
 
