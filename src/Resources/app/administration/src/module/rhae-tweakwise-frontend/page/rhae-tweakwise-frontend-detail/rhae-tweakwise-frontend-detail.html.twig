@@ -43,7 +43,7 @@
                 </sw-card-section>
 
             </sw-card>
-            <sw-card v-if="item.integration === 'javascript'" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.search')">
+            <sw-card v-if="item && item.integration === 'javascript'" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.search')">
                 <sw-card-section>
                     <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.wayOfSearch')"
                                      v-model="item.wayOfSearch"
@@ -69,7 +69,7 @@
                     </sw-container>
                 </sw-card-section>
             </sw-card>
-            <sw-card v-if="item.integration === 'javascript'" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.checkoutSales')">
+            <sw-card v-if="item && item.integration === 'javascript'" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.checkoutSales')">
                 <sw-card-section>
                     <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSales')"
                                      v-model="item.checkoutSales"
