@@ -11,14 +11,6 @@
         </sw-button>
     </template>
 
-    <sw-sidebar slot="sidebar">
-        <sw-sidebar-item
-            icon="default-arrow-360-left"
-            :title="$t('rhae-tweakwise-feed.list.refreshButtonText')"
-            @click="getList"
-        />
-    </sw-sidebar>
-
     <template slot="content">
         <sw-entity-listing
             v-if="items"
