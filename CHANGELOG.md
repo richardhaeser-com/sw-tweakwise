@@ -9,8 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- In the feed configuration you can now define if categories which are hidden in the navigation should be exported for Tweakwise or not.
+
+## [2.5.0] - 12-03-2024
+
+### Added
 - In the Tweakwise frontend config, you can now enable checkout sales option. This can be either a featured product group or a cross-sell based on the last product that is added to the cart.
 - Added the possibility to set the number of products per row in the frontend. You can set a value for desktop, tablet and mobile devices.
+
+### Fixed
+- The settings for feed and frontend are now available again in Shopware 6.4 settings
 
 ## [2.4.4] - 13-02-2024
 
