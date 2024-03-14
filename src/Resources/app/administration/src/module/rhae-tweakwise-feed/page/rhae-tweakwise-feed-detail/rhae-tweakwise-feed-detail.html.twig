@@ -43,7 +43,7 @@
 
                 </sw-card-section>
 
-                <sw-card-section divider="bottom">
+                <sw-card-section>
                     <sw-field :label="$t('rhae-tweakwise-feed.detail.label.name')"
                               v-model="item.name"
                               required validation="required" ></sw-field>
@@ -54,43 +54,16 @@
                         value-property="id"
                         v-model="item.salesChannelDomains"
                     />
-                </sw-card-section>
 
-                <div style="display: none">
-                <sw-card-section>
-                    <sw-container
-                        align="center"
-                        columns="1fr auto"
-                        gap="20px"
+                    <sw-boolean-radio-group
+                        v-model="item.includeHiddenCategories"
+                        :label="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategories')"
+                        :label-option-true="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategoriesTrue')"
+                        :label-option-false="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategoriesFalse')"
                     >
-                        <div>
-
-                            {% block sw_settings_cache_content_clear_and_warm_up_cache_row_heading %}
-                                <p class="sw-settings-cache__card-section-heading">
-                                    {{ $tc('rhae-tweakwise-feed.generate.heading') }}
-                                </p>
-                            {% endblock %}
-
-                            {% block sw_settings_cache_content_clear_and_warm_up_cache_row_text %}
-                                <p>{{ $tc('rhae-tweakwise-feed.generate.text') }}</p>
-                            {% endblock %}
-                        </div>
-
-                        {% block sw_settings_cache_content_clear_and_warm_up_cache_row_button %}
-                            <sw-button-process
-                                variant="ghost"
-                                :is-loading="processes.generateFeed"
-                                :process-success="processSuccess.generateFeed"
-                                @process-finish="resetButtons"
-                                @click="generateFeed"
-                            >
-                                {{ $tc('rhae-tweakwise-feed.generate.button') }}
-                            </sw-button-process>
-                        {% endblock %}
-                    </sw-container>
+                    </sw-boolean-radio-group>
                 </sw-card-section>
             </sw-card>
-            </div>
         </sw-card-view>
     </template>
 

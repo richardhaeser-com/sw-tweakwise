@@ -5,6 +5,7 @@ namespace RH\Tweakwise\Core\Content\Feed;
 use RH\Tweakwise\Core\Content\Aggregate\FeedSalesChannelDomain\FeedSalesChannelDomainDefinition;
 use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
@@ -48,6 +49,7 @@ class FeedDefinition extends EntityDefinition
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey(), new ApiAware()),
             (new StringField('name', 'name'))->addFlags(new Required(), new ApiAware()),
+            (new BoolField('includeHiddenCategories', 'includeHiddenCategories'))->addFlags(new ApiAware()),
             (new DateTimeField('last_started_at', 'lastStartedAt'))->addFlags(new ApiAware()),
             (new DateTimeField('last_generated_at', 'lastGeneratedAt'))->addFlags(new ApiAware()),
             (new ManyToManyAssociationField('salesChannelDomains', SalesChannelDomainDefinition::class, FeedSalesChannelDomainDefinition::class, 'feed_id', 'sales_channel_domain_id'))->addFlags(new ApiAware()),

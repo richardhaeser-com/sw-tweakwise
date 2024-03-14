@@ -65,7 +65,8 @@ class FeedService
     private TemplateFinder $templateFinder;
     private array $uniqueCategoryIds = [];
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
-    private NavigationLoader $navigationLoader;
+
+    private TweakwiseCategoryLoader $categoryLoader;
     private int $categoryRank = 1;
     private EntityRepository $feedRepository;
     private ProductListingLoader $listingLoader;
@@ -79,7 +80,7 @@ class FeedService
         Environment $twig,
         TemplateFinder $templateFinder,
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
-        NavigationLoader $navigationLoader,
+        TweakwiseCategoryLoader $categoryLoader,
         EntityRepository $feedRepository,
         ProductListingLoader $listingLoader,
         EntityRepository $productRepository,
@@ -90,7 +91,7 @@ class FeedService
         $this->twig = $twig;
         $this->templateFinder = $templateFinder;
         $this->salesChannelContextFactory = $salesChannelContextFactory;
-        $this->navigationLoader = $navigationLoader;
+        $this->categoryLoader = $categoryLoader;
         $this->feedRepository = $feedRepository;
         $this->listingLoader = $listingLoader;
         $this->productRepository = $productRepository;
@@ -492,7 +493,7 @@ class FeedService
             $criteria = new Criteria([$salesChannel->getNavigationCategoryId()]);
             /** @var CategoryEntity $rootCategory */
             $rootCategory = $this->categoryRepository->search($criteria, $context)->first();
-            $navigation = $this->navigationLoader->load($rootCategory->getId(), $salesChannelContext, $rootCategory->getId(), 99);
+            $navigation = $this->categoryLoader->load($rootCategory->getId(), $salesChannelContext, $rootCategory->getId(), 99, $feed->isIncludeHiddenCategories());
 
             $this->parseTreeItems([], $navigation->getTree(), $salesChannelDomain, $feed);
         }
