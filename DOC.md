@@ -31,8 +31,9 @@ To configure this, you need to follow the next steps:
 3. In the top right corner, you will find a button "Create new feed". Click this button
 4. You can give the feed a name. This will be only used in the overview of feeds within Shopware and will not be exported. 
 5. Select the domains you want to include. The domains you can select are the domains that are connected to a sales channel.
-6. Click on Save in the top right corner.
-7. After you have created the feed and opened it, you can see the feed URL. This is the URL that needs to be given to your Tweakwise onboarding specialist.
+6. You can also define if categories that are excluded from the navigation are added to the Tweakwise feed. Be aware that this will export all categories even if that category does not contain any product. 
+7. Click on Save in the top right corner.
+8. After you have created the feed and opened it, you can see the feed URL. This is the URL that needs to be given to your Tweakwise onboarding specialist.
 
 **Please be aware that the feed is only available if it is at least once been generated. See the topic below how to generate the feed**
 
