@@ -13,6 +13,8 @@ class FeedEntity extends Entity
 
     protected ?string $name;
 
+    protected bool $includeHiddenCategories = false;
+
     /**
      * @var SalesChannelDomainCollection|null
      */
@@ -78,6 +80,16 @@ class FeedEntity extends Entity
     public function setLastStartedAt(?\DateTimeInterface $lastStartedAt): void
     {
         $this->lastStartedAt = $lastStartedAt;
+    }
+
+    public function isIncludeHiddenCategories(): bool
+    {
+        return $this->includeHiddenCategories;
+    }
+
+    public function setIncludeHiddenCategories(bool $includeHiddenCategories): void
+    {
+        $this->includeHiddenCategories = $includeHiddenCategories;
     }
 
 }

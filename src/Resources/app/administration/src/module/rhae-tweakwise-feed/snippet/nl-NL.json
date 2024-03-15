@@ -22,7 +22,10 @@
                 "name": "Naam",
                 "salesChannelDomains": "Domeinen",
                 "feedUrl": "Feed URL",
-                "lastGeneratedAt": "Laatst gegenereerd op"
+                "lastGeneratedAt": "Laatst gegenereerd op",
+                "includeHiddenCategories": "Exporteer ook verborgen categorieën.",
+                "includeHiddenCategoriesTrue": "Ja",
+                "includeHiddenCategoriesFalse": "Nee"
             }
         }
     }

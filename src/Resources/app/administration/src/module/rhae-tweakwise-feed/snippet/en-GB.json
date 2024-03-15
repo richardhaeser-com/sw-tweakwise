@@ -22,7 +22,10 @@
                 "name": "Name",
                 "salesChannelDomains": "Domains",
                 "feedUrl": "Feed URL",
-                "lastGeneratedAt": "Last generated at"
+                "lastGeneratedAt": "Last generated at",
+                "includeHiddenCategories": "Include hidden categories",
+                "includeHiddenCategoriesTrue": "True",
+                "includeHiddenCategoriesFalse": "False"
             },
             "generate": {
                 "heading": "Generate feed",

@@ -56,7 +56,7 @@
             <argument type="service" id="Twig\Environment"/>
             <argument type="service" id="Shopware\Core\Framework\Adapter\Twig\TemplateFinder"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
-            <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader" />
+            <argument type="service" id="RH\Tweakwise\Service\TweakwiseCategoryLoader" />
             <argument type="service" id="s_plugin_rhae_tweakwise_feed.repository"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
             <argument type="service" id="product.repository"/>
@@ -67,6 +67,9 @@
         <service id="RH\Tweakwise\Service\ProductDataService" public="true">
             <argument type="service" id="product.repository"/>
             <argument>%kernel.shopware_version%</argument>
+        </service>
+        <service id="RH\Tweakwise\Service\TweakwiseCategoryLoader" public="true">
+            <argument type="service" id="Shopware\Core\Content\Category\SalesChannel\NavigationRoute"/>
         </service>
 
         <service id="RH\Tweakwise\Core\Content\Feed\FeedDefinition">
