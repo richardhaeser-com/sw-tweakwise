@@ -10,6 +10,29 @@
                     output: "#tweakwise-featured-recommendations-{{ element.id }}",
                     featured: {
                         id: "{{ element.config.groupId.value }}"
+                    },
+                    on: {
+                        "twn.add-to-cart": function (event) {
+                            let addToCartEvent = new CustomEvent('twAddToCart', {
+                                detail: {
+                                    addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
+                                    data: event.data
+                                }
+                            });
+                            window.dispatchEvent(addToCartEvent);
+                        },
+                        "twn.request.navigation.completed": function (event) {
+                            let navSuccessEvent = new CustomEvent('twNavigationSuccess', {
+                                detail: {}
+                            });
+                            window.dispatchEvent(navSuccessEvent);
+                        },
+                        "twn.request.completed'": function (event) {
+                            let navSuccessEvent = new CustomEvent('twSuccess', {
+                                detail: {}
+                            });
+                            window.dispatchEvent(navSuccessEvent);
+                        },
                     }
                 });
             });
