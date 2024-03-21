@@ -37,6 +37,9 @@
                     <categoryid name="{{ category.translated.name }}" domain="{{ domainUrl }}">{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
                 {% endif %}
             {% endfor %}
+            {% for category in categoriesFromStreams %}
+                <categoryid>{{ category }}</categoryid>
+            {% endfor %}
         </categories>
         {% block feed_item_attributes %}
             <attributes>

@@ -71,9 +71,11 @@ class FeedService
     private EntityRepository $feedRepository;
     private ProductListingLoader $listingLoader;
     private array $uniqueProductIds = [];
+    private array $productStreamCategories = [];
     private EntityRepository $productRepository;
     private string $shopwareVersion;
     private AbstractRuleLoader $ruleLoader;
+    private EntityRepository $productStreamRepository;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -377,8 +379,14 @@ class FeedService
                     $otherVariants = $product->getChildren();
                 }
 
+                $categoriesFromStreams = [];
+                foreach ($product->getStreamIds() as $streamId) {
+                    $categoriesFromStreams = array_merge($categoriesFromStreams, (array)$this->productStreamCategories[$streamId]['categories']);
+                }
+
                 $content .= $this->twig->render($this->resolveView('tweakwise/product.xml.twig'), [
                     'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
+                    'categoriesFromStreams' => $categoriesFromStreams,
                     'domainId' => $domain->getId(),
                     'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
                     'product' => $product,
@@ -516,6 +524,7 @@ class FeedService
 
             $context = new Context(new SystemSource(), [], $salesChannelDomain->getCurrencyId(), [$salesChannelDomain->getLanguageId(), $salesChannel->getLanguageId()]);
             $criteria = new Criteria([$salesChannel->getNavigationCategoryId()]);
+
             /** @var CategoryEntity $rootCategory */
             $rootCategory = $this->categoryRepository->search($criteria, $context)->first();
             $navigation = $this->categoryLoader->load($rootCategory->getId(), $salesChannelContext, $rootCategory->getId(), 99, $feed->isIncludeHiddenCategories());
@@ -528,6 +537,10 @@ class FeedService
     {
         /** @var TreeItem $treeItem */
         foreach ($treeItems as $treeItem) {
+            if ($treeItem->getCategory()->getProductStreamId()) {
+                $this->productStreamCategories[$treeItem->getCategory()->getProductStreamId()]['categories'][] = md5($treeItem->getCategory()->getId() . '_' . $domainEntity->getId());
+            }
+
             $this->uniqueCategoryIds[] = $treeItem->getCategory()->getId() . '_' . $domainEntity->getId();
             $this->renderCategory($treeItem->getCategory(), $domainEntity, $feed);
             $this->categoryRank++;
