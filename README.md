@@ -14,6 +14,9 @@ At the moment the following features are supported:
 - Advanced pricing
 - Variants
 
+> [!IMPORTANT]  
+> Be aware that dynamic product groups are currently not supported.
+
 ### JavaScript implementation
 - Instant search
 - Suggestions (including search phrases, categories and facets)
