@@ -75,7 +75,6 @@ class FeedService
     private EntityRepository $productRepository;
     private string $shopwareVersion;
     private AbstractRuleLoader $ruleLoader;
-    private EntityRepository $productStreamRepository;
 
     public function __construct(
         EntityRepository $categoryRepository,
