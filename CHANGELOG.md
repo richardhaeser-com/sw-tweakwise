@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - If for whatever reason no price can be retrieved, this will not cause an error anymore when the feed is generated
+- Fixed extensionkey when resolving the path for the feed templates
 
 ## [2.6.0] - 15-03-2024
 

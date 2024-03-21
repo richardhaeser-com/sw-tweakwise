@@ -504,7 +504,7 @@ class FeedService
 
     private function resolveView(string $view): string
     {
-        return $this->templateFinder->find('@Storefront/' . $view, true, '@RhTweakwise/' . $view);
+        return $this->templateFinder->find('@Storefront/' . $view, true, '@RhaeTweakwise/' . $view);
     }
 
     public function generateCategories(FeedEntity $feed)
