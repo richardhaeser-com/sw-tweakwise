@@ -379,8 +379,10 @@ class FeedService
                 }
 
                 $categoriesFromStreams = [];
-                foreach ($product->getStreamIds() as $streamId) {
-                    $categoriesFromStreams = array_merge($categoriesFromStreams, (array)$this->productStreamCategories[$streamId]['categories']);
+                foreach ($product->getStreamIds() ?: [] as $streamId) {
+                    if (array_key_exists($streamId, $this->productStreamCategories)) {
+                        $categoriesFromStreams = array_merge($categoriesFromStreams, (array)$this->productStreamCategories[$streamId]['categories']);
+                    }
                 }
 
                 $content .= $this->twig->render($this->resolveView('tweakwise/product.xml.twig'), [
