@@ -16,13 +16,13 @@
                 });
                 window.dispatchEvent(addToCartEvent);
             },
-            "twn.request.navigation.completed": function (event) {
+            "twn.request.navigation.success": function (event) {
                 let navSuccessEvent = new CustomEvent('twNavigationSuccess', {
                     detail: {}
                 });
                 window.dispatchEvent(navSuccessEvent);
             },
-            "twn.request.completed'": function (event) {
+            "twn.request.success'": function (event) {
                 let navSuccessEvent = new CustomEvent('twSuccess', {
                     detail: {}
                 });
