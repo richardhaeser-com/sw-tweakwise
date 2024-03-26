@@ -379,10 +379,17 @@ class FeedService
                 }
 
                 $categoriesFromStreams = [];
+                $categoryIds = $product->getCategories()->getIds();
                 foreach ($product->getStreamIds() ?: [] as $streamId) {
                     if (array_key_exists($streamId, $this->productStreamCategories)) {
                         $categoriesFromStreams = array_merge($categoriesFromStreams, (array)$this->productStreamCategories[$streamId]['categories']);
                     }
+                }
+
+                if ($categoriesFromStreams) {
+                    $categoriesFromStreams = array_filter($categoriesFromStreams, function($hash, $categoryId) use ($categoryIds) {
+                        return !in_array($categoryId, $categoryIds);
+                    }, ARRAY_FILTER_USE_BOTH);
                 }
 
                 $content .= $this->twig->render($this->resolveView('tweakwise/product.xml.twig'), [
@@ -539,7 +546,7 @@ class FeedService
         /** @var TreeItem $treeItem */
         foreach ($treeItems as $treeItem) {
             if ($treeItem->getCategory()->getProductStreamId()) {
-                $this->productStreamCategories[$treeItem->getCategory()->getProductStreamId()]['categories'][] = md5($treeItem->getCategory()->getId() . '_' . $domainEntity->getId());
+                $this->productStreamCategories[$treeItem->getCategory()->getProductStreamId()]['categories'][$treeItem->getCategory()->getId()] = md5($treeItem->getCategory()->getId() . '_' . $domainEntity->getId());
             }
 
             $this->uniqueCategoryIds[] = $treeItem->getCategory()->getId() . '_' . $domainEntity->getId();
