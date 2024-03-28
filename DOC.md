@@ -35,7 +35,11 @@ To configure this, you need to follow the next steps:
 7. Click on Save in the top right corner.
 8. After you have created the feed and opened it, you can see the feed URL. This is the URL that needs to be given to your Tweakwise onboarding specialist.
 
-**Please be aware that the feed is only available if it is at least once been generated. See the topic below how to generate the feed**
+> [!IMPORTANT]  
+> Please be aware that the feed is only available if it is at least once been generated. See the topic below how to generate the feed.
+
+> [!IMPORTANT]  
+> If you are using dynamic product groups, please make sure your indexes are up-to-date. Especially your product_stream_mapping.indexer. You can update your indexes in the admin in `Settings > System > Caches & Indexes` or use the command line method `bin/console dal:refresh:index`.  
 
 <a name="generate-feed"></a>
 ## Generate feed

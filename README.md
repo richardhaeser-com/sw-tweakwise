@@ -13,9 +13,7 @@ At the moment the following features are supported:
 - Fully customizable product feed which out-of-the-box gives you a valid feed for Tweakwise (multi-channel, multi-language)
 - Advanced pricing
 - Variants
-
-> [!IMPORTANT]  
-> Be aware that dynamic product groups are currently not supported.
+- Dynamic Product Groups
 
 ### JavaScript implementation
 - Instant search
