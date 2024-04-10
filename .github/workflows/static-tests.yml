@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ['ubuntu-latest']
-        php: ['php8.1']
+        php: ['php8.1', 'php8.2']
         experimental: [false]
         dependencies: ['lowest', 'highest']
         include:
@@ -20,6 +20,10 @@ jobs:
             php: 'php7.4'
             experimental: false
             dependencies: highest
+          - os: 'ubuntu-20.04'
+            php: 'php7.4'
+            experimental: false
+            dependencies: lowest
           - os: 'ubuntu-20.04'
             php: 'php8.0'
             experimental: false
