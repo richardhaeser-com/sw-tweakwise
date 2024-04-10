@@ -36,8 +36,8 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
 
     steps:
-      - uses: shivammathur/setup-php@v2
       - name: Set up PHP Version
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: mbstring, intl
