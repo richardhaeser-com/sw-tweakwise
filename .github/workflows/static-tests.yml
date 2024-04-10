@@ -12,27 +12,39 @@ jobs:
       fail-fast: false
       matrix:
         os: ['ubuntu-latest']
-        php: ['php8.1']
+        php: ['8.1', '8.2']
         experimental: [false]
         dependencies: ['lowest', 'highest']
         include:
           - os: 'ubuntu-20.04'
-            php: 'php8.0'
+            php: '7.4'
             experimental: false
             dependencies: highest
           - os: 'ubuntu-20.04'
-            php: 'php8.1'
+            php: '7.4'
+            experimental: false
+            dependencies: lowest
+          - os: 'ubuntu-20.04'
+            php: '8.0'
+            experimental: false
+            dependencies: highest
+          - os: 'ubuntu-20.04'
+            php: '8.1'
             experimental: false
             dependencies: highest
 
     continue-on-error: ${{ matrix.experimental }}
 
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set up PHP Version
-        run: |
-          sudo update-alternatives --set php /usr/bin/${{ matrix.php }}
-          php -v
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl
+          ini-values: post_max_size=256M, max_execution_time=180
 
       - name: Update Composer
         run: |
