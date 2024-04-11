@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.7.1] - 11-04-2024
+
+### Fixed
+- Some fixes for PHP 7.4 compatibility 
+
 ## [2.7.0] - 28-03-2024
 
 ### Added
