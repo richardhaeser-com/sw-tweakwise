@@ -26,7 +26,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
     public function __construct(
         EntityRepository $frontendRepository,
         NavigationLoader $navigationLoader,
-        ProductDataService $productDataService,
+        ProductDataService $productDataService
     ) {
         $this->frontendRepository = $frontendRepository;
         $this->navigationLoader = $navigationLoader;

@@ -39,8 +39,6 @@ $config
         ],
         'no_leading_import_slash' => true,
         'no_trailing_comma_in_singleline' => true,
-        'trailing_comma_in_multiline' => true,
-        'no_trailing_comma_in_list_call' => true,
         'no_singleline_whitespace_before_semicolons' => true,
         'no_unused_imports' => true,
         'concat_space' => ['spacing' => 'one'],
