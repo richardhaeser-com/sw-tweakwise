@@ -2,31 +2,20 @@
 
 namespace RH\Tweakwise\Subscriber;
 
+use function crc32;
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
 use RH\Tweakwise\Service\ProductDataService;
-use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
-use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Content\Seo\SeoUrlGenerator;
-use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Struct\ArrayStruct;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Event\StorefrontRenderEvent;
 use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Page\Product\ProductPage;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use function array_key_exists;
-use function crc32;
-use function is_array;
-use function json_encode;
 use function sprintf;
-use function version_compare;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class StorefrontRenderSubscriber implements EventSubscriberInterface
 {
@@ -38,8 +27,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         EntityRepository $frontendRepository,
         NavigationLoader $navigationLoader,
         ProductDataService $productDataService,
-    )
-    {
+    ) {
         $this->frontendRepository = $frontendRepository;
         $this->navigationLoader = $navigationLoader;
         $this->productDataService = $productDataService;
@@ -70,8 +58,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
 
         $categoryData = [];
         $navigationTree = $this->navigationLoader->load($rootCategoryId, $event->getSalesChannelContext(), $rootCategoryId, 99);
-        foreach ($navigationTree->getTree() as $treeItem)
-        {
+        foreach ($navigationTree->getTree() as $treeItem) {
             $this->parseCategoryData($categoryData, $domainId, $treeItem);
         }
 
@@ -109,8 +96,6 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
             ]);
         }
     }
-
-
 
     private function parseCategoryData(&$categoryData, $domainId, TreeItem $treeItem): void
     {

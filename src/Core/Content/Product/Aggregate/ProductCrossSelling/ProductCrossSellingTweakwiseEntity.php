@@ -29,7 +29,7 @@ class ProductCrossSellingTweakwiseEntity extends Entity
         return $this->productCrossSelling;
     }
 
-    public function setProductCrossSelling(?ProductCrossSellingEntity $productCrossSelling): ProductCrossSellingTweakwiseEntity
+    public function setProductCrossSelling(?ProductCrossSellingEntity $productCrossSelling): self
     {
         $this->productCrossSelling = $productCrossSelling;
 

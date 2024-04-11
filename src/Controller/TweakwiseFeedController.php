@@ -5,7 +5,6 @@ namespace RH\Tweakwise\Controller;
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use RH\Tweakwise\Service\FeedService;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Exception\InvalidUuidException;

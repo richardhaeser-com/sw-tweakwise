@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Command;
 
+use function date;
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use RH\Tweakwise\Service\FeedService;
 use Shopware\Core\Framework\Context;
@@ -12,7 +13,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use function date;
 
 #[AsCommand(name: 'tweakwise:generate-feed')]
 class GenerateFeedCommand extends Command

@@ -2,13 +2,13 @@
 
 namespace RH\Tweakwise\Service;
 
+use function array_key_exists;
+use function is_array;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use function array_key_exists;
-use function is_array;
 use function version_compare;
 
 class ProductDataService
@@ -55,7 +55,7 @@ class ProductDataService
                             if ($listingConfig->getMainVariantId()) {
                                 /** @var ProductEntity $mainVariant */
                                 $mainVariant = $this->productRepository->search(
-                                /** @phpstan-ignore-next-line */
+                                    /** @phpstan-ignore-next-line */
                                     new Criteria([$listingConfig->getMainVariantId()]),
                                     $context
                                 )->first();

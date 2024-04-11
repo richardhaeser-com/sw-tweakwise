@@ -18,7 +18,6 @@ class ProductCrossSellingEntityExtension extends EntityExtension
             ProductCrossSellingTweakwiseEntityDefinition::class
         ));
 
-
         $collection->add(
             (new OneToOneAssociationField(
                 'tweakwise',

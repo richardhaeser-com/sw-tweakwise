@@ -28,7 +28,6 @@ class FrontendEntity extends Entity
     protected int $productsTablet = 2;
     protected int $productsMobile = 1;
 
-
     /**
      * @var SalesChannelDomainCollection|null
      */

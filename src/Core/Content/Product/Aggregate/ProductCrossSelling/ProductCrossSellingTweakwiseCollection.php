@@ -2,7 +2,6 @@
 
 namespace RH\Tweakwise\Core\Content\Product\Aggregate\ProductCrossSelling;
 
-use RH\Tweakwise\Core\Content\Product\Aggregate\ProductCrossSelling\ProductCrossSellingTweakwiseEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**

@@ -6,8 +6,6 @@ use Shopware\Core\Framework\Adapter\Translation\Translator;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
-use function hash;
-use function md5;
 
 class TranslatorExtension extends AbstractExtension
 {
@@ -24,7 +22,6 @@ class TranslatorExtension extends AbstractExtension
             new TwigFunction('rh_translate', [$this, 'translate']),
         ];
     }
-
 
     public function getFilters(): array
     {

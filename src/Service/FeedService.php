@@ -2,15 +2,27 @@
 
 namespace RH\Tweakwise\Service;
 
-use League\Flysystem\FilesystemOperator;
-use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceEntity;
-use Symfony\Component\Filesystem\Filesystem;
+use function array_key_exists;
+use function array_unique;
+use function crc32;
+use function dirname;
+use const FILE_APPEND;
+use function file_exists;
+use function file_get_contents;
+use function file_put_contents;
+use function in_array;
+use function is_array;
+use function is_dir;
+use function md5;
+use function mkdir;
+use function rename;
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
+use function rtrim;
 use Shopware\Core\Checkout\Cart\AbstractRuleLoader;
 use Shopware\Core\Checkout\CheckoutRuleScope;
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
+use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
@@ -30,31 +42,14 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use function sprintf;
+use function str_replace;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
-use function array_key_exists;
-use function array_unique;
-use function crc32;
-use function dirname;
-use function file_exists;
-use function file_get_contents;
-use function file_put_contents;
-use function getcwd;
-use function in_array;
-use function is_array;
-use function is_dir;
-use function ltrim;
-use function md5;
-use function mkdir;
-use function rename;
-use function rtrim;
-use function sprintf;
-use function str_replace;
 use function unlink;
 use function version_compare;
-use const FILE_APPEND;
 
 class FeedService
 {
@@ -332,7 +327,7 @@ class FeedService
                 $otherVariants = null;
                 if ($product->getParentId()) {
                     // only 1 variant is shown in listing
-//                    $context = new Context(new SystemSource(), [], $domain->getCurrencyId(), [$domain->getLanguageId(), $domain->getLanguageId()]);
+                    //                    $context = new Context(new SystemSource(), [], $domain->getCurrencyId(), [$domain->getLanguageId(), $domain->getLanguageId()]);
                     $criteria = new Criteria([$product->getParentId()]);
                     $criteria->addAssociation('children');
                     $criteria->addAssociation('children.options');
@@ -356,7 +351,7 @@ class FeedService
                         }
 
                         $getVariants = true;
-//                        if (!$parent->getMainVariantId()) {
+                        //                        if (!$parent->getMainVariantId()) {
                         foreach ($configurationGroupConfigArray as $configurationGroupConfig) {
                             if (
                                 is_array($configurationGroupConfig)
@@ -367,7 +362,7 @@ class FeedService
                                 break;
                             }
                         }
-//                        }
+                        //                        }
                         if ($getVariants === true) {
                             $otherVariants = $parent->getChildren();
                         }
@@ -387,7 +382,7 @@ class FeedService
                 }
 
                 if ($categoriesFromStreams) {
-                    $categoriesFromStreams = array_filter($categoriesFromStreams, function($hash, $categoryId) use ($categoryIds) {
+                    $categoriesFromStreams = array_filter($categoriesFromStreams, function ($hash, $categoryId) use ($categoryIds) {
                         return !in_array($categoryId, $categoryIds);
                     }, ARRAY_FILTER_USE_BOTH);
                 }
