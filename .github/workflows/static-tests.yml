@@ -68,3 +68,7 @@ jobs:
         if: matrix.dependencies == 'highest' && matrix.php == '8.2'
         run: |
           php -d memory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --using-cache=no --diff
+
+      - name: PHP linting
+        run: |
+          php -d memory_limit=-1 vendor/bin/phplint --configuration=.phplint.yml
