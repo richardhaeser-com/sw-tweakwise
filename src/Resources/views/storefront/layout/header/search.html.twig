@@ -2,6 +2,7 @@
 
 {% block layout_header_search %}
     {% if page.extensions.twConfiguration.integration == 'javascript' %}
+        <form>
         {% if page.extensions.twConfiguration.wayOfSearch == 'suggestions' %}
             <div class="collapse" id="searchCollapse">
                 <div class="header-search">
@@ -48,6 +49,7 @@
                 </div>
             </div>
         {% endif %}
+        </form>
     {% else %}
         {{ parent() }}
     {% endif %}

@@ -22,11 +22,17 @@
                 });
                 window.dispatchEvent(navSuccessEvent);
             },
-            "twn.request.success'": function (event) {
+            "twn.request.success": function (event) {
                 let navSuccessEvent = new CustomEvent('twSuccess', {
                     detail: {}
                 });
                 window.dispatchEvent(navSuccessEvent);
+            },
+            "twn.container.close": function (event) {
+                let navCloseEvent = new CustomEvent('twContainerClose', {
+                    detail: {}
+                });
+                window.dispatchEvent(navCloseEvent);
             },
         }
     };
