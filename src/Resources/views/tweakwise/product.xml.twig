@@ -33,7 +33,7 @@
         {% endblock %}
         <categories>
             {% for category in product.categories %}
-                {% if (category.id ~ '_' ~ domainId) in categoryIdsInFeed and (category.childCount or (category.type == 'page' and category.productAssignmentType == 'product')) %}
+                {% if (category.id ~ '_' ~ domainId) in categoryIdsInFeed %}
                     <categoryid name="{{ category.translated.name }}" domain="{{ domainUrl }}">{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
                 {% endif %}
             {% endfor %}
