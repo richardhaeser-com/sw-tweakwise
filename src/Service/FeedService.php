@@ -100,7 +100,7 @@ class FeedService
 
     public function readFeed(FeedEntity $feedEntity): ?string
     {
-        $path = '../' . $this->getExportPath($feedEntity, false, true);
+        $path = $this->getExportPath($feedEntity, false, true);
         if (!file_exists($path)) {
             return null;
         }
