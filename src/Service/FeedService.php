@@ -564,7 +564,7 @@ class FeedService
     {
         $pathPrefix = '';
         if ($absolute) {
-            $pathPrefix = $this->path;
+            $pathPrefix = rtrim($this->path, '/') . '/';
         }
 
         if ($temporarily) {
