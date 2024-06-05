@@ -70,6 +70,7 @@ class FeedService
     private EntityRepository $productRepository;
     private string $shopwareVersion;
     private AbstractRuleLoader $ruleLoader;
+    private string $path;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -81,7 +82,8 @@ class FeedService
         ProductListingLoader $listingLoader,
         EntityRepository $productRepository,
         string $shopwareVersion,
-        AbstractRuleLoader $ruleLoader
+        AbstractRuleLoader $ruleLoader,
+        string $path
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -93,6 +95,7 @@ class FeedService
         $this->productRepository = $productRepository;
         $this->shopwareVersion = $shopwareVersion;
         $this->ruleLoader = $ruleLoader;
+        $this->path = $path;
     }
 
     public function readFeed(FeedEntity $feedEntity): ?string
@@ -561,7 +564,7 @@ class FeedService
     {
         $pathPrefix = '';
         if ($absolute) {
-            $pathPrefix = 'files/';
+            $pathPrefix = $this->path;
         }
 
         if ($temporarily) {

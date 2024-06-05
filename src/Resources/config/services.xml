@@ -62,6 +62,7 @@
             <argument type="service" id="product.repository"/>
             <argument>%kernel.shopware_version%</argument>
             <argument type="service" id="Shopware\Core\Checkout\Cart\RuleLoader"/>
+            <argument>%shopware.filesystem.private.config.root%</argument>
         </service>
 
         <service id="RH\Tweakwise\Service\ProductDataService" public="true">
