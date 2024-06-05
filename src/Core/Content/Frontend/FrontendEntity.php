@@ -28,6 +28,8 @@ class FrontendEntity extends Entity
     protected int $productsTablet = 2;
     protected int $productsMobile = 1;
 
+    protected string $paginationType;
+
     /**
      * @var SalesChannelDomainCollection|null
      */
@@ -141,5 +143,15 @@ class FrontendEntity extends Entity
     public function setProductsMobile(int $productsMobile): void
     {
         $this->productsMobile = $productsMobile;
+    }
+
+    public function getPaginationType(): string
+    {
+        return $this->paginationType;
+    }
+
+    public function setPaginationType(string $paginationType): void
+    {
+        $this->paginationType = $paginationType;
     }
 }

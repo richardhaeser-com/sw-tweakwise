@@ -73,6 +73,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
                 'tablet' => $result->getProductsTablet(),
                 'mobile' => $result->getProductsMobile(),
             ],
+            'paginationType' => $result->getPaginationType(),
             'checkoutSales' => [
                 'type' => $result->getCheckoutSales(),
                 'featuredProductsId' => $result->getCheckoutSalesFeaturedProductsId(),

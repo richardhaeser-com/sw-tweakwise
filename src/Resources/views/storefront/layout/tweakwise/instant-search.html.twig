@@ -4,6 +4,7 @@
             cid: ""
         },
         products: {},
+        pagination: {},
         cid: "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}",
         lang: "{{ languageKey }}",
         on: {
@@ -45,6 +46,9 @@
     {% endif %}
     {% if page.extensions.twConfiguration.products.mobile %}
     window["twn-starter-config"]["products"]["mobile"] = {{ page.extensions.twConfiguration.products.mobile }};
+    {% endif %}
+    {% if page.extensions.twConfiguration.paginationType %}
+    window["twn-starter-config"]["pagination"]["type"] = '{{ page.extensions.twConfiguration.paginationType }}';
     {% endif %}
 </script>
 

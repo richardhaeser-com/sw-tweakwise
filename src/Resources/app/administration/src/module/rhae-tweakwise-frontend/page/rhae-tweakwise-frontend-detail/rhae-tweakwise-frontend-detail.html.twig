@@ -67,6 +67,14 @@
                                          v-model="item.productsMobile">
                         </sw-number-field>
                     </sw-container>
+
+                    <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.paginationType')"
+                                     v-model="item.paginationType">
+                        <option v-for="value in ['default','button', 'infinite']" :value="value">
+                            {{ $tc('rhae-tweakwise-frontend.detail.label.paginationTypeOptions.' + value) }}
+                        </option>
+                    </sw-select-field>
+
                 </sw-card-section>
             </sw-card>
             <sw-card v-if="item && item.integration === 'javascript'" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.checkoutSales')">

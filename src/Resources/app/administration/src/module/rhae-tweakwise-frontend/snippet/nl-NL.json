@@ -44,7 +44,13 @@
         "salesChannelDomains": "Domeinen",
         "productsDesktop": "Aantal producten per rij op desktop",
         "productsTablet": "Aantal producten per rij op tablet",
-        "productsMobile": "Aantal producten per rij op mobiel"
+        "productsMobile": "Aantal producten per rij op mobiel",
+        "paginationType": "Type paginering",
+        "paginationTypeOptions": {
+          "default": "Standaard",
+          "button": "Knop",
+          "infinite": "Oneindig"
+        }
       }
     }
   }

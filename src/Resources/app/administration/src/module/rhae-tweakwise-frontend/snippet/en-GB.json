@@ -44,7 +44,13 @@
         "salesChannelDomains": "Domains",
         "productsDesktop": "Products per row on desktop",
         "productsTablet": "Products per row on tablet",
-        "productsMobile": "Products per row on mobile"
+        "productsMobile": "Products per row on mobile",
+        "paginationType": "Type of pagination",
+        "paginationTypeOptions": {
+          "default": "Default",
+          "button": "Button",
+          "infinite": "Infinite"
+        }
       }
     }
   }
