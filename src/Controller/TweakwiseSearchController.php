@@ -19,7 +19,7 @@ class TweakwiseSearchController extends StorefrontController
         $this->pageLoader = $pageLoader;
     }
 
-    #[Route(path: '/search-results', name: "storefront.tweakwise.search", methods: ['GET'])]
+    #[Route(path: '/search-results', name: 'storefront.tweakwise.search', methods: ['GET'])]
     public function search(Request $request, SalesChannelContext $context): Response
     {
         $page = $this->pageLoader->load($request, $context);

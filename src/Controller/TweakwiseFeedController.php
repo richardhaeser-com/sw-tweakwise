@@ -26,7 +26,7 @@ class TweakwiseFeedController extends StorefrontController
         $this->feedRepository = $feedRepository;
     }
 
-    #[Route(path: '/tweakwise/feed-{feedId}.xml', name: "storefront.tweakwise.feed", methods: ['GET'])]
+    #[Route(path: '/tweakwise/feed-{feedId}.xml', name: 'storefront.tweakwise.feed', methods: ['GET'])]
     public function feed(Request $request, SalesChannelContext $context, $feedId): Response
     {
         $criteria = new Criteria();
