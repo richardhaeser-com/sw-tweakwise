@@ -38,7 +38,7 @@
   "require-dev": {
     "phpstan/phpstan": "^1.10",
     "friendsofphp/php-cs-fixer": "^3.0",
-    "overtrue/phplint": "^9.0"
+    "overtrue/phplint": "^9.3"
   },
   "config": {
     "allow-plugins": {
