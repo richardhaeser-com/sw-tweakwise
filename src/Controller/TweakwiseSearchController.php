@@ -7,11 +7,9 @@ use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Storefront\Page\GenericPageLoader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"storefront"}})
- */
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class TweakwiseSearchController extends StorefrontController
 {
     private GenericPageLoader $pageLoader;
@@ -21,9 +19,7 @@ class TweakwiseSearchController extends StorefrontController
         $this->pageLoader = $pageLoader;
     }
 
-    /**
-     * @Route("/search-results", name="storefront.tweakwise.search", methods={"GET"})
-     */
+    #[Route(path: '/search-results', name: 'storefront.tweakwise.search', methods: ['GET'])]
     public function search(Request $request, SalesChannelContext $context): Response
     {
         $page = $this->pageLoader->load($request, $context);

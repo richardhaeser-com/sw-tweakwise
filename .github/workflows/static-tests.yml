@@ -12,24 +12,12 @@ jobs:
       fail-fast: false
       matrix:
         os: ['ubuntu-latest']
-        php: ['8.1', '8.2']
+        php: ['8.2', '8.3']
         experimental: [false]
         dependencies: ['lowest', 'highest']
         include:
           - os: 'ubuntu-20.04'
-            php: '7.4'
-            experimental: false
-            dependencies: highest
-          - os: 'ubuntu-20.04'
-            php: '7.4'
-            experimental: false
-            dependencies: lowest
-          - os: 'ubuntu-20.04'
-            php: '8.0'
-            experimental: false
-            dependencies: highest
-          - os: 'ubuntu-20.04'
-            php: '8.1'
+            php: '8.2'
             experimental: false
             dependencies: highest
 
@@ -65,7 +53,7 @@ jobs:
           php -d memory_limit=-1 vendor/bin/phpstan analyse --configuration phpstan.neon --debug
 
       - name: CGL
-        if: matrix.dependencies == 'highest' && matrix.php == '8.2'
+        if: matrix.dependencies == 'highest' && matrix.php == '8.3'
         run: |
           php -d memory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --using-cache=no --diff
 

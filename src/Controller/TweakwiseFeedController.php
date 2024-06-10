@@ -12,11 +12,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"storefront"}})
- */
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class TweakwiseFeedController extends StorefrontController
 {
     private FeedService $feedService;
@@ -28,9 +26,7 @@ class TweakwiseFeedController extends StorefrontController
         $this->feedRepository = $feedRepository;
     }
 
-    /**
-     * @Route("/tweakwise/feed-{feedId}.xml", name="storefront.tweakwise.feed", methods={"GET"})
-     */
+    #[Route(path: '/tweakwise/feed-{feedId}.xml', name: 'storefront.tweakwise.feed', methods: ['GET'])]
     public function feed(Request $request, SalesChannelContext $context, $feedId): Response
     {
         $criteria = new Criteria();

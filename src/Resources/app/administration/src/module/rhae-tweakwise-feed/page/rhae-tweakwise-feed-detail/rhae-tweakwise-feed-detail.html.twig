@@ -1,5 +1,5 @@
 <sw-page class="rhae-tweakwise-feed-detail">
-    <template slot="smart-bar-actions">
+    <template #smart-bar-actions>
         <sw-button :routerLink="{ name: 'rhae.tweakwise.feed.list' }">
             {{ $t('rhae-tweakwise-feed.detail.cancelButtonText') }}
         </sw-button>
@@ -14,14 +14,10 @@
         </sw-button-process>
     </template>
 
-    <template slot="content">
+    <template #content>
         <sw-card-view>
             <sw-card v-if="item" :isLoading="isLoading" :title="$tc('rhae-tweakwise-feed.detail.section.main')">
-                <sw-card-section
-                    v-if="!item.isNew()"
-                    slot="toolbar"
-                    :secondary="true"
-                >
+                <sw-card-section v-if="item.salesChannelDomains[0]" divider="bottom">
                     <sw-container
                         class="rhae-tweakwise-feed__card-toolbar"
                         columns="1fr 1fr"
@@ -36,27 +32,27 @@
                                 <p class="rhae-tweakwise-feed__card-toolbar-heading">
                                     {{ $t('rhae-tweakwise-feed.detail.label.lastGeneratedAt') }}
                                 </p>
-                                <p>{{ item.lastGeneratedAt|date("d-m-Y H:i") }}</p>
+                                <p v-if="item.lastGeneratedAt"><sw-time-ago :date="item.lastGeneratedAt" /></p>
+                                <p v-else>-</p>
                             </div>
                     </sw-container>
-
 
                 </sw-card-section>
 
                 <sw-card-section>
-                    <sw-field :label="$t('rhae-tweakwise-feed.detail.label.name')"
-                              v-model="item.name"
-                              required validation="required" ></sw-field>
+                    <sw-text-field :label="$t('rhae-tweakwise-feed.detail.label.name')"
+                              v-model:value="item.name"
+                              required validation="required" ></sw-text-field>
 
                     <sw-entity-multi-select
                         :label="$t('rhae-tweakwise-feed.detail.label.salesChannelDomains')"
                         labelProperty="url"
                         value-property="id"
-                        v-model="item.salesChannelDomains"
+                        v-model:entityCollection="item.salesChannelDomains"
                     />
 
                     <sw-boolean-radio-group
-                        v-model="item.includeHiddenCategories"
+                        v-model:value="item.includeHiddenCategories"
                         :label="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategories')"
                         :label-option-true="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategoriesTrue')"
                         :label-option-false="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategoriesFalse')"
