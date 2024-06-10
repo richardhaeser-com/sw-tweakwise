@@ -1,17 +1,17 @@
 <sw-page class="rhae-tweakwise-frontend-list">
-    <template slot="smart-bar-header">
+    <template #smart-bar-header>
         <h2>
             {{ $tc('rhae-tweakwise-frontend.main.menuLabel') }}
         </h2>
     </template>
 
-    <template slot="smart-bar-actions">
+    <template #smart-bar-actions>
         <sw-button variant="primary" :routerLink="{ name: 'rhae.tweakwise.frontend.create' }">
             {{ $tc('rhae-tweakwise-frontend.list.addButtonText') }}
         </sw-button>
     </template>
 
-    <template slot="content">
+    <template #content>
         <sw-entity-listing
             v-if="items"
             :items="items"
