@@ -10,6 +10,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
@@ -45,9 +46,12 @@ class FeedDefinition extends EntityDefinition
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey(), new ApiAware()),
             (new StringField('name', 'name'))->addFlags(new Required(), new ApiAware()),
+            (new StringField('status', 'status'))->addFlags(new Required(), new ApiAware()),
+            (new StringField('interval', 'interval'))->addFlags(new Required(), new ApiAware()),
             (new BoolField('includeHiddenCategories', 'includeHiddenCategories'))->addFlags(new ApiAware()),
             (new DateTimeField('last_started_at', 'lastStartedAt'))->addFlags(new ApiAware()),
             (new DateTimeField('last_generated_at', 'lastGeneratedAt'))->addFlags(new ApiAware()),
+            (new DateTimeField('next_generation_at', 'nextGenerationAt'))->addFlags(new ApiAware()),
             (new ManyToManyAssociationField('salesChannelDomains', SalesChannelDomainDefinition::class, FeedSalesChannelDomainDefinition::class, 'feed_id', 'sales_channel_domain_id'))->addFlags(new ApiAware()),
         ]);
     }

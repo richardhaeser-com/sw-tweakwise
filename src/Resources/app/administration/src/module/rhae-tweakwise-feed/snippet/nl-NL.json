@@ -25,7 +25,24 @@
                 "lastGeneratedAt": "Laatst gegenereerd op",
                 "includeHiddenCategories": "Exporteer ook verborgen categorieën.",
                 "includeHiddenCategoriesTrue": "Ja",
-                "includeHiddenCategoriesFalse": "Nee"
+                "includeHiddenCategoriesFalse": "Nee",
+                "interval": "Interval",
+                "nextGenerationAt": "Wordt opnieuw genegereerd op",
+                "status": "Status",
+                "statusOption": {
+                    "queued": "Queued",
+                    "running": "Running",
+                    "completed": "Completed"
+                },
+                "intervalOptions": {
+                    "30": "30 minuten",
+                    "60": "1 uur",
+                    "360": "6 uur",
+                    "720": "12 uur",
+                    "1440": "24 uur"
+                },
+                "generateNow": "Generate now",
+                "withinOneMinute": "Within one minute"
             }
         }
     }

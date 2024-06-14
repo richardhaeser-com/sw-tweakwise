@@ -56,7 +56,9 @@ Component.register('rhae-tweakwise-feed-detail', {
                 this.salesChannelDomainIds = { ...this.salesChannelDomainIds, salesChannelDomainIds };
             },
         },
-
+        dateFilter() {
+            return Shopware.Filter.getByName('date');
+        },
         defaultCriteria() {
             return new Criteria();
         }
@@ -81,8 +83,23 @@ Component.register('rhae-tweakwise-feed-detail', {
                 generateFeed: false,
             };
         },
-        generateFeed() {
-            alert('foo');
+        generateFeedNow() {
+            this.isLoading = true;
+            this.item.nextGenerationAt = null;
+            this.repository
+                .save(this.item, Context.api)
+                .then(() => {
+                    this.getItem();
+                    this.isLoading = false;
+                    this.processSuccess = true;
+                })
+                .catch((exception) => {
+                    this.isLoading = false;
+                    this.createNotificationError({
+                        title: 'Unknown error',
+                        message: exception
+                    });
+                });
         },
         getItem() {
             var criteria = new Criteria();

@@ -112,6 +112,10 @@
                         <value>{% if product.isNew %}true{% else %}false{% endif %}</value>
                     </attribute>
                     <attribute>
+                        <name>sw-free-shipping</name>
+                        <value>{% if product.shippingFree %}true{% else %}false{% endif %}</value>
+                    </attribute>
+                    <attribute>
                         <name>sw-has-discount</name>
                         <value>{% if price.listPrice and price.listPrice.price > price.unitPrice %}true{% else %}false{% endif %}</value>
                     </attribute>

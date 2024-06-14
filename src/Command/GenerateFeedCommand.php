@@ -40,19 +40,13 @@ class GenerateFeedCommand extends Command
         }
 
         $time_start = microtime(true);
-        $criteria = new Criteria();
-        $criteria->addAssociation('salesChannelDomains');
-        $criteria->addAssociation('salesChannelDomains.salesChannel');
-        $criteria->addAssociation('salesChannelDomains.language');
-        $criteria->addAssociation('salesChannelDomains.language.translationCode');
-        $context = Context::createDefaultContext();
 
-        $feeds = $this->feedRepository->search($criteria, $context)->getEntities();
-        /** @var FeedEntity $feed */
-        foreach ($feeds as $feed) {
-            $this->feedService->generateFeed($feed, $context);
-            $output->writeln('Feed "' . $feed->getName() . '" is created on ' . date('d-m-Y H:i:s'));
-        }
+        $output->writeln('Checking for wrong feed records');
+        $this->feedService->fixFeedRecords(true);
+        $output->writeln('Generating scheduled feeds');
+        $this->feedService->generateScheduledFeeds();
+        $output->writeln('Schedule feeds');
+        $this->feedService->scheduleFeeds();
 
         $time_end = microtime(true);
         $execution_time = ceil($time_end - $time_start);
