@@ -3,6 +3,7 @@
 namespace RH\Tweakwise\Service;
 
 use DateInterval;
+use DateTime;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Rule\CartRuleScope;
 use Shopware\Core\Defaults;
@@ -154,7 +155,9 @@ class FeedService
         foreach ($feeds as $feed) {
             if ($feed->getLastGeneratedAt()) {
                 $interval = DateInterval::createFromDateString($feed->getInterval() . ' minutes');
-                $newDate =$feed->getLastGeneratedAt()->add($interval);
+                /** @var DateTime $lastGenerated */
+                $lastGenerated = $feed->getLastGeneratedAt();
+                $newDate = $lastGenerated->add($interval);
 
                 $this->feedRepository->update([
                     [
