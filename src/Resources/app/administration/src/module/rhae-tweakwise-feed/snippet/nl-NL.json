@@ -32,7 +32,9 @@
                 "statusOption": {
                     "queued": "Queued",
                     "running": "Running",
-                    "completed": "Completed"
+                    "completed": "Completed",
+                    "undefined": "-",
+                    "null": "-"
                 },
                 "intervalOptions": {
                     "30": "30 minuten",

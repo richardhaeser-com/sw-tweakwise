@@ -46,7 +46,7 @@ class FeedDefinition extends EntityDefinition
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey(), new ApiAware()),
             (new StringField('name', 'name'))->addFlags(new Required(), new ApiAware()),
-            (new StringField('status', 'status'))->addFlags(new Required(), new ApiAware()),
+            (new StringField('status', 'status'))->addFlags(new ApiAware()),
             (new StringField('interval', 'interval'))->addFlags(new Required(), new ApiAware()),
             (new BoolField('includeHiddenCategories', 'includeHiddenCategories'))->addFlags(new ApiAware()),
             (new DateTimeField('last_started_at', 'lastStartedAt'))->addFlags(new ApiAware()),

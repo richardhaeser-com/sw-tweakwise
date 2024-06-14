@@ -47,7 +47,6 @@
         </service>
         <service id="RH\Tweakwise\Command\GenerateFeedCommand">
             <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
-            <argument type="service" id="s_plugin_rhae_tweakwise_feed.repository"/>
             <tag name="console.command"/>
         </service>
 

@@ -2,12 +2,7 @@
 
 namespace RH\Tweakwise\Command;
 
-use function date;
-use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use RH\Tweakwise\Service\FeedService;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,12 +14,10 @@ class GenerateFeedCommand extends Command
 {
     protected static $defaultName = 'tweakwise:generate-feed';
     private FeedService $feedService;
-    private EntityRepository $feedRepository;
 
-    public function __construct(FeedService $feedService, EntityRepository $feedRepository)
+    public function __construct(FeedService $feedService)
     {
         $this->feedService = $feedService;
-        $this->feedRepository = $feedRepository;
         parent::__construct();
     }
 
