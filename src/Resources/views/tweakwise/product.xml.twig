@@ -33,7 +33,7 @@
         {% endblock %}
         <categories>
             {% for category in product.categories %}
-                {% if (category.id ~ '_' ~ domainId) in categoryIdsInFeed %}
+                {% if (category.id ~ '_' ~ domainId) in categoryIdsInFeed and category.productAssignmentType == 'product' %}
                     <categoryid name="{{ category.translated.name }}" domain="{{ domainUrl }}">{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
                 {% endif %}
             {% endfor %}
@@ -110,6 +110,10 @@
                     <attribute>
                         <name>sw-new</name>
                         <value>{% if product.isNew %}true{% else %}false{% endif %}</value>
+                    </attribute>
+                    <attribute>
+                        <name>sw-free-shipping</name>
+                        <value>{% if product.shippingFree %}true{% else %}false{% endif %}</value>
                     </attribute>
                     <attribute>
                         <name>sw-has-discount</name>

@@ -25,7 +25,26 @@
                 "lastGeneratedAt": "Last generated at",
                 "includeHiddenCategories": "Include hidden categories",
                 "includeHiddenCategoriesTrue": "True",
-                "includeHiddenCategoriesFalse": "False"
+                "includeHiddenCategoriesFalse": "False",
+                "interval": "Interval",
+                "nextGenerationAt": "Will be regenerated on",
+                "status": "Status",
+                "statusOption": {
+                    "queued": "Queued",
+                    "running": "Running",
+                    "completed": "Completed",
+                    "undefined": "-",
+                    "null": "-"
+                },
+                "intervalOptions": {
+                    "30": "30 minutes",
+                    "60": "1 hour",
+                    "360": "6 hours",
+                    "720": "12 hours",
+                    "1440": "24 hours"
+                },
+                "generateNow": "Generate now",
+                "withinOneMinute": "Within one minute"
             },
             "generate": {
                 "heading": "Generate feed",

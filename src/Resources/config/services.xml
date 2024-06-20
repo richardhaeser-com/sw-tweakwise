@@ -47,7 +47,6 @@
         </service>
         <service id="RH\Tweakwise\Command\GenerateFeedCommand">
             <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
-            <argument type="service" id="s_plugin_rhae_tweakwise_feed.repository"/>
             <tag name="console.command"/>
         </service>
 
@@ -93,5 +92,13 @@
             <tag name="shopware.entity.definition" entity="product_cross_selling_tweakwise" />
         </service>
 
+        <service id="RH\Tweakwise\Service\ScheduledTask\GenerateFeedTask" public="true">
+            <tag name="shopware.scheduled.task" />
+        </service>
+        <service id="RH\Tweakwise\Service\ScheduledTask\GenerateFeedTaskHandler" public="true">
+            <argument type="service" id="scheduled_task.repository" />
+            <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
+            <tag name="messenger.message_handler" />
+        </service>
     </services>
 </container>

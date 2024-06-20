@@ -3,7 +3,7 @@
   "description": "Tweakwise for Shopware 6",
   "type": "shopware-platform-plugin",
   "license": "proprietary",
-  "version": "2.8.1",
+  "version": "3.0.0",
   "autoload": {
     "psr-4": {
       "RH\\Tweakwise\\": "src/"
