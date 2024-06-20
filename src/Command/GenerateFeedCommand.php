@@ -2,12 +2,7 @@
 
 namespace RH\Tweakwise\Command;
 
-use function date;
-use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use RH\Tweakwise\Service\FeedService;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,12 +14,10 @@ class GenerateFeedCommand extends Command
 {
     protected static $defaultName = 'tweakwise:generate-feed';
     private FeedService $feedService;
-    private EntityRepository $feedRepository;
 
-    public function __construct(FeedService $feedService, EntityRepository $feedRepository)
+    public function __construct(FeedService $feedService)
     {
         $this->feedService = $feedService;
-        $this->feedRepository = $feedRepository;
         parent::__construct();
     }
 
@@ -40,19 +33,13 @@ class GenerateFeedCommand extends Command
         }
 
         $time_start = microtime(true);
-        $criteria = new Criteria();
-        $criteria->addAssociation('salesChannelDomains');
-        $criteria->addAssociation('salesChannelDomains.salesChannel');
-        $criteria->addAssociation('salesChannelDomains.language');
-        $criteria->addAssociation('salesChannelDomains.language.translationCode');
-        $context = Context::createDefaultContext();
 
-        $feeds = $this->feedRepository->search($criteria, $context)->getEntities();
-        /** @var FeedEntity $feed */
-        foreach ($feeds as $feed) {
-            $this->feedService->generateFeed($feed, $context);
-            $output->writeln('Feed "' . $feed->getName() . '" is created on ' . date('d-m-Y H:i:s'));
-        }
+        $output->writeln('Checking for wrong feed records');
+        $this->feedService->fixFeedRecords(true);
+        $output->writeln('Generating scheduled feeds');
+        $this->feedService->generateScheduledFeeds();
+        $output->writeln('Schedule feeds');
+        $this->feedService->scheduleFeeds();
 
         $time_end = microtime(true);
         $execution_time = ceil($time_end - $time_start);

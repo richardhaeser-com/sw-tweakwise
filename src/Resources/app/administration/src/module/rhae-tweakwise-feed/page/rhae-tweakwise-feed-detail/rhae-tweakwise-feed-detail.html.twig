@@ -1,5 +1,9 @@
 <sw-page class="rhae-tweakwise-feed-detail">
     <template #smart-bar-actions>
+        <sw-button @click="getItem">
+            <sw-icon name="regular-undo" />
+        </sw-button>
+
         <sw-button :routerLink="{ name: 'rhae.tweakwise.feed.list' }">
             {{ $t('rhae-tweakwise-feed.detail.cancelButtonText') }}
         </sw-button>
@@ -18,22 +22,41 @@
         <sw-card-view>
             <sw-card v-if="item" :isLoading="isLoading" :title="$tc('rhae-tweakwise-feed.detail.section.main')">
                 <sw-card-section v-if="item.salesChannelDomains[0]" divider="bottom">
+                    <sw-container columns="1fr" gap="30px" style="margin-bottom: 1rem;">
+                        <div>
+                            <p class="rhae-tweakwise-feed__card-toolbar-heading">
+                                {{ $t('rhae-tweakwise-feed.detail.label.feedUrl') }}
+                            </p>
+
+                            <p>{{ item.salesChannelDomains[0].url }}/tweakwise/feed-{{item.id}}.xml</p>
+                        </div>
+                    </sw-container>
                     <sw-container
                         class="rhae-tweakwise-feed__card-toolbar"
-                        columns="1fr 1fr"
+                        columns="repeat(3, 1fr)"
                     >
-                            <div>
-                                <p class="rhae-tweakwise-feed__card-toolbar-heading">
-                                    {{ $t('rhae-tweakwise-feed.detail.label.feedUrl') }}
-                                </p>
-                                <p>{{ item.salesChannelDomains[0].url }}/tweakwise/feed-{{item.id}}.xml</p>
-                            </div>
                             <div>
                                 <p class="rhae-tweakwise-feed__card-toolbar-heading">
                                     {{ $t('rhae-tweakwise-feed.detail.label.lastGeneratedAt') }}
                                 </p>
                                 <p v-if="item.lastGeneratedAt"><sw-time-ago :date="item.lastGeneratedAt" /></p>
                                 <p v-else>-</p>
+                            </div>
+                            <div>
+                                <p class="rhae-tweakwise-feed__card-toolbar-heading">
+                                    {{ $t('rhae-tweakwise-feed.detail.label.nextGenerationAt') }}
+                                </p>
+                                <p v-if="item.nextGenerationAt">{{ dateFilter(item.nextGenerationAt, { hour: '2-digit', minute: '2-digit' }) }}</p>
+                                <p v-else>{{ $t('rhae-tweakwise-feed.detail.label.withinOneMinute') }}</p>
+                                <sw-button size="small" style="margin-top: 1rem;" @click="generateFeedNow" :isLoading="isLoading">
+                                    {{ $t('rhae-tweakwise-feed.detail.label.generateNow') }}
+                                </sw-button>
+                            </div>
+                            <div>
+                                <p class="rhae-tweakwise-feed__card-toolbar-heading">
+                                    {{ $t('rhae-tweakwise-feed.detail.label.status') }}
+                                </p>
+                                <p>{{ $tc(`rhae-tweakwise-feed.detail.label.statusOption.${item.status}`) }}</p>
                             </div>
                     </sw-container>
 
@@ -58,6 +81,13 @@
                         :label-option-false="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategoriesFalse')"
                     >
                     </sw-boolean-radio-group>
+
+                    <sw-select-field :label="$t('rhae-tweakwise-feed.detail.label.interval')"
+                                     v-model:value="item.interval">
+                        <option v-for="value in [30,60,360,720,1440]" :value="value">
+                            {{ $tc('rhae-tweakwise-feed.detail.label.intervalOptions.' + value) }}
+                        </option>
+                    </sw-select-field>
                 </sw-card-section>
             </sw-card>
         </sw-card-view>

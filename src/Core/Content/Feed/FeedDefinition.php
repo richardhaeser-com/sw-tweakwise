@@ -45,9 +45,12 @@ class FeedDefinition extends EntityDefinition
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey(), new ApiAware()),
             (new StringField('name', 'name'))->addFlags(new Required(), new ApiAware()),
+            (new StringField('status', 'status'))->addFlags(new ApiAware()),
+            (new StringField('interval', 'interval'))->addFlags(new Required(), new ApiAware()),
             (new BoolField('includeHiddenCategories', 'includeHiddenCategories'))->addFlags(new ApiAware()),
             (new DateTimeField('last_started_at', 'lastStartedAt'))->addFlags(new ApiAware()),
             (new DateTimeField('last_generated_at', 'lastGeneratedAt'))->addFlags(new ApiAware()),
+            (new DateTimeField('next_generation_at', 'nextGenerationAt'))->addFlags(new ApiAware()),
             (new ManyToManyAssociationField('salesChannelDomains', SalesChannelDomainDefinition::class, FeedSalesChannelDomainDefinition::class, 'feed_id', 'sales_channel_domain_id'))->addFlags(new ApiAware()),
         ]);
     }

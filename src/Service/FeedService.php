@@ -5,6 +5,8 @@ namespace RH\Tweakwise\Service;
 use function array_key_exists;
 use function array_unique;
 use function crc32;
+use DateInterval;
+use DateTime;
 use function dirname;
 use const FILE_APPEND;
 use function file_exists;
@@ -19,6 +21,8 @@ use function rename;
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use function rtrim;
 use Shopware\Core\Checkout\Cart\AbstractRuleLoader;
+use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\Rule\CartRuleScope;
 use Shopware\Core\Checkout\CheckoutRuleScope;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Tree\TreeItem;
@@ -28,6 +32,7 @@ use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Adapter\Twig\TemplateFinder;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
@@ -35,6 +40,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
@@ -98,6 +104,90 @@ class FeedService
         $this->path = $path;
     }
 
+    public function fixFeedRecords(bool $forceFeedGeneration = false): void
+    {
+        $criteria = new Criteria();
+        $criteria->addAssociation('salesChannelDomains');
+        $criteria->addAssociation('salesChannelDomains.salesChannel');
+        $criteria->addAssociation('salesChannelDomains.language');
+        $criteria->addAssociation('salesChannelDomains.language.translationCode');
+        $context = Context::createDefaultContext();
+
+        $feeds = $this->feedRepository->search($criteria, $context)->getEntities();
+        /** @var FeedEntity $feed */
+        foreach ($feeds as $feed) {
+            $data = [];
+
+            if (!$feed->getInterval()) {
+                $data['interval'] = 1440;
+            }
+            if (!$feed->getStatus()) {
+                $data['status'] = FeedEntity::STATUS_QUEUED;
+            }
+            if ($forceFeedGeneration === true || $feed->getNextGenerationAt() === null) {
+                $data['nextGenerationAt'] = new \DateTime();
+            }
+
+            if (!empty($data)) {
+                $data['id'] = $feed->getId();
+                $this->feedRepository->update([
+                    $data,
+                ], $context);
+
+            }
+        }
+    }
+
+    public function scheduleFeeds(): void
+    {
+        $criteria = new Criteria();
+        $criteria->addAssociation('salesChannelDomains');
+        $criteria->addAssociation('salesChannelDomains.salesChannel');
+        $criteria->addAssociation('salesChannelDomains.language');
+        $criteria->addAssociation('salesChannelDomains.language.translationCode');
+        $criteria->addFilter(new EqualsFilter('status', FeedEntity::STATUS_COMPLETED));
+        $context = Context::createDefaultContext();
+
+        $feeds = $this->feedRepository->search($criteria, $context)->getEntities();
+        /** @var FeedEntity $feed */
+        foreach ($feeds as $feed) {
+            if ($feed->getLastGeneratedAt()) {
+                $interval = DateInterval::createFromDateString($feed->getInterval() . ' minutes');
+                /** @var DateTime $lastGenerated */
+                $lastGenerated = $feed->getLastGeneratedAt();
+                $newDate = $lastGenerated->add($interval);
+
+                $this->feedRepository->update([
+                    [
+                        'id' => $feed->getId(),
+                        'status' => FeedEntity::STATUS_QUEUED,
+                        'nextGenerationAt' => $newDate
+                    ],
+                ], $context);
+            }
+        }
+    }
+
+    public function generateScheduledFeeds(): void
+    {
+        $now = new \DateTime();
+        $criteria = new Criteria();
+        $criteria->addAssociation('salesChannelDomains');
+        $criteria->addAssociation('salesChannelDomains.salesChannel');
+        $criteria->addAssociation('salesChannelDomains.language');
+        $criteria->addAssociation('salesChannelDomains.language.translationCode');
+
+        $criteria->addFilter(new EqualsFilter('status', FeedEntity::STATUS_QUEUED));
+        $criteria->addFilter(new RangeFilter('nextGenerationAt', [RangeFilter::LTE => $now->format(Defaults::STORAGE_DATE_TIME_FORMAT)]));
+
+        $context = Context::createDefaultContext();
+
+        $feeds = $this->feedRepository->search($criteria, $context)->getEntities();
+        /** @var FeedEntity $feed */
+        foreach ($feeds as $feed) {
+            $this->generateFeed($feed, $context);
+        }
+    }
     public function readFeed(FeedEntity $feedEntity): ?string
     {
         $path = $this->getExportPath($feedEntity, false, true);
@@ -115,6 +205,7 @@ class FeedService
             [
                 'id' => $feed->getId(),
                 'lastStartedAt' => new \DateTime(),
+                'status' => FeedEntity::STATUS_RUNNING,
             ],
         ], $context);
 
@@ -131,6 +222,7 @@ class FeedService
             [
                 'id' => $feed->getId(),
                 'lastGeneratedAt' => new \DateTime(),
+                'status' => FeedEntity::STATUS_COMPLETED
             ],
         ], $context);
     }
@@ -168,10 +260,12 @@ class FeedService
             $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $salesChannelDomain->getLanguageId()]);
 
             $rules = $this->ruleLoader->load($salesChannelContext->getContext());
-            $scope = new CheckoutRuleScope($salesChannelContext);
+            $checkoutRuleScope = new CheckoutRuleScope($salesChannelContext);
+            $cart = new Cart(Uuid::randomHex());
+            $cartScope = new CartRuleScope($cart, $salesChannelContext);
 
-            $rules = $rules->filter(function ($rule) use ($scope) {
-                return $rule->getPayload()->match($scope);
+            $rules = $rules->filter(function ($rule) use ($checkoutRuleScope, $cartScope) {
+                return $rule->getPayload()->match($checkoutRuleScope) || $rule->getPayload()->match($cartScope);
             });
 
             $salesChannelContext->setRuleIds($rules->getIds());
@@ -437,12 +531,14 @@ class FeedService
             ];
         }
         $rules = $this->ruleLoader->load($salesChannelContext->getContext());
-        $scope = new CheckoutRuleScope($salesChannelContext);
 
-        $rules = $rules->filter(function ($rule) use ($scope) {
-            return $rule->getPayload()->match($scope);
+        $checkoutScope = new CheckoutRuleScope($salesChannelContext);
+        $cart = new Cart(Uuid::randomHex());
+        $cartScope = new CartRuleScope($cart, $salesChannelContext);
+
+        $rules = $rules->filter(function ($rule) use ($checkoutScope, $cartScope) {
+            return $rule->getPayload()->match($checkoutScope) || $rule->getPayload()->match($cartScope);
         });
-
         $lowest = $highest = null;
 
         /** @var ProductPriceEntity $price */

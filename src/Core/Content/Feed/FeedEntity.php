@@ -8,6 +8,10 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
 
 class FeedEntity extends Entity
 {
+    const STATUS_QUEUED = 'queued';
+    const STATUS_RUNNING = 'running';
+    const STATUS_COMPLETED = 'completed';
+
     use EntityIdTrait;
 
     protected ?string $name;
@@ -28,6 +32,15 @@ class FeedEntity extends Entity
      * @var null|\DateTimeInterface
      */
     protected ?\DateTimeInterface $lastGeneratedAt;
+
+    /**
+     * @var null|\DateTimeInterface
+     */
+    protected ?\DateTimeInterface $nextGenerationAt;
+
+    protected ?string $status;
+
+    protected ?string $interval;
 
     public function getName(): ?string
     {
@@ -91,4 +104,36 @@ class FeedEntity extends Entity
         $this->includeHiddenCategories = $includeHiddenCategories;
     }
 
+    public function getNextGenerationAt(): ?\DateTimeInterface
+    {
+        return $this->nextGenerationAt;
+    }
+
+    public function setNextGenerationAt(?\DateTimeInterface $nextGenerationAt): void
+    {
+        if ($nextGenerationAt === null) {
+            $nextGenerationAt = new \DateTime();
+        }
+        $this->nextGenerationAt = $nextGenerationAt;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): void
+    {
+        $this->status = $status;
+    }
+
+    public function getInterval(): ?string
+    {
+        return $this->interval;
+    }
+
+    public function setInterval(?string $interval): void
+    {
+        $this->interval = $interval;
+    }
 }
