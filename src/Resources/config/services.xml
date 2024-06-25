@@ -100,5 +100,11 @@
             <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
             <tag name="messenger.message_handler" />
         </service>
+
+        <service id="RH\Tweakwise\Core\Content\Cms\TweakwiseProductListingCmsElementResolver" decorates="Shopware\Core\Content\Product\Cms\ProductListingCmsElementResolver">
+            <argument type="service" id="RH\Tweakwise\Core\Content\Cms\TweakwiseProductListingCmsElementResolver.inner"/>
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute" />
+            <tag name="shopware.cms.data_resolver"/>
+        </service>
     </services>
 </container>
