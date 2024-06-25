@@ -264,7 +264,12 @@ class FeedService
 
             $rules = $this->ruleLoader->load($salesChannelContext->getContext());
             $checkoutRuleScope = new CheckoutRuleScope($salesChannelContext);
-            $cart = new Cart('tweakwise', Uuid::randomHex());
+
+            if (version_compare($this->shopwareVersion, '6.5.0', '>=')) {
+                $cart = new Cart(Uuid::randomHex());
+            } else {
+                $cart = new Cart('tweakwise', Uuid::randomHex());
+            }
             $cartScope = new CartRuleScope($cart, $salesChannelContext);
 
             $rules = $rules->filter(function ($rule) use ($checkoutRuleScope, $cartScope) {
@@ -536,7 +541,11 @@ class FeedService
         $rules = $this->ruleLoader->load($salesChannelContext->getContext());
 
         $checkoutScope = new CheckoutRuleScope($salesChannelContext);
-        $cart = new Cart('tweakwise', Uuid::randomHex());
+        if (version_compare($this->shopwareVersion, '6.5.0', '>=')) {
+            $cart = new Cart(Uuid::randomHex());
+        } else {
+            $cart = new Cart('tweakwise', Uuid::randomHex());
+        }
         $cartScope = new CartRuleScope($cart, $salesChannelContext);
 
         $rules = $rules->filter(function ($rule) use ($checkoutScope, $cartScope) {
