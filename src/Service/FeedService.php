@@ -266,8 +266,10 @@ class FeedService
             $checkoutRuleScope = new CheckoutRuleScope($salesChannelContext);
 
             if (version_compare($this->shopwareVersion, '6.5.0', '>=')) {
+                /** @phpstan-ignore-next-line */
                 $cart = new Cart(Uuid::randomHex());
             } else {
+                /** @phpstan-ignore-next-line */
                 $cart = new Cart('tweakwise', Uuid::randomHex());
             }
             $cartScope = new CartRuleScope($cart, $salesChannelContext);
@@ -542,8 +544,10 @@ class FeedService
 
         $checkoutScope = new CheckoutRuleScope($salesChannelContext);
         if (version_compare($this->shopwareVersion, '6.5.0', '>=')) {
+            /** @phpstan-ignore-next-line */
             $cart = new Cart(Uuid::randomHex());
         } else {
+            /** @phpstan-ignore-next-line */
             $cart = new Cart('tweakwise', Uuid::randomHex());
         }
         $cartScope = new CartRuleScope($cart, $salesChannelContext);
