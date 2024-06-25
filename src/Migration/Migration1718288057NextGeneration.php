@@ -3,13 +3,8 @@
 namespace RH\Tweakwise\Migration;
 
 use Doctrine\DBAL\Connection;
-use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-/**
- * @internal
- */
-#[Package('core')]
 class Migration1718288057NextGeneration extends MigrationStep
 {
     public function getCreationTimestamp(): int
@@ -27,5 +22,8 @@ ALTER TABLE `s_plugin_rhae_tweakwise_feed`
                 ;
 SQL;
         $connection->executeUpdate($sql);
+    }
+    public function updateDestructive(Connection $connection): void
+    {
     }
 }

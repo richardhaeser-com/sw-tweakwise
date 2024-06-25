@@ -3,19 +3,27 @@
 namespace RH\Tweakwise\Service\ScheduledTask;
 
 use RH\Tweakwise\Service\FeedService;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(handles: GenerateFeedTask::class)]
 class GenerateFeedTaskHandler extends ScheduledTaskHandler
 {
+    protected FeedService $feedService;
+
     public function __construct(
-        protected EntityRepository $scheduledTaskRepository,
-        protected FeedService $feedService
+        EntityRepositoryInterface $scheduledTaskRepository,
+        FeedService $feedService
     ) {
+        $this->feedService = $feedService;
+        $this->scheduledTaskRepository = $scheduledTaskRepository;
         parent::__construct($scheduledTaskRepository);
     }
+
+    public static function getHandledMessages (): iterable
+    {
+        return [ GenerateFeedTask::class ];
+    }
+
     public function run(): void
     {
         $this->feedService->fixFeedRecords();

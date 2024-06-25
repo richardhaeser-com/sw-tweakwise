@@ -124,6 +124,9 @@ class FeedService
             if (!$feed->getStatus()) {
                 $data['status'] = FeedEntity::STATUS_QUEUED;
             }
+            if ($feed->getStatus() === FeedEntity::STATUS_RUNNING && (int)$feed->getLastGeneratedAt()->diff(new \DateTime())->format('%a') > 1) {
+                $data['status'] = FeedEntity::STATUS_QUEUED;
+            }
             if ($forceFeedGeneration === true || $feed->getNextGenerationAt() === null) {
                 $data['nextGenerationAt'] = new \DateTime();
             }
@@ -261,7 +264,7 @@ class FeedService
 
             $rules = $this->ruleLoader->load($salesChannelContext->getContext());
             $checkoutRuleScope = new CheckoutRuleScope($salesChannelContext);
-            $cart = new Cart(Uuid::randomHex());
+            $cart = new Cart('tweakwise', Uuid::randomHex());
             $cartScope = new CartRuleScope($cart, $salesChannelContext);
 
             $rules = $rules->filter(function ($rule) use ($checkoutRuleScope, $cartScope) {
@@ -533,7 +536,7 @@ class FeedService
         $rules = $this->ruleLoader->load($salesChannelContext->getContext());
 
         $checkoutScope = new CheckoutRuleScope($salesChannelContext);
-        $cart = new Cart(Uuid::randomHex());
+        $cart = new Cart('tweakwise', Uuid::randomHex());
         $cartScope = new CartRuleScope($cart, $salesChannelContext);
 
         $rules = $rules->filter(function ($rule) use ($checkoutScope, $cartScope) {
