@@ -127,6 +127,14 @@
                         <name>sw-keywords</name>
                         <value>{{ product.customSearchKeywords|join(', ') }}</value>
                     </attribute>
+                    {% block feed_item_tag %}
+                        {% for tag in product.tags %}
+                            <attribute>
+                                <name>tag</name>
+                                <value>{{ tag.name }}</value>
+                            </attribute>
+                        {% endfor %}
+                    {% endblock %}
                     <attribute>
                         <name>sw-tags</name>
                         <value>{% for tag in product.tags %}{{ tag.name }}, {% endfor %}</value>
