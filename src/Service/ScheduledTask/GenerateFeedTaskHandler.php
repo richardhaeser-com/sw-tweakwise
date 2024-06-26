@@ -3,7 +3,6 @@
 namespace RH\Tweakwise\Service\ScheduledTask;
 
 use RH\Tweakwise\Service\FeedService;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 
 class GenerateFeedTaskHandler extends ScheduledTaskHandler
