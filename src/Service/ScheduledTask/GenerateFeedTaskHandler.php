@@ -19,7 +19,7 @@ class GenerateFeedTaskHandler extends ScheduledTaskHandler
         parent::__construct($scheduledTaskRepository);
     }
 
-    public static function getHandledMessages (): iterable
+    public static function getHandledMessages(): iterable
     {
         return [ GenerateFeedTask::class ];
     }
