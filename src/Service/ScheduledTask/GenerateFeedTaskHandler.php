@@ -11,7 +11,7 @@ class GenerateFeedTaskHandler extends ScheduledTaskHandler
     protected FeedService $feedService;
 
     public function __construct(
-        EntityRepositoryInterface $scheduledTaskRepository,
+        $scheduledTaskRepository,
         FeedService $feedService
     ) {
         $this->feedService = $feedService;
