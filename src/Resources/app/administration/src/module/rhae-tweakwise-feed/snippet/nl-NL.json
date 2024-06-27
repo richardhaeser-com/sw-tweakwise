@@ -27,6 +27,7 @@
                 "includeHiddenCategoriesTrue": "Ja",
                 "includeHiddenCategoriesFalse": "Nee",
                 "interval": "Interval",
+                "intervalDescription": "Let op dat de interval moet worden ingesteld in overleg met Tweakwise. Het heeft bijvoorbeeld geen nut om de feed iedere 30 minuten te updaten terwijl Tweakwise de feed maar een keer per dag ophaalt.",
                 "nextGenerationAt": "Wordt opnieuw genegereerd op",
                 "status": "Status",
                 "statusOption": {
