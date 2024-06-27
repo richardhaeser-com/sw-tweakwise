@@ -89,7 +89,7 @@
 
                     <sw-select-field :label="$t('rhae-tweakwise-feed.detail.label.interval')"
                                      v-model:value="item.interval">
-                        <option v-for="value in [30,60,360,720,1440]" :value="value">
+                        <option v-for="value in [60,360,720,1440]" :value="value">
                             {{ $tc('rhae-tweakwise-feed.detail.label.intervalOptions.' + value) }}
                         </option>
                     </sw-select-field>
