@@ -120,7 +120,7 @@ class FeedService
             $data = [];
 
             if (!$feed->getInterval()) {
-                $data['interval'] = 1440;
+                $data['interval'] = '0 3 * * *';
             }
             if (!$feed->getStatus()) {
                 $data['status'] = FeedEntity::STATUS_QUEUED;
