@@ -87,12 +87,9 @@
                     >
                     </sw-boolean-radio-group>
 
-                    <sw-select-field :label="$t('rhae-tweakwise-feed.detail.label.interval')"
-                                     v-model:value="item.interval">
-                        <option v-for="value in [60,360,720,1440]" :value="value">
-                            {{ $tc('rhae-tweakwise-feed.detail.label.intervalOptions.' + value) }}
-                        </option>
-                    </sw-select-field>
+                    <sw-field :label="$t('rhae-tweakwise-feed.detail.label.interval')"
+                              v-model="item.interval"
+                              required validation="required"></sw-field>
 
                     <p>{{ $tc(`rhae-tweakwise-feed.detail.label.intervalDescription`) }}</p>
                 </sw-card-section>

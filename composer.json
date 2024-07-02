@@ -12,7 +12,8 @@
   "require": {
     "shopware/core": ">=6.4.10 <6.6",
     "shopware/administration": "*",
-    "shopware/storefront": "*"
+    "shopware/storefront": "*",
+    "dragonmantank/cron-expression": "^3.3"
   },
   "extra": {
     "shopware-plugin-class": "RH\\Tweakwise\\RhaeTweakwise",

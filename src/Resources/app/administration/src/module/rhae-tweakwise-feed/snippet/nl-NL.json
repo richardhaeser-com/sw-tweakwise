@@ -26,7 +26,7 @@
                 "includeHiddenCategories": "Exporteer ook verborgen categorieën.",
                 "includeHiddenCategoriesTrue": "Ja",
                 "includeHiddenCategoriesFalse": "Nee",
-                "interval": "Interval",
+                "interval": "Herhaling (cron notatie of interval in minuten)",
                 "intervalDescription": "Let op dat de interval moet worden ingesteld in overleg met Tweakwise. Het heeft bijvoorbeeld geen nut om de feed iedere 30 minuten te updaten terwijl Tweakwise de feed maar een keer per dag ophaalt.",
                 "nextGenerationAt": "Wordt opnieuw genegereerd op",
                 "status": "Status",
