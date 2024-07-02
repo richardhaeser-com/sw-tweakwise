@@ -42,6 +42,8 @@ class FeedEntity extends Entity
 
     protected ?string $interval;
 
+    protected ?string $importTaskUrl;
+
     public function getName(): ?string
     {
         return $this->name;
@@ -135,5 +137,15 @@ class FeedEntity extends Entity
     public function setInterval(?string $interval): void
     {
         $this->interval = $interval;
+    }
+
+    public function getImportTaskUrl(): ?string
+    {
+        return $this->importTaskUrl;
+    }
+
+    public function setImportTaskUrl(?string $importTaskUrl): void
+    {
+        $this->importTaskUrl = $importTaskUrl;
     }
 }

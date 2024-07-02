@@ -89,9 +89,12 @@
 
                     <sw-field :label="$t('rhae-tweakwise-feed.detail.label.interval')"
                               v-model="item.interval"
+                              :help-text="$tc('rhae-tweakwise-feed.detail.label.intervalDescription')"
                               required validation="required"></sw-field>
 
-                    <p>{{ $tc(`rhae-tweakwise-feed.detail.label.intervalDescription`) }}</p>
+                    <sw-field :label="$t('rhae-tweakwise-feed.detail.label.importTaskUrl')"
+                              v-model="item.importTaskUrl"></sw-field>
+
                 </sw-card-section>
             </sw-card>
         </sw-card-view>

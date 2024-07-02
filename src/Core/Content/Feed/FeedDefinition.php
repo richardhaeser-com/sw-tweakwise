@@ -47,6 +47,7 @@ class FeedDefinition extends EntityDefinition
             (new StringField('name', 'name'))->addFlags(new Required(), new ApiAware()),
             (new StringField('status', 'status'))->addFlags(new ApiAware()),
             (new StringField('interval', 'interval'))->addFlags(new Required(), new ApiAware()),
+            (new StringField('importTaskUrl', 'importTaskUrl'))->addFlags(new ApiAware()),
             (new BoolField('includeHiddenCategories', 'includeHiddenCategories'))->addFlags(new ApiAware()),
             (new DateTimeField('last_started_at', 'lastStartedAt'))->addFlags(new ApiAware()),
             (new DateTimeField('last_generated_at', 'lastGeneratedAt'))->addFlags(new ApiAware()),
