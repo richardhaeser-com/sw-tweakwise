@@ -63,6 +63,14 @@
                 </sw-card-section>
 
                 <sw-card-section>
+                    <sw-select-field :label="$t('rhae-tweakwise-feed.detail.label.type')"
+                                     v-model:value="item.type">
+                        <option v-for="value in ['full']" :value="value">
+                            {{ $tc('rhae-tweakwise-feed.detail.label.typeOptions.' + value) }}
+                        </option>
+                    </sw-select-field>
+
+
                     <sw-text-field :label="$t('rhae-tweakwise-feed.detail.label.name')"
                               v-model:value="item.name"
                               required validation="required" ></sw-text-field>
@@ -90,6 +98,18 @@
                     </sw-select-field>
 
                     <p>{{ $tc(`rhae-tweakwise-feed.detail.label.intervalDescription`) }}</p>
+                </sw-card-section>
+            </sw-card>
+
+            <sw-card v-if="item && item.type === 'full'" :isLoading="isLoading" :title="$tc('rhae-tweakwise-feed.detail.section.data')">
+                <sw-card-section>
+                    <sw-boolean-radio-group
+                            v-model:value="item.includeHiddenCategories"
+                            :label="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategories')"
+                            :label-option-true="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategoriesTrue')"
+                            :label-option-false="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategoriesFalse')"
+                    >
+                    </sw-boolean-radio-group>
                 </sw-card-section>
             </sw-card>
         </sw-card-view>

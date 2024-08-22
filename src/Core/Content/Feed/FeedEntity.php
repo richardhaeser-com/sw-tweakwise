@@ -42,6 +42,8 @@ class FeedEntity extends Entity
 
     protected ?string $interval;
 
+    protected ?string $type;
+
     public function getName(): ?string
     {
         return $this->name;
@@ -135,5 +137,15 @@ class FeedEntity extends Entity
     public function setInterval(?string $interval): void
     {
         $this->interval = $interval;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type): void
+    {
+        $this->type = $type;
     }
 }
