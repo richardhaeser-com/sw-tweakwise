@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Service;
 
+use Cron\CronExpression;
 use function array_key_exists;
 use function array_unique;
 use function crc32;
@@ -152,10 +153,15 @@ class FeedService
         /** @var FeedEntity $feed */
         foreach ($feeds as $feed) {
             if ($feed->getLastGeneratedAt()) {
-                $interval = DateInterval::createFromDateString($feed->getInterval() . ' minutes');
-                /** @var DateTime $lastGenerated */
-                $lastGenerated = $feed->getLastGeneratedAt();
-                $newDate = $lastGenerated->add($interval);
+                try {
+                    $cron = new CronExpression($feed->getInterval());
+                    $newDate = $cron->getNextRunDate();
+                } catch (\InvalidArgumentException $e) {
+                    $interval = DateInterval::createFromDateString($feed->getInterval() . ' minutes');
+                    /** @var DateTime $lastGenerated */
+                    $lastGenerated = $feed->getLastGeneratedAt();
+                    $newDate = $lastGenerated->add($interval);
+                }
 
                 $this->feedRepository->update([
                     [

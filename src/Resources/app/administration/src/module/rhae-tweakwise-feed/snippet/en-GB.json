@@ -26,7 +26,7 @@
                 "includeHiddenCategories": "Include hidden categories",
                 "includeHiddenCategoriesTrue": "True",
                 "includeHiddenCategoriesFalse": "False",
-                "interval": "Interval",
+                "interval": "Recurring (cron notation or interval in minutes)",
                 "intervalDescription": "Please be aware that the interval should be set as discussed with Tweakwise. It doesn't make sense to generate the feed every 30 minutes while Tweakwise gets the feed only once a day.",
                 "nextGenerationAt": "Will be regenerated on",
                 "status": "Status",

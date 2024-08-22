@@ -82,22 +82,9 @@
                         v-model:entityCollection="item.salesChannelDomains"
                     />
 
-                    <sw-boolean-radio-group
-                        v-model:value="item.includeHiddenCategories"
-                        :label="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategories')"
-                        :label-option-true="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategoriesTrue')"
-                        :label-option-false="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategoriesFalse')"
-                    >
-                    </sw-boolean-radio-group>
-
-                    <sw-select-field :label="$t('rhae-tweakwise-feed.detail.label.interval')"
-                                     v-model:value="item.interval">
-                        <option v-for="value in [60,360,720,1440]" :value="value">
-                            {{ $tc('rhae-tweakwise-feed.detail.label.intervalOptions.' + value) }}
-                        </option>
-                    </sw-select-field>
-
-                    <p>{{ $tc(`rhae-tweakwise-feed.detail.label.intervalDescription`) }}</p>
+                    <sw-text-field :label="$t('rhae-tweakwise-feed.detail.label.interval')"
+                              v-model:value="item.interval"
+                              required validation="required"></sw-text-field>
                 </sw-card-section>
             </sw-card>
 
