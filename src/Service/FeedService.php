@@ -297,6 +297,8 @@ class FeedService
             $criteria->addAssociation('properties');
             $criteria->addAssociation('properties.group');
             $criteria->addAssociation('manufacturer');
+            $criteria->getAssociation('categories')
+                ->addFilter(new EqualsFilter('productAssignmentType', 'product'));
             $criteria->addAssociation('categories');
             $criteria->addAssociation('media');
             $criteria->addAssociation('productReviews');
