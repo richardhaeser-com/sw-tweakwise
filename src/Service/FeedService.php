@@ -2,10 +2,10 @@
 
 namespace RH\Tweakwise\Service;
 
-use Cron\CronExpression;
 use function array_key_exists;
 use function array_unique;
 use function crc32;
+use Cron\CronExpression;
 use DateInterval;
 use DateTime;
 use function dirname;
