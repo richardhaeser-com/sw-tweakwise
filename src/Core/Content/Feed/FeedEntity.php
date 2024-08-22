@@ -44,6 +44,8 @@ class FeedEntity extends Entity
 
     protected ?string $type;
 
+    protected ?string $importTaskUrl;
+
     public function getName(): ?string
     {
         return $this->name;
@@ -147,5 +149,15 @@ class FeedEntity extends Entity
     public function setType(?string $type): void
     {
         $this->type = $type;
+    }
+
+    public function getImportTaskUrl(): ?string
+    {
+        return $this->importTaskUrl;
+    }
+
+    public function setImportTaskUrl(?string $importTaskUrl): void
+    {
+        $this->importTaskUrl = $importTaskUrl;
     }
 }

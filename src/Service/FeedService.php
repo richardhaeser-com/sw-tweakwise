@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Service;
 
+use GuzzleHttp\Client;
 use function array_key_exists;
 use function array_unique;
 use function crc32;
@@ -223,6 +224,7 @@ class FeedService
         $this->generateItems($feed);
         $this->generateFooter($feed);
         $this->finishXmlFeed($feed);
+        $this->startImportTask($feed);
 
         $this->feedRepository->update([
             [
@@ -254,6 +256,16 @@ class FeedService
             unlink($path);
         }
         rename($this->getExportPath($feed, true, true), $this->getExportPath($feed, false, true));
+    }
+
+    private function startImportTask(FeedEntity $feed): void
+    {
+        if (!$feed->getImportTaskUrl()) {
+            return;
+        }
+
+        $client = new Client();
+        $client->request('GET', $feed->getImportTaskUrl());
     }
 
     private function generateItems(FeedEntity $feed)
