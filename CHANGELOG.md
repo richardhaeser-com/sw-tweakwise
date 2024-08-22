@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Use cron notation for scheduling feed generation
+- Add possibility to start import task after feed generation completed
+
+### Fixed
+- Fixed an issue with categories containing products but are set to stream afterwards
+
+### Changed
+- Set default recurring on once a day at 3am
+
 ## [3.0.3] - 27-06-2024
 
 ### Added
