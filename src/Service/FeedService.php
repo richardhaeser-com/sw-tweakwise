@@ -290,25 +290,40 @@ class FeedService
 
             $criteria = new Criteria();
             $criteria->setOffset(0);
-            $criteria->setLimit(10);
+            $criteria->setLimit(1);
             $criteria->addAssociation('customFields');
-            $criteria->addAssociation('options');
-            $criteria->addAssociation('options.group');
-            $criteria->addAssociation('properties');
-            $criteria->addAssociation('properties.group');
+
+            if (!$feed->isExcludeOptions()) {
+                $criteria->addAssociation('options');
+                $criteria->addAssociation('options.group');
+            }
+            if (!$feed->isExcludeProperties()) {
+                $criteria->addAssociation('properties');
+                $criteria->addAssociation('properties.group');
+            }
             $criteria->addAssociation('manufacturer');
             $criteria->getAssociation('categories')
                 ->addFilter(new EqualsFilter('productAssignmentType', 'product'));
             $criteria->addAssociation('categories');
             $criteria->addAssociation('media');
-            $criteria->addAssociation('productReviews');
+
+            if (!$feed->isExcludeReviews()) {
+                $criteria->addAssociation('productReviews');
+            }
             $criteria->addAssociation('cover.media.thumbnails');
-            $criteria->addAssociation('children');
-            $criteria->addAssociation('children.options');
-            $criteria->addAssociation('children.options.group');
-            $criteria->addAssociation('children.properties');
-            $criteria->addAssociation('children.properties.group');
-            $criteria->addAssociation('tags');
+
+            if (!$feed->isExcludeChildren()) {
+                $criteria->addAssociation('children');
+                $criteria->addAssociation('children.options');
+                $criteria->addAssociation('children.options.group');
+                $criteria->addAssociation('children.properties');
+                $criteria->addAssociation('children.properties.group');
+            }
+
+            if (!$feed->isExcludeTags()) {
+                $criteria->addAssociation('tags');
+            }
+
             $criteria->getAssociation('seoUrls')
                 ->setLimit(1)
                 ->addFilter(new EqualsFilter('isCanonical', true));
