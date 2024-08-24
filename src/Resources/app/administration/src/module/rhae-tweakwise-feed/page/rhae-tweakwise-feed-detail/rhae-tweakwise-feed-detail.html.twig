@@ -95,13 +95,44 @@
 
             <sw-card v-if="item && item.type === 'full'" :isLoading="isLoading" :title="$tc('rhae-tweakwise-feed.detail.section.data')">
                 <sw-card-section>
-                    <sw-boolean-radio-group
+                    <p class="mb">{{ $tc(`rhae-tweakwise-feed.detail.label.exclude`) }}</p>
+
+
+                    <sw-checkbox-field
                             v-model:value="item.includeHiddenCategories"
                             :label="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategories')"
-                            :label-option-true="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategoriesTrue')"
-                            :label-option-false="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategoriesFalse')"
-                    >
-                    </sw-boolean-radio-group>
+                            @update:value="onChangeToggle($event, 'includeHiddenCategories')"
+                    />
+
+                    <sw-checkbox-field
+                            v-model:value="item.excludeChildren"
+                            :label="$t('rhae-tweakwise-feed.detail.label.excludeChildren')"
+                            @update:value="onChangeToggle($event, 'excludeChildren')"
+                    />
+
+                    <sw-checkbox-field
+                            v-model:value="item.excludeReviews"
+                            :label="$t('rhae-tweakwise-feed.detail.label.excludeReviews')"
+                            @update:value="onChangeToggle($event, 'excludeReviews')"
+                    />
+
+                    <sw-checkbox-field
+                            v-model:value="item.excludeTags"
+                            :label="$t('rhae-tweakwise-feed.detail.label.excludeTags')"
+                            @update:value="onChangeToggle($event, 'excludeTags')"
+                    ></sw-checkbox-field>
+
+                    <sw-checkbox-field
+                            v-model:value="item.excludeOptions"
+                            :label="$t('rhae-tweakwise-feed.detail.label.excludeOptions')"
+                            @update:value="onChangeToggle($event, 'excludeOptions')"
+                    ></sw-checkbox-field>
+
+                    <sw-checkbox-field
+                            v-model:value="item.excludeProperties"
+                            :label="$t('rhae-tweakwise-feed.detail.label.excludeProperties')"
+                            @update:value="onChangeToggle($event, 'excludeProperties')"
+                    ></sw-checkbox-field>
                 </sw-card-section>
             </sw-card>
         </sw-card-view>

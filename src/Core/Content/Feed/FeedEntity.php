@@ -46,6 +46,12 @@ class FeedEntity extends Entity
 
     protected ?string $importTaskUrl;
 
+    protected bool $excludeChildren = false;
+    protected bool $excludeReviews = false;
+    protected bool $excludeTags = false;
+    protected bool $excludeOptions = false;
+    protected bool $excludeProperties = false;
+
     public function getName(): ?string
     {
         return $this->name;
@@ -160,4 +166,55 @@ class FeedEntity extends Entity
     {
         $this->importTaskUrl = $importTaskUrl;
     }
+
+    public function isExcludeChildren(): bool
+    {
+        return $this->excludeChildren;
+    }
+
+    public function setExcludeChildren(bool $excludeChildren): void
+    {
+        $this->excludeChildren = $excludeChildren;
+    }
+
+    public function isExcludeReviews(): bool
+    {
+        return $this->excludeReviews;
+    }
+
+    public function setExcludeReviews(bool $excludeReviews): void
+    {
+        $this->excludeReviews = $excludeReviews;
+    }
+
+    public function isExcludeTags(): bool
+    {
+        return $this->excludeTags;
+    }
+
+    public function setExcludeTags(bool $excludeTags): void
+    {
+        $this->excludeTags = $excludeTags;
+    }
+
+    public function isExcludeOptions(): bool
+    {
+        return $this->excludeOptions;
+    }
+
+    public function setExcludeOptions(bool $excludeOptions): void
+    {
+        $this->excludeOptions = $excludeOptions;
+    }
+
+    public function isExcludeProperties(): bool
+    {
+        return $this->excludeProperties;
+    }
+
+    public function setExcludeProperties(bool $excludeProperties): void
+    {
+        $this->excludeProperties = $excludeProperties;
+    }
+
 }

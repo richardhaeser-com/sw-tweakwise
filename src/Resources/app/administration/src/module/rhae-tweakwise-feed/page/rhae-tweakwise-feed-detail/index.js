@@ -61,7 +61,7 @@ Component.register('rhae-tweakwise-feed-detail', {
         },
         defaultCriteria() {
             return new Criteria();
-        }
+        },
     },
 
     created() {
@@ -111,6 +111,16 @@ Component.register('rhae-tweakwise-feed-detail', {
                     this.item = entity;
                 });
         },
+        onChangeValue(value, fieldName, valueChange = true) {
+            this.item[fieldName] = value;
+
+            this.$emit('change-value', fieldName, value);
+        },
+
+        onChangeToggle(value, fieldName) {
+            this.onChangeValue(value, fieldName, false);
+        },
+
         onClickSave() {
             this.isLoading = true;
             this.repository

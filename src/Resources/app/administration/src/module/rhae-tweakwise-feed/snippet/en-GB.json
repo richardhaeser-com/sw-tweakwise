@@ -31,6 +31,16 @@
                 "intervalDescription": "Please be aware that the interval should be set as discussed with Tweakwise. It doesn't make sense to generate the feed every 30 minutes while Tweakwise gets the feed only once a day.",
                 "nextGenerationAt": "Will be regenerated on",
                 "status": "Status",
+                "exclude": "With the options below, you can decide what data should be available in the feed. By removing relations, you will lower the memory consumption. Please only use these toggles when you are familiar with the data structure of Shopware products.",
+                "excludeChildren": "I have no variant products. Remove the relation with child products",
+                "excludeReviews": "Don't add data of product reviews to the feed. The relation with reviews will not be made",
+                "excludeTags": "Tags should not be added to the feed. Remove the relation with tags",
+                "excludeOptions": "Options defining the variant should not be added to the feed. Remove the relation with options",
+                "excludeProperties": "Options that are not defining the variant should not be added to the feed. Remote the relation with properties",
+                "yesno": {
+                    "0": "No",
+                    "1": "Yes"
+                },
                 "statusOption": {
                     "queued": "Queued",
                     "running": "Running",
