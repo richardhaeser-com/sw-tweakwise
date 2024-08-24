@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Use cron notation for scheduling feed generation
 - Add possibility to start import task after feed generation completed
+- New options to remove relations to products in the feed admin
 
 ### Fixed
 - Fixed an issue with categories containing products but are set to stream afterwards

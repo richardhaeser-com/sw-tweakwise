@@ -2,7 +2,6 @@
 
 namespace RH\Tweakwise\Service;
 
-use GuzzleHttp\Client;
 use function array_key_exists;
 use function array_unique;
 use function crc32;
@@ -14,6 +13,7 @@ use const FILE_APPEND;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
+use GuzzleHttp\Client;
 use function in_array;
 use function is_array;
 use function is_dir;
