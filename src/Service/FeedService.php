@@ -123,7 +123,7 @@ class FeedService
             if (!$feed->getInterval()) {
                 $data['interval'] = '0 3 * * *';
             }
-            if (!$feed->getStatus()) {
+            if (!$feed->getStatus() || $forceFeedGeneration) {
                 $data['status'] = FeedEntity::STATUS_QUEUED;
             }
             if ($forceFeedGeneration === true || $feed->getNextGenerationAt() === null) {
@@ -168,7 +168,7 @@ class FeedService
                     [
                         'id' => $feed->getId(),
                         'status' => FeedEntity::STATUS_QUEUED,
-                        'nextGenerationAt' => $newDate
+                        'nextGenerationAt' => $newDate,
                     ],
                 ], $context);
             }
@@ -230,7 +230,7 @@ class FeedService
             [
                 'id' => $feed->getId(),
                 'lastGeneratedAt' => new \DateTime(),
-                'status' => FeedEntity::STATUS_COMPLETED
+                'status' => FeedEntity::STATUS_COMPLETED,
             ],
         ], $context);
     }
@@ -311,14 +311,6 @@ class FeedService
                 $criteria->addAssociation('productReviews');
             }
             $criteria->addAssociation('cover.media.thumbnails');
-
-            if (!$feed->isExcludeChildren()) {
-                $criteria->addAssociation('children');
-                $criteria->addAssociation('children.options');
-                $criteria->addAssociation('children.options.group');
-                $criteria->addAssociation('children.properties');
-                $criteria->addAssociation('children.properties.group');
-            }
 
             if (!$feed->isExcludeTags()) {
                 $criteria->addAssociation('tags');
@@ -454,18 +446,22 @@ class FeedService
         $content = '';
         /** @var ProductEntity $product */
         foreach ($products as $product) {
+            echo '.';
             $productId = $product->getProductNumber() . ' (' . $domain->getLanguage()->getTranslationCode()->getCode() . ' - ' . crc32($domain->getId()) . ')';
             if (!in_array($productId, $this->uniqueProductIds, true)) {
                 $otherVariants = null;
                 if ($product->getParentId()) {
-                    // only 1 variant is shown in listing
-                    //                    $context = new Context(new SystemSource(), [], $domain->getCurrencyId(), [$domain->getLanguageId(), $domain->getLanguageId()]);
                     $criteria = new Criteria([$product->getParentId()]);
                     $criteria->addAssociation('children');
-                    $criteria->addAssociation('children.options');
-                    $criteria->addAssociation('children.options.group');
-                    $criteria->addAssociation('children.properties');
-                    $criteria->addAssociation('children.properties.group');
+
+                    if (!$feed->isExcludeOptions()) {
+                        $criteria->addAssociation('children.options');
+                        $criteria->addAssociation('children.options.group');
+                    }
+                    if (!$feed->isExcludeProperties()) {
+                        $criteria->addAssociation('children.properties');
+                        $criteria->addAssociation('children.properties.group');
+                    }
 
                     /** @var ProductEntity $parent */
                     $parent = $this->productRepository->search($criteria, $salesChannelContext->getContext())->first();
@@ -501,8 +497,42 @@ class FeedService
 
                     }
                 }
-                if ($product->getChildCount() > 0) {
-                    $otherVariants = $product->getChildren();
+                $otherVariantsXml = '';
+
+                if ($product->getChildCount() > 0 && !$feed->isExcludeChildren() && (!$feed->isExcludeOptions() || !$feed->isExcludeProperties())) {
+                    $criteria = new Criteria();
+                    $criteria->addFilter(new EqualsFilter('parentId', $product->getId()));
+
+                    if (!$feed->isExcludeOptions()) {
+                        $criteria->addAssociation('options');
+                        $criteria->addAssociation('options.group');
+                    }
+                    if (!$feed->isExcludeProperties()) {
+                        $criteria->addAssociation('properties');
+                        $criteria->addAssociation('properties.group');
+                    }
+
+                    $criteria->setLimit(1);
+                    $criteria->setOffset(0);
+                    while ($childProducts = $this->productRepository->search($criteria, $salesChannelContext->getContext())->getElements()) {
+                        /** @var ProductEntity $childProduct */
+                        foreach ($childProducts as $childProduct) {
+                            foreach ($childProduct->getOptions() as $option) {
+                                $otherVariantsXml .= $this->twig->render($this->resolveView('tweakwise/variantAttributes.xml.twig'), [
+                                    'name' => $option->getGroup()->getTranslated()['name'],
+                                    'value' => $option->getTranslated()['name'],
+                                ]);
+                            }
+                            foreach ($childProduct->getProperties() as $property) {
+                                $otherVariantsXml .= $this->twig->render($this->resolveView('tweakwise/variantAttributes.xml.twig'), [
+                                    'name' => $property->getGroup()->getTranslated()['name'],
+                                    'value' => $property->getTranslated()['name'],
+                                ]);
+                            }
+                        }
+                        $criteria->setOffset($criteria->getOffset() + 1);
+                        echo '.';
+                    }
                 }
 
                 $categoriesFromStreams = [];
@@ -526,9 +556,9 @@ class FeedService
                     'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
                     'product' => $product,
                     'prices' => $this->getLowestAndHighestPrice($product, $salesChannelContext),
-                    'otherVariants' => $otherVariants,
+                    'otherVariantsXml' => $otherVariantsXml,
                     'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
-                    'salesChannel' => $domain->getSalesChannel()
+                    'salesChannel' => $domain->getSalesChannel(),
                 ]);
                 $this->uniqueProductIds[] = $productId;
             }
@@ -551,7 +581,7 @@ class FeedService
                     'cheapest_price_net' => 0,
                     'cheapest_price_gross' => 0,
                     'quantity_start' => '',
-                    'quantity_end' => ''
+                    'quantity_end' => '',
                 ],
                 'highest' => [
                     'price_net' => 0,
@@ -561,8 +591,8 @@ class FeedService
                     'cheapest_price_net' => 0,
                     'cheapest_price_gross' => 0,
                     'quantity_start' => '',
-                    'quantity_end' => ''
-                ]
+                    'quantity_end' => '',
+                ],
             ];
         }
         $rules = $this->ruleLoader->load($salesChannelContext->getContext());
@@ -613,7 +643,7 @@ class FeedService
                     'cheapest_price_net' => ($lowestRegulationPrice) ? $lowestRegulationPrice->getNet() : 0,
                     'cheapest_price_gross' => ($lowestRegulationPrice) ? $lowestRegulationPrice->getGross() : 0,
                     'quantity_start' => $lowest->getQuantityStart(),
-                    'quantity_end' => $lowest->getQuantityEnd()
+                    'quantity_end' => $lowest->getQuantityEnd(),
                 ],
                 'highest' => [
                     'price_net' => $highest->getPrice()->first()->getNet(),
@@ -623,8 +653,8 @@ class FeedService
                     'cheapest_price_net' => ($highestRegulationPrice) ? $highestRegulationPrice->getNet() : 0,
                     'cheapest_price_gross' => ($highestRegulationPrice) ? $highestRegulationPrice->getGross() : 0,
                     'quantity_start' => $highest->getQuantityStart(),
-                    'quantity_end' => $highest->getQuantityEnd()
-                ]
+                    'quantity_end' => $highest->getQuantityEnd(),
+                ],
             ];
         } else {
             return [
@@ -636,7 +666,7 @@ class FeedService
                     'cheapest_price_net' => 0,
                     'cheapest_price_gross' => 0,
                     'quantity_start' => '',
-                    'quantity_end' => ''
+                    'quantity_end' => '',
                 ],
                 'highest' => [
                     'price_net' => 0,
@@ -646,8 +676,8 @@ class FeedService
                     'cheapest_price_net' => 0,
                     'cheapest_price_gross' => 0,
                     'quantity_start' => '',
-                    'quantity_end' => ''
-                ]
+                    'quantity_end' => '',
+                ],
             ];
         }
     }

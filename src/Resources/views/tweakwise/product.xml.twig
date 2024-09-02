@@ -80,32 +80,8 @@
                             {% set propertyIds = propertyIds|merge([property.id]) %}
                         {% endif %}
                     {% endfor %}
-                    {% if otherVariants %}
-                        {% for variant in otherVariants %}
-                            {% if variant.active !== false %}
-                                {% for option in variant.options %}
-                                    {% if not (option.id in optionIds) %}
-                                        <attribute>
-                                            <name><![CDATA[{{ option.group.translated.name|raw }}]]></name>
-                                            <value><![CDATA[{{ option.translated.name|raw }}]]></value>
-                                        </attribute>
-                                        {% set optionGroups = optionGroups|merge([option.groupId]) %}
-                                        {% set optionIds = optionIds|merge([option.id]) %}
-                                    {% endif %}
-                                {% endfor %}
-
-                                {% for property in variant.properties %}
-                                    {% if not (property.groupId in optionGroups) and not (property.id in propertyIds) %}
-                                        <attribute>
-                                            <name><![CDATA[{{ property.group.translated.name|raw }}]]></name>
-                                            <value><![CDATA[{{ property.translated.name|raw }}]]></value>
-                                        </attribute>
-                                        {% set propertyIds = propertyIds|merge([property.id]) %}
-                                    {% endif %}
-                                {% endfor %}
-
-                            {% endif %}
-                        {% endfor %}
+                    {% if otherVariantsXml %}
+                        {{ otherVariantsXml|raw }}
                     {% endif %}
                     <attribute>
                         <name>sw-new</name>
