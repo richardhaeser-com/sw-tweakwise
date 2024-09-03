@@ -95,7 +95,7 @@ export default class TwAddToCartPlugin extends Plugin {
     }
 
     _openOffCanvasCarts(requestUrl, formData) {
-        const offCanvasCartInstances = PluginManager.getPluginInstances('OffCanvasCart');
+        const offCanvasCartInstances = window.PluginManager.getPluginInstances('OffCanvasCart');
         Iterator.iterate(offCanvasCartInstances, instance => this._openOffCanvasCart(instance, requestUrl, formData));
     }
 
