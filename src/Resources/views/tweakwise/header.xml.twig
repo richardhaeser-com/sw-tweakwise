@@ -1,6 +1,8 @@
 {% block feed_header %}
 <tweakwise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
     <timestamp>{{ date().timestamp }}</timestamp>
+    <shopwareVersion>{{ shopwareVersion }}</shopwareVersion>
+    <pluginVersion>{{ pluginVersion }}</pluginVersion>
 
     <categories>
 {% endblock %}

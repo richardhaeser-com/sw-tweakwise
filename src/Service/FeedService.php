@@ -2,8 +2,10 @@
 
 namespace RH\Tweakwise\Service;
 
+use Composer\InstalledVersions;
 use function array_key_exists;
 use function array_unique;
+use function class_exists;
 use function crc32;
 use Cron\CronExpression;
 use DateInterval;
@@ -348,7 +350,20 @@ class FeedService
 
     private function generateHeader(FeedEntity $feed): void
     {
-        $content = $this->twig->render($this->resolveView('tweakwise/header.xml.twig'), []);
+        $version = null;
+        if (class_exists(InstalledVersions::class)) {
+            $version = InstalledVersions::getVersion('richardhaeser/sw-tweakwise');
+        }
+        if ($version === null) {
+            $filename = __DIR__ . '/../../composer.json';
+            $composerData = json_decode(file_get_contents($filename), true);
+            $version = $composerData['version'] ?: '-';
+        }
+        $variables = [
+            'pluginVersion' => $version,
+            'shopwareVersion' => $this->shopwareVersion
+        ];
+        $content = $this->twig->render($this->resolveView('tweakwise/header.xml.twig'), $variables);
         $this->writeContent($content, $feed);
     }
     private function generateMiddle(FeedEntity $feed): void
