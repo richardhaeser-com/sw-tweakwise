@@ -3,6 +3,9 @@
 namespace RH\Tweakwise\Service;
 
 use Composer\InstalledVersions;
+use RH\Tweakwise\Events\TweakwiseProductFeedCriteriaEvent;
+use RH\Tweakwise\Events\TweakwiseProductFeedResultEvent;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use function array_key_exists;
 use function array_unique;
 use function class_exists;
@@ -81,6 +84,7 @@ class FeedService
     private string $shopwareVersion;
     private AbstractRuleLoader $ruleLoader;
     private string $path;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -93,7 +97,8 @@ class FeedService
         EntityRepository $productRepository,
         string $shopwareVersion,
         AbstractRuleLoader $ruleLoader,
-        string $path
+        string $path,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -106,6 +111,7 @@ class FeedService
         $this->shopwareVersion = $shopwareVersion;
         $this->ruleLoader = $ruleLoader;
         $this->path = $path;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function fixFeedRecords(bool $forceFeedGeneration = false): void
@@ -328,8 +334,16 @@ class FeedService
                 new ProductAvailableFilter($salesChannel->getId(), ProductVisibilityDefinition::VISIBILITY_ALL)
             );
 
+            $this->eventDispatcher->dispatch(
+                new TweakwiseProductFeedCriteriaEvent($criteria, $salesChannelContext)
+            );
+
             /** @var ProductListingResult $result */
             while (($result = $this->loadProducts($criteria, $salesChannelContext)) !== null) {
+                $this->eventDispatcher->dispatch(
+                    new TweakwiseProductFeedResultEvent($result, $salesChannelContext)
+                );
+
                 $this->renderProducts($result->getElements(), $salesChannelDomain, $feed, $salesChannelContext);
                 $criteria->setOffset($criteria->getOffset() + $criteria->getLimit());
             }
