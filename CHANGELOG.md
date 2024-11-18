@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.2] - 18-11-2024
+
+### Fixed
+- Fixed issue with version number not being updated in the composer manifest.
+
+## [2.9.1] - 12-11-2024
+
+### Fixed
+- Fix issue when products are both manual in a category as by a dynamic product group
+
+### Changed
+- You can now use the cron notation when scheduling the generation of your feed in the administration.
+- Added each tag as separate attribute to the feed besides having 1 field containing all tags.
+
 ## [2.9.0] - 26-06-2024
 
 ### Added
