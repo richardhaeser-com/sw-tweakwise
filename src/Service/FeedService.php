@@ -284,16 +284,8 @@ class FeedService
             /** @var SalesChannelEntity $salesChannel */
             $salesChannel = $salesChannelDomain->getSalesChannel();
             $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $salesChannelDomain->getLanguageId()]);
-
-            $rules = $this->ruleLoader->load($salesChannelContext->getContext());
-            $checkoutRuleScope = new CheckoutRuleScope($salesChannelContext);
             $cart = new Cart(Uuid::randomHex());
-            $cartScope = new CartRuleScope($cart, $salesChannelContext);
-
-            $rules = $rules->filter(function ($rule) use ($checkoutRuleScope, $cartScope) {
-                return $rule->getPayload()->match($checkoutRuleScope) || $rule->getPayload()->match($cartScope);
-            });
-
+            $rules = $this->ruleLoader->load($salesChannelContext->getContext())->filterMatchingRules($cart, $salesChannelContext);
             $salesChannelContext->setRuleIds($rules->getIds());
 
             $criteria = new Criteria();
@@ -375,19 +367,21 @@ class FeedService
         }
         $variables = [
             'pluginVersion' => $version,
-            'shopwareVersion' => $this->shopwareVersion
+            'shopwareVersion' => $this->shopwareVersion,
+            'feed' => $feed
         ];
-        $content = $this->twig->render($this->resolveView('tweakwise/header.xml.twig'), $variables);
+        $content = $this->twig->render($this->resolveView('header.xml.twig', $feed), $variables);
         $this->writeContent($content, $feed);
     }
+
     private function generateMiddle(FeedEntity $feed): void
     {
-        $content = $this->twig->render($this->resolveView('tweakwise/middle.xml.twig'), []);
+        $content = $this->twig->render($this->resolveView('middle.xml.twig', $feed), ['feed' => $feed]);
         $this->writeContent($content, $feed);
     }
     private function generateFooter(FeedEntity $feed): void
     {
-        $content = $this->twig->render($this->resolveView('tweakwise/footer.xml.twig'), []);
+        $content = $this->twig->render($this->resolveView('footer.xml.twig', $feed), ['feed' => $feed]);
         $this->writeContent($content, $feed);
     }
 
@@ -397,10 +391,11 @@ class FeedService
         $rootCategoryEntity->setName('Shopware feed');
         $rootCategoryEntity->setTranslated(['name' => 'Shopware feed']);
 
-        $content = $this->twig->render($this->resolveView('tweakwise/category.xml.twig'), [
+        $content = $this->twig->render($this->resolveView('category.xml.twig', $feed), [
             'elementId' => 'root',
             'category' => $rootCategoryEntity,
             'rank' => $this->categoryRank,
+            'feed' => $feed
         ]);
         $this->categoryRank++;
 
@@ -411,11 +406,12 @@ class FeedService
             $salesChannelCategory->setName($salesChannel->getName());
             $salesChannelCategory->setTranslated(['name' => $salesChannel->getName()]);
 
-            $content .= $this->twig->render($this->resolveView('tweakwise/category.xml.twig'), [
+            $content .= $this->twig->render($this->resolveView('category.xml.twig', $feed), [
                 'elementId' => md5($salesChannel->getId()),
                 'category' => $salesChannelCategory,
                 'parentElementId' => 'root',
                 'rank' => $this->categoryRank,
+                'feed' => $feed
             ]);
             $this->categoryRank++;
         }
@@ -425,11 +421,12 @@ class FeedService
             $salesChannelDomainCategory->setName($salesChannelDomain->getLanguage()->getTranslationCode()->getCode());
             $salesChannelDomainCategory->setTranslated(['name' => $salesChannelDomain->getLanguage()->getTranslationCode()->getCode()]);
 
-            $content .= $this->twig->render($this->resolveView('tweakwise/category.xml.twig'), [
+            $content .= $this->twig->render($this->resolveView('category.xml.twig', $feed), [
                 'elementId' => md5($salesChannelDomain->getSalesChannel()->getNavigationCategoryId() . '_' . $salesChannelDomain->getId()),
                 'category' => $salesChannelDomainCategory,
                 'parentElementId' => md5($salesChannelDomain->getSalesChannel()->getId()),
                 'rank' => $this->categoryRank,
+                'feed' => $feed
             ]);
             $this->categoryRank++;
         }
@@ -448,10 +445,11 @@ class FeedService
     }
     private function renderCategory(CategoryEntity $category, SalesChannelDomainEntity $domain, FeedEntity $feed)
     {
-        $content = $this->twig->render($this->resolveView('tweakwise/category.xml.twig'), [
+        $content = $this->twig->render($this->resolveView('category.xml.twig', $feed), [
             'domainId' => $domain->getId(),
             'category' => $category,
             'rank' => $this->categoryRank,
+            'feed' => $feed
         ]);
         $this->writeContent($content, $feed);
     }
@@ -547,13 +545,13 @@ class FeedService
                         /** @var ProductEntity $childProduct */
                         foreach ($childProducts as $childProduct) {
                             foreach ($childProduct->getOptions() as $option) {
-                                $otherVariantsXml .= $this->twig->render($this->resolveView('tweakwise/variantAttributes.xml.twig'), [
+                                $otherVariantsXml .= $this->twig->render($this->resolveView('variantAttributes.xml.twig', $feed), [
                                     'name' => $option->getGroup()->getTranslated()['name'],
                                     'value' => $option->getTranslated()['name'],
                                 ]);
                             }
                             foreach ($childProduct->getProperties() as $property) {
-                                $otherVariantsXml .= $this->twig->render($this->resolveView('tweakwise/variantAttributes.xml.twig'), [
+                                $otherVariantsXml .= $this->twig->render($this->resolveView('variantAttributes.xml.twig', $feed), [
                                     'name' => $property->getGroup()->getTranslated()['name'],
                                     'value' => $property->getTranslated()['name'],
                                 ]);
@@ -578,7 +576,7 @@ class FeedService
                     }, ARRAY_FILTER_USE_BOTH);
                 }
 
-                $content .= $this->twig->render($this->resolveView('tweakwise/product.xml.twig'), [
+                $content .= $this->twig->render($this->resolveView('product.xml.twig', $feed), [
                     'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
                     'categoriesFromStreams' => $categoriesFromStreams,
                     'domainId' => $domain->getId(),
@@ -588,6 +586,7 @@ class FeedService
                     'otherVariantsXml' => $otherVariantsXml,
                     'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
                     'salesChannel' => $domain->getSalesChannel(),
+                    'feed' => $feed
                 ]);
                 $this->uniqueProductIds[] = $productId;
             }
@@ -624,20 +623,11 @@ class FeedService
                 ],
             ];
         }
-        $rules = $this->ruleLoader->load($salesChannelContext->getContext());
-
-        $checkoutScope = new CheckoutRuleScope($salesChannelContext);
-        $cart = new Cart(Uuid::randomHex());
-        $cartScope = new CartRuleScope($cart, $salesChannelContext);
-
-        $rules = $rules->filter(function ($rule) use ($checkoutScope, $cartScope) {
-            return $rule->getPayload()->match($checkoutScope) || $rule->getPayload()->match($cartScope);
-        });
         $lowest = $highest = null;
 
         /** @var ProductPriceEntity $price */
         foreach ($prices as $price) {
-            if (!$price->getRuleId() || !in_array($price->getRuleId(), $rules->getIds())) {
+            if (!$price->getRuleId() || !in_array($price->getRuleId(), $salesChannelContext->getRuleIds())) {
                 continue;
             }
             if ($lowest === null) {
@@ -711,9 +701,13 @@ class FeedService
         }
     }
 
-    private function resolveView(string $view): string
+    private function resolveView(string $view, FeedEntity $feed): string
     {
-        return $this->templateFinder->find('@Storefront/' . $view, true, '@RhaeTweakwise/' . $view);
+        $folder = 'tweakwise';
+        if ($feed->getType() !== 'full') {
+            $folder = $folder . '/' . strtolower($feed->getType());
+        }
+        return $this->templateFinder->find('@Storefront/' . $folder . '/' . $view, true, '@RhaeTweakwise/' . $folder . '/' . $view);
     }
 
     public function generateCategories(FeedEntity $feed)

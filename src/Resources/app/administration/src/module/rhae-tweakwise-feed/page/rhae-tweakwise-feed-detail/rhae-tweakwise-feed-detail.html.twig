@@ -1,28 +1,40 @@
+{% block sw_tweakwise_feed_detail %}
 <sw-page class="rhae-tweakwise-feed-detail">
     <template #smart-bar-actions>
-        <sw-button @click="getItem">
-            <sw-icon name="regular-undo" />
-        </sw-button>
+        {% block sw_tweakwise_feed_detail_actions %}
+            {% block sw_tweakwise_feed_detail_actions_refresh %}
+            <sw-button @click="getItem">
+                <sw-icon name="regular-undo" />
+            </sw-button>
+            {% endblock %}
 
-        <sw-button :routerLink="{ name: 'rhae.tweakwise.feed.list' }">
-            {{ $t('rhae-tweakwise-feed.detail.cancelButtonText') }}
-        </sw-button>
+            {% block sw_tweakwise_feed_detail_actions_cancel %}
+            <sw-button :routerLink="{ name: 'rhae.tweakwise.feed.list' }">
+                {{ $t('rhae-tweakwise-feed.detail.cancelButtonText') }}
+            </sw-button>
+            {% endblock %}
 
-        <sw-button-process
-                :isLoading="isLoading"
-                :processSuccess="processSuccess.general"
-                variant="primary"
-                @process-finish="saveFinish"
-                @click="onClickSave">
-            {{ $t('rhae-tweakwise-feed.detail.saveButtonText') }}
-        </sw-button-process>
+            {% block sw_tweakwise_feed_detail_actions_save %}
+            <sw-button-process
+                    :isLoading="isLoading"
+                    :processSuccess="processSuccess.general"
+                    variant="primary"
+                    @process-finish="saveFinish"
+                    @click="onClickSave">
+                {{ $t('rhae-tweakwise-feed.detail.saveButtonText') }}
+            </sw-button-process>
+            {% endblock %}
+        {% endblock %}
     </template>
 
     <template #content>
+        {% block sw_tweakwise_feed_detail_content %}
         <sw-card-view>
+            {% block sw_tweakwise_feed_detail_content_main %}
             <sw-card v-if="item" :isLoading="isLoading" :title="$tc('rhae-tweakwise-feed.detail.section.main')">
                 <sw-card-section v-if="item.salesChannelDomains[0]" divider="bottom">
                     <sw-container columns="1fr" gap="30px" style="margin-bottom: 1rem;">
+                        {% block sw_tweakwise_feed_detail_content_main_url %}
                         <div>
                             <p class="rhae-tweakwise-feed__card-toolbar-heading">
                                 {{ $t('rhae-tweakwise-feed.detail.label.feedUrl') }}
@@ -30,11 +42,13 @@
 
                             <p>{{ item.salesChannelDomains[0].url }}/tweakwise/feed-{{item.id}}.xml</p>
                         </div>
+                        {% endblock %}
                     </sw-container>
                     <sw-container
                         class="rhae-tweakwise-feed__card-toolbar"
                         columns="repeat(3, 1fr)"
                     >
+                        {% block sw_tweakwise_feed_detail_content_main_last_generated %}
                             <div>
                                 <p class="rhae-tweakwise-feed__card-toolbar-heading">
                                     {{ $t('rhae-tweakwise-feed.detail.label.lastGeneratedAt') }}
@@ -42,6 +56,8 @@
                                 <p v-if="item.lastGeneratedAt"><sw-time-ago :date="item.lastGeneratedAt" /></p>
                                 <p v-else>-</p>
                             </div>
+                        {% endblock %}
+                        {% block sw_tweakwise_feed_detail_content_main_next_generation %}
                             <div>
                                 <p class="rhae-tweakwise-feed__card-toolbar-heading">
                                     {{ $t('rhae-tweakwise-feed.detail.label.nextGenerationAt') }}
@@ -52,57 +68,76 @@
                                     {{ $t('rhae-tweakwise-feed.detail.label.generateNow') }}
                                 </sw-button>
                             </div>
+                        {% endblock %}
+                        {% block sw_tweakwise_feed_detail_content_main_status %}
                             <div>
                                 <p class="rhae-tweakwise-feed__card-toolbar-heading">
                                     {{ $t('rhae-tweakwise-feed.detail.label.status') }}
                                 </p>
                                 <p>{{ $tc(`rhae-tweakwise-feed.detail.label.statusOption.${item.status}`) }}</p>
                             </div>
+                        {% endblock %}
                     </sw-container>
 
                 </sw-card-section>
 
                 <sw-card-section>
+                    {% block sw_tweakwise_feed_detail_content_main_type %}
                     <sw-select-field :label="$t('rhae-tweakwise-feed.detail.label.type')"
                                      v-model:value="item.type">
-                        <option v-for="value in ['full']" :value="value">
+                        <option v-for="value in ['full', 'z']" :value="value">
                             {{ $tc('rhae-tweakwise-feed.detail.label.typeOptions.' + value) }}
                         </option>
                     </sw-select-field>
+                    {% endblock %}
 
 
+                    {% block sw_tweakwise_feed_detail_content_main_name %}
                     <sw-text-field :label="$t('rhae-tweakwise-feed.detail.label.name')"
                               v-model:value="item.name"
                               required validation="required" ></sw-text-field>
+                    {% endblock %}
 
+                    {% block sw_tweakwise_feed_detail_content_main_domains %}
                     <sw-entity-multi-select
                         :label="$t('rhae-tweakwise-feed.detail.label.salesChannelDomains')"
                         labelProperty="url"
                         value-property="id"
                         v-model:entityCollection="item.salesChannelDomains"
                     />
+                    {% endblock %}
 
+                    {% block sw_tweakwise_feed_detail_content_main_interval %}
                     <sw-text-field :label="$t('rhae-tweakwise-feed.detail.label.interval')"
                               v-model:value="item.interval"
                               required validation="required"></sw-text-field>
+                    {% endblock %}
 
-
+                    {% block sw_tweakwise_feed_detail_content_main_import_task_url %}
                     <sw-text-field :label="$t('rhae-tweakwise-feed.detail.label.importTaskUrl')"
                               v-model:value="item.importTaskUrl"></sw-text-field>
+                    {% endblock %}
 
                 </sw-card-section>
             </sw-card>
+            {% endblock %}
 
+            {% block sw_tweakwise_feed_detail_content_settings_full %}
             <sw-card v-if="item && item.type === 'full'" :isLoading="isLoading" :title="$tc('rhae-tweakwise-feed.detail.section.data')">
                 <sw-card-section>
+                    {% block sw_tweakwise_feed_detail_content_settings_full_include_hidden_categories %}
                     <sw-checkbox-field
                             v-model:value="item.includeHiddenCategories"
                             :label="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategories')"
                             @update:value="onChangeToggle($event, 'includeHiddenCategories')"
                     />
+                    {% endblock %}
                 </sw-card-section>
             </sw-card>
+            {% endblock %}
         </sw-card-view>
+        {% endblock %}
     </template>
 
 </sw-page>
+{% endblock %}
