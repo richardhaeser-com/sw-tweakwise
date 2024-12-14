@@ -302,8 +302,6 @@ class FeedService
                 $criteria->addAssociation('properties.group');
             }
             $criteria->addAssociation('manufacturer');
-            $criteria->getAssociation('categories')
-                ->addFilter(new EqualsFilter('productAssignmentType', 'product'));
             $criteria->addAssociation('categories');
             $criteria->addAssociation('media');
 
@@ -563,7 +561,11 @@ class FeedService
                 }
 
                 $categoriesFromStreams = [];
-                $categoryIds = $product->getCategories()->getIds();
+                $categoryIds = $product->getCategories()->filter(
+                    function (CategoryEntity $category) {
+                        return $category->getProductAssignmentType() === 'product';
+                    }
+                )->getIds();
                 foreach ($product->getStreamIds() ?: [] as $streamId) {
                     if (array_key_exists($streamId, $this->productStreamCategories)) {
                         $categoriesFromStreams = array_merge($categoriesFromStreams, (array)$this->productStreamCategories[$streamId]['categories']);
