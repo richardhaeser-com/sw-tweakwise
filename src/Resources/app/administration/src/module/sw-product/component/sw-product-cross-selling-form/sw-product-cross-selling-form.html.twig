@@ -5,9 +5,10 @@
 
     <div v-if="useTweakwise">
         <sw-text-field
-            v-model="crossSelling.extensions.tweakwise.groupKey"
+            v-model:value="crossSelling.extensions.tweakwise.groupKey"
             :label="$tc('sw-product.crossselling.tweakwiseGroupKey')"
             required
+            validation="required"
             placeholder="Default is sw-cross-sell"
             :disabled="!allowEdit"
         />

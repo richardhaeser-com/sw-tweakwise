@@ -1,0 +1,51 @@
+{% sw_extends '@Storefront/storefront/element/cms-element-cross-selling.html.twig' %}
+
+{% block cms_element_cross_selling_tabs_content_container_slider %}
+    {% if page.extensions.twConfiguration.integration == 'javascript' and item.crossSelling.type == "tweakwiseRecommendation" %}
+        {% if item.crossSelling.extensions.tweakwise.groupKey %}
+            {% set groupKey = item.crossSelling.extensions.tweakwise.groupKey %}
+        {% else %}
+            {% set groupKey = "sw-cross-sell" %}
+        {% endif %}
+
+        <div id="related-recommendations-{{ id }}"></div>
+
+        <script>
+            window.addEventListener("DOMContentLoaded", function () {
+                window.tweakwiseRecommendations({
+                    output: "#related-recommendations-{{ id }}",
+                    instancekey: "{{ page.extensions.twConfiguration.instanceKey|escape }}",
+                    related: {
+                        productId: "{{ page.extensions.twConfiguration.crossSellProductId }}",
+                        groupKey: "{{ groupKey }}"
+                    },
+                    on: {
+                        "twn.add-to-cart": function (event) {
+                            let addToCartEvent = new CustomEvent('twAddToCart', {
+                                detail: {
+                                    addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
+                                    data: event.data
+                                }
+                            });
+                            window.dispatchEvent(addToCartEvent);
+                        },
+                        "twn.request.navigation.completed": function (event) {
+                            let navSuccessEvent = new CustomEvent('twNavigationSuccess', {
+                                detail: {}
+                            });
+                            window.dispatchEvent(navSuccessEvent);
+                        },
+                        "twn.request.completed'": function (event) {
+                            let navSuccessEvent = new CustomEvent('twSuccess', {
+                                detail: {}
+                            });
+                            window.dispatchEvent(navSuccessEvent);
+                        },
+                    }
+                });
+            });
+        </script>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
