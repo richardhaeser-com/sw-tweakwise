@@ -85,7 +85,7 @@
                     {% block sw_tweakwise_feed_detail_content_main_type %}
                     <sw-select-field :label="$t('rhae-tweakwise-feed.detail.label.type')"
                                      v-model:value="item.type">
-                        <option v-for="value in ['full', 'z']" :value="value">
+                        <option v-for="value in ['full']" :value="value">
                             {{ $tc('rhae-tweakwise-feed.detail.label.typeOptions.' + value) }}
                         </option>
                     </sw-select-field>
