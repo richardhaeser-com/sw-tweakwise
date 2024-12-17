@@ -11,7 +11,8 @@ class TweakwiseProductFeedCriteriaEvent implements ShopwareSalesChannelEvent
     public function __construct(
         protected Criteria $criteria,
         protected SalesChannelContext $context
-    ) { }
+    ) {
+    }
     public function getContext(): Context
     {
         return $this->context->getContext();

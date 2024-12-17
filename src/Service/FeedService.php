@@ -2,13 +2,10 @@
 
 namespace RH\Tweakwise\Service;
 
-use Composer\InstalledVersions;
-use RH\Tweakwise\Events\TweakwiseProductFeedCriteriaEvent;
-use RH\Tweakwise\Events\TweakwiseProductFeedResultEvent;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use function array_key_exists;
 use function array_unique;
 use function class_exists;
+use Composer\InstalledVersions;
 use function crc32;
 use Cron\CronExpression;
 use DateInterval;
@@ -26,11 +23,11 @@ use function md5;
 use function mkdir;
 use function rename;
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
+use RH\Tweakwise\Events\TweakwiseProductFeedCriteriaEvent;
+use RH\Tweakwise\Events\TweakwiseProductFeedResultEvent;
 use function rtrim;
 use Shopware\Core\Checkout\Cart\AbstractRuleLoader;
 use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Checkout\Cart\Rule\CartRuleScope;
-use Shopware\Core\Checkout\CheckoutRuleScope;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceEntity;
@@ -57,6 +54,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use function sprintf;
 use function str_replace;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
