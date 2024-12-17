@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.5] - 17-12-2024
+
+### Added
+- Added events to be able to alter criteria and results before writing the feed to the XML
+
+### Fixed
+- Fixed issue with advanced pricing not using the rules attached to the price tier
+- Resolved a problem setting the group key while adding a cross-sell to a product
+- Made sure all categories are used including categories based on dynamic product groups
+
+### Changed
+- Added more twig blocks in templates
+
 ## [3.0.4] - 09-09-2024
 
 ### Added

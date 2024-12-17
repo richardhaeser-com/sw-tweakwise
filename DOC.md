@@ -10,6 +10,7 @@ This document will help you to setup the plugin for the default features of Shop
 - [Tweakwise Merchandise / Product Listing Page](#merchandise)
 - [Cross-sell recommendations](#cross-sell)
 - [Featured products](#featured-products)
+- [Events](#events)
 
 <a name="installation"></a>
 ## Installation
@@ -156,3 +157,13 @@ It is possible to use the cross-sell recommendations of Tweakwise in your Shopwa
 <a name="featured-products"></a>
 ## Featured products
 If you have configured featured products in your Tweakwise app, you can show those featured products by adding a CMS element called Tweakwise Featured Products. You only have to give the group ID, which can be found in the Tweakwise app, and you are ready to go. The styling of the products, is done by either Tweakwise or you can do it yourselves. You can not change the HTML template though.
+
+<a name="events"></a>
+## Events
+If you want to alter the criteria or the results of the product query, you can now subscribe to the events below. 
+
+### TweakwiseProductFeedCriteriaEvent
+With this event, you are able to alter the criteria that are used querying the products.
+
+### TweakwiseProductFeedResultEvent
+To enrich or alter the results of the product query, you are now able to use this event.
