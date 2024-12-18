@@ -77,7 +77,6 @@ class FeedService
     private EntityRepository $feedRepository;
     private ProductListingLoader $listingLoader;
     private array $uniqueProductIds = [];
-    private array $productStreamCategories = [];
     private EntityRepository $productRepository;
     private string $shopwareVersion;
     private AbstractRuleLoader $ruleLoader;
@@ -471,9 +470,6 @@ class FeedService
         /** @var ProductEntity $product */
         foreach ($products as $product) {
             echo '.';
-            if ($product->getProductNumber() === 'SWDEMO100013') {
-                var_dump($product->getStreams());
-            }
             $productId = $product->getProductNumber() . ' (' . $domain->getLanguage()->getTranslationCode()->getCode() . ' - ' . crc32($domain->getId()) . ')';
             if (!in_array($productId, $this->uniqueProductIds, true)) {
                 $otherVariants = null;
@@ -717,10 +713,6 @@ class FeedService
     {
         /** @var TreeItem $treeItem */
         foreach ($treeItems as $treeItem) {
-            if ($treeItem->getCategory()->getProductStreamId()) {
-                $this->productStreamCategories[$treeItem->getCategory()->getProductStreamId()]['categories'][$treeItem->getCategory()->getId()] = md5($treeItem->getCategory()->getId() . '_' . $domainEntity->getId());
-            }
-
             $this->uniqueCategoryIds[] = $treeItem->getCategory()->getId() . '_' . $domainEntity->getId();
             $this->renderCategory($treeItem->getCategory(), $domainEntity, $feed);
             $this->categoryRank++;
