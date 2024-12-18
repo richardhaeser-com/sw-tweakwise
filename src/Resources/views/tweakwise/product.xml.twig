@@ -33,12 +33,7 @@
         {% endblock %}
         <categories>
             {% for category in product.categories %}
-                {% if (category.id ~ '_' ~ domainId) in categoryIdsInFeed and category.productAssignmentType == 'product' %}
-                    <categoryid name="{{ category.translated.name }}" domain="{{ domainUrl }}">{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
-                {% endif %}
-            {% endfor %}
-            {% for category in categoriesFromStreams %}
-                <categoryid>{{ category }}</categoryid>
+                <categoryid name="{{ category.translated.name }}" domain="{{ domainUrl }}">{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
             {% endfor %}
         </categories>
         {% block feed_item_attributes %}

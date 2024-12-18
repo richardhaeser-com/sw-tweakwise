@@ -301,6 +301,7 @@ class FeedService
             }
             $criteria->addAssociation('manufacturer');
             $criteria->addAssociation('categories');
+            $criteria->addAssociation('streams');
             $criteria->addAssociation('media');
 
             if (!$feed->isExcludeReviews()) {
@@ -470,6 +471,9 @@ class FeedService
         /** @var ProductEntity $product */
         foreach ($products as $product) {
             echo '.';
+            if ($product->getProductNumber() === 'SWDEMO100013') {
+                var_dump($product->getStreams());
+            }
             $productId = $product->getProductNumber() . ' (' . $domain->getLanguage()->getTranslationCode()->getCode() . ' - ' . crc32($domain->getId()) . ')';
             if (!in_array($productId, $this->uniqueProductIds, true)) {
                 $otherVariants = null;
@@ -558,27 +562,8 @@ class FeedService
                     }
                 }
 
-                $categoriesFromStreams = [];
-                $categoryIds = $product->getCategories()->filter(
-                    function (CategoryEntity $category) {
-                        return $category->getProductAssignmentType() === 'product';
-                    }
-                )->getIds();
-                foreach ($product->getStreamIds() ?: [] as $streamId) {
-                    if (array_key_exists($streamId, $this->productStreamCategories)) {
-                        $categoriesFromStreams = array_merge($categoriesFromStreams, (array)$this->productStreamCategories[$streamId]['categories']);
-                    }
-                }
-
-                if ($categoriesFromStreams) {
-                    $categoriesFromStreams = array_filter($categoriesFromStreams, function ($hash, $categoryId) use ($categoryIds) {
-                        return !in_array($categoryId, $categoryIds);
-                    }, ARRAY_FILTER_USE_BOTH);
-                }
-
                 $content .= $this->twig->render($this->resolveView('product.xml.twig', $feed), [
                     'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
-                    'categoriesFromStreams' => $categoriesFromStreams,
                     'domainId' => $domain->getId(),
                     'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
                     'product' => $product,
