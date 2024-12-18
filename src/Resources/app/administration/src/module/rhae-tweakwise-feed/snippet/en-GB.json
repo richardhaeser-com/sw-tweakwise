@@ -8,7 +8,9 @@
             "addButtonText": "Create new feed",
             "refreshButtonText": "Refresh",
             "columns": {
-                "name": "Feed name"
+                "name": "Feed name",
+                "type": "Type of feed",
+                "domains": "Domains"
             }
         },
         "detail": {

@@ -21,10 +21,11 @@
             detailRoute="rhae.tweakwise.feed.detail"
             @select-item="updateSelection"
             @update-records="updateTotal">
-            <template #more-actions="{ item }">
-                <sw-context-menu-item @click="onDuplicate(item)">
-                    {{ $tc('sw-product.list.buttonDuplicate') }}
-                </sw-context-menu-item>
+            <template #column-type="{ item }">
+                {{ $tc('rhae-tweakwise-feed.detail.label.typeOptions.' + item.type) }}
+            </template>
+            <template #column-domains="{ item }">
+                <template v-for="(domain, index) in item.salesChannelDomains">{{ domain.url }}<span v-if="index < (item.salesChannelDomains.length - 1)">,&nbsp;</span></template>
             </template>
         </sw-entity-listing>
     </template>

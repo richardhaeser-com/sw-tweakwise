@@ -8,7 +8,9 @@
             "addButtonText": "Maak nieuwe feed",
             "refreshButtonText": "Vernieuwen",
             "columns": {
-                "name": "Feed naam"
+                "name": "Feed naam",
+                "type": "Soort feed",
+                "domains": "Domeinnamen"
             }
         },
         "detail": {

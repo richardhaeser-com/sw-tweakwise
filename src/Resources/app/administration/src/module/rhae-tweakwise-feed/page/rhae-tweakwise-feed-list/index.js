@@ -52,6 +52,17 @@ Component.register('rhae-tweakwise-feed-list', {
                     inlineEdit: 'string',
                     allowResize: true,
                     primary: true
+                },
+                {
+                    property: 'type',
+                    dataIndex: 'type',
+                    label: this.$t('rhae-tweakwise-feed.list.columns.type'),
+                    inlineEdit: 'string'
+                },
+                {
+                    property: 'domains',
+                    dataIndex: 'domains',
+                    label: this.$t('rhae-tweakwise-feed.list.columns.domains'),
                 }
             ]
         }
@@ -60,6 +71,7 @@ Component.register('rhae-tweakwise-feed-list', {
     methods: {
         async getList() {
             const criteria = new Criteria(this.page, this.limit, this.term);
+            criteria.addAssociation('salesChannelDomains');
 
             this.isLoading = true;
 
