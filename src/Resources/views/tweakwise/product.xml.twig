@@ -32,8 +32,10 @@
             {% endif %}
         {% endblock %}
         <categories>
-            {% for category in product.categories %}
-                <categoryid name="{{ category.translated.name }}" domain="{{ domainUrl }}">{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
+            {% for category in categories %}
+                {% if (category.id ~ '_' ~ domainId) in categoryIdsInFeed %}
+                    <categoryid name="{{ category.translated.name }}" domain="{{ domainUrl }}">{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
+                {% endif %}
             {% endfor %}
         </categories>
         {% block feed_item_attributes %}
@@ -149,16 +151,16 @@
                         <value>{% if product.releaseDate %}{{ product.releaseDate|date('Y-m-d') }}{% endif %}</value>
                     </attribute>
                     {% if price.listPrice.price %}
-                    <attribute>
-                        <name>sw-price-from</name>
-                        <value>{{ price.listPrice.price|round(2, 'common') }}</value>
-                    </attribute>
+                        <attribute>
+                            <name>sw-price-from</name>
+                            <value>{{ price.listPrice.price|round(2, 'common') }}</value>
+                        </attribute>
                     {% endif %}
                     {% if price.listPrice.price %}
-                    <attribute>
-                        <name>sw-price-list</name>
-                        <value>{{ price.listPrice.price|round(2, 'common') }}</value>
-                    </attribute>
+                        <attribute>
+                            <name>sw-price-list</name>
+                            <value>{{ price.listPrice.price|round(2, 'common') }}</value>
+                        </attribute>
                     {% endif %}
                     {% if price.calculatedTaxes.count > 0 %}
                         {% set netPrice = price.unitPrice %}
@@ -328,19 +330,19 @@
                     {% for image in product.media %}
                         {% block feed_item_media_item %}
                             {% if image.media is defined and image.media.url %}
-                            <attribute>
-                                <name>sw-media-{{ loop.index }}</name>
-                                {% set width = 0 %}
-                                {% set thumbUrl = image.media.url %}
+                                <attribute>
+                                    <name>sw-media-{{ loop.index }}</name>
+                                    {% set width = 0 %}
+                                    {% set thumbUrl = image.media.url %}
 
-                                {% for thumbnail in image.media.thumbnails %}
-                                    {% if thumbnail.width > width %}
-                                        {% set thumbUrl = thumbnail.url %}
-                                        {% set width = thumbnail.width %}
-                                    {% endif %}
-                                {% endfor %}
-                                <value>{{ thumbUrl }}</value>
-                            </attribute>
+                                    {% for thumbnail in image.media.thumbnails %}
+                                        {% if thumbnail.width > width %}
+                                            {% set thumbUrl = thumbnail.url %}
+                                            {% set width = thumbnail.width %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    <value>{{ thumbUrl }}</value>
+                                </attribute>
                             {% endif %}
                         {% endblock %}
                     {% endfor %}

@@ -301,6 +301,7 @@ class FeedService
             $criteria->addAssociation('manufacturer');
             $criteria->addAssociation('categories');
             $criteria->addAssociation('streams');
+            $criteria->addAssociation('streams.categories');
             $criteria->addAssociation('media');
 
             if (!$feed->isExcludeReviews()) {
@@ -558,8 +559,25 @@ class FeedService
                     }
                 }
 
+                $categories = [];
+                foreach ($product->getCategories() as $pCategory) {
+                    if ($pCategory->getProductAssignmentType() === 'product') {
+                        if (!array_key_exists($pCategory->getId(), $categories)) {
+                            $categories[$pCategory->getId()] = $pCategory;
+                        }
+                    }
+                }
+                foreach ($product->getStreams() as $pStream) {
+                    foreach ($pStream->getCategories() as $sCategory) {
+                        if (!array_key_exists($sCategory->getId(), $categories)) {
+                            $categories[$sCategory->getId()] = $sCategory;
+                        }
+                    }
+                }
+
                 $content .= $this->twig->render($this->resolveView('product.xml.twig', $feed), [
                     'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
+                    'categories' => $categories,
                     'domainId' => $domain->getId(),
                     'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
                     'product' => $product,
