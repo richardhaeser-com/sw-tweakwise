@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- The fields Min. order quantity and Max. order quantity are now added to the feed
+
+### Changed
+- Added some twig blocks in the product feed template
+
 ### Fixed
 - In some cases cross-selling on products with variants didn't work. This update fixes this behaviour and will show cross-sellings based on the variant that is within the Tweakwise feed.
 - Fixed search on 404 pages

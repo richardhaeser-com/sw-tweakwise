@@ -6,15 +6,15 @@
 {% block feed_item %}
 <item>
     {% block feed_item_inner %}
-        <id>{{ product.productNumber }} ({{ lang }} - {{ crc32(domainId) }})</id>
+        <id>{% block feed_item_id %}{{ product.productNumber }} ({{ lang }} - {{ crc32(domainId) }}){% endblock %}</id>
         <price>{{ price.unitPrice|round(2, 'common') }}</price>
-        <name><![CDATA[{{ product.translated.name|raw }}]]></name>
-        <stock>{{ product.availableStock }}</stock>
+        <name>{% block feed_item_name %}<![CDATA[{{ product.translated.name|raw }}]]>{% endblock %}</name>
+        <stock>{% block feed_item_stock %}{{ product.availableStock }}{% endblock %}</stock>
         {% if product.manufacturer %}
-            <brand><![CDATA[{{ product.manufacturer.translated.name|raw }}]]></brand>
+            <brand>{% block feed_item_manufacturer %}<![CDATA[{{ product.manufacturer.translated.name|raw }}]]>{% endblock %}</brand>
         {% endif %}
         {% for url in product.seoUrls %}
-            <url>{{ domainUrl ~ url.seoPathInfo }}</url>
+            <url>{% block feed_item_url %}{{ domainUrl ~ url.seoPathInfo }}{% endblock %}</url>
         {% endfor %}
 
         {% block feed_item_image %}
@@ -32,11 +32,13 @@
             {% endif %}
         {% endblock %}
         <categories>
-            {% for category in categories %}
-                {% if (category.id ~ '_' ~ domainId) in categoryIdsInFeed %}
-                    <categoryid name="{{ category.translated.name }}" domain="{{ domainUrl }}">{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
-                {% endif %}
-            {% endfor %}
+            {% block feed_item_categories %}
+                {% for category in categories %}
+                    {% if (category.id ~ '_' ~ domainId) in categoryIdsInFeed %}
+                        <categoryid name="{{ category.translated.name }}" domain="{{ domainUrl }}">{{ md5(category.id ~ '_' ~ domainId) }}</categoryid>
+                    {% endif %}
+                {% endfor %}
+            {% endblock %}
         </categories>
         {% block feed_item_attributes %}
             <attributes>
@@ -222,6 +224,18 @@
                         <attribute>
                             <name>sw-purchase-unit</name>
                             <value>{{ product.purchaseUnit }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_min_purchase %}
+                        <attribute>
+                            <name>sw-min-purchase</name>
+                            <value>{{ product.minPurchase }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_max_purchase %}
+                        <attribute>
+                            <name>sw-max-purchase</name>
+                            <value>{{ product.maxPurchase }}</value>
                         </attribute>
                     {% endblock %}
                     {% block feed_item_reference_unit %}
