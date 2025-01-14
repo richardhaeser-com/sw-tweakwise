@@ -22,7 +22,7 @@
       },
       "label": {
         "name": "Name",
-        "token": "Authorization key",
+        "token": "Instance key",
         "integration": "Way of integration",
         "integrationOptions": {
           "no-integration": "No integration",
