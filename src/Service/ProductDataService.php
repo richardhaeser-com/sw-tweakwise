@@ -2,24 +2,29 @@
 
 namespace RH\Tweakwise\Service;
 
-use function array_key_exists;
-use function is_array;
+use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
+use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
+use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
+use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use function version_compare;
 
 class ProductDataService
 {
     private string $shopwareVersion;
     private EntityRepository $productRepository;
+    private ProductListingLoader $listingLoader;
 
-    public function __construct(EntityRepository $productRepository, string $shopwareVersion)
+    public function __construct(EntityRepository $productRepository, string $shopwareVersion, ProductListingLoader $listingLoader)
     {
         $this->shopwareVersion = $shopwareVersion;
         $this->productRepository = $productRepository;
+        $this->listingLoader = $listingLoader;
     }
 
     public function getProductFromProductNumber(string $productNumber, Context $context): ?ProductEntity
@@ -34,71 +39,33 @@ class ProductDataService
         return $product;
     }
 
-    public function getProductShownInListing(ProductEntity $product, Context $context): ProductEntity
+    public function getProductShownInListing(ProductEntity $product, SalesChannelContext $context): ProductEntity
     {
-        if (version_compare($this->shopwareVersion, '6.5.0', '>=')) {
-            if ($product->getParentId()) {
-                $criteria = new Criteria([$product->getParentId()]);
-                /** @var ProductEntity $parentProduct */
-                $parentProduct = $this->productRepository->search($criteria, $context)->first();
-                if ($parentProduct instanceof ProductEntity) {
-                    $configurationGroupConfigArray = [];
-                    if (version_compare($this->shopwareVersion, '6.4.15', '>=')) {
-                        /** @phpstan-ignore-next-line */
-                        $listingConfig = $parentProduct->getVariantListingConfig();
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new EqualsFilter('parentId', $product->getParentId())
+        );
+        $criteria->addAssociation('options');
+        $criteria->addAssociation('options.group');
+        $criteria->setOffset(0);
+        $criteria->setLimit(1);
 
-                        if ($listingConfig) {
-                            if ($listingConfig->getDisplayParent()) {
-                                return $parentProduct;
-                            }
+        $criteria->getAssociation('seoUrls')
+            ->setLimit(1)
+            ->addFilter(new EqualsFilter('isCanonical', true));
 
-                            if ($listingConfig->getMainVariantId()) {
-                                /** @var ProductEntity $mainVariant */
-                                $mainVariant = $this->productRepository->search(
-                                    /** @phpstan-ignore-next-line */
-                                    new Criteria([$listingConfig->getMainVariantId()]),
-                                    $context
-                                )->first();
+        $criteria->addFilter(
+            new ProductAvailableFilter($context->getSalesChannelId(), ProductVisibilityDefinition::VISIBILITY_ALL)
+        );
+        $criteria->addSorting(new FieldSorting('productNumber', FieldSorting::ASCENDING));
 
-                                return $mainVariant;
-                            }
+        $entities = $this->listingLoader->load($criteria, $context);
+        $result = ProductListingResult::createFrom($entities);
+        if ($result->getTotal() > 0) {
+            $result->addState(...$entities->getStates());
 
-                            $configurationGroupConfigArray = $listingConfig->getConfiguratorGroupConfig() ?: [];
-                        }
-                    } else {
-                        /** @phpstan-ignore-next-line */
-                        $configurationGroupConfigArray = $parentProduct->getConfiguratorGroupConfig() ?: [];
-                    }
-
-                    $useParentProduct = true;
-                    foreach ($configurationGroupConfigArray as $configurationGroupConfig) {
-                        if (
-                            is_array($configurationGroupConfig)
-                            && array_key_exists('expressionForListings', $configurationGroupConfig)
-                            && $configurationGroupConfig['expressionForListings'] === true
-                        ) {
-                            $useParentProduct = false;
-                            break;
-                        }
-                    }
-                    if ($useParentProduct) {
-                        if (version_compare($this->shopwareVersion, '6.4.15', '>=')) {
-                            $criteria = new Criteria();
-                            $criteria->addFilter(
-                                new EqualsFilter('parentId', $parentProduct->getId())
-                            );
-
-                            /** @var ProductEntity $firstVariant */
-                            $firstVariant = $this->productRepository->search(
-                                $criteria,
-                                $context
-                            )->first();
-                            return $firstVariant;
-                        }
-
-                        return $parentProduct;
-                    }
-                }
+            if ($result->first() instanceof ProductEntity) {
+                return $result->first();
             }
         }
 

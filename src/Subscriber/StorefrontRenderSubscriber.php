@@ -85,7 +85,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         $parameters = $event->getParameters();
         $page = $parameters['page'] ?? null;
         if ($page instanceof ProductPage) {
-            $product = $this->productDataService->getProductShownInListing($page->getProduct(), $event->getContext());
+            $product = $this->productDataService->getProductShownInListing($page->getProduct(), $event->getSalesChannelContext());
 
             /** @phpstan-ignore-next-line */
             $productNumber = $product->getProductNumber();

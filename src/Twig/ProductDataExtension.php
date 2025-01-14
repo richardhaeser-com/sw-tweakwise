@@ -47,7 +47,7 @@ class ProductDataExtension extends AbstractExtension
             return $product->getProductNumber();
         }
 
-        $product = $this->productDataService->getProductShownInListing($product, $twigContext['context']->getContext());
+        $product = $this->productDataService->getProductShownInListing($product, $twigContext['context']);
         return $product->getProductNumber();
     }
 }
