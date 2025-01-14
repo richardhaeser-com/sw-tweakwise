@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Subscriber;
 
+use Shopware\Storefront\Framework\Twig\ErrorTemplateStruct;
 use function crc32;
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
 use RH\Tweakwise\Service\ProductDataService;
@@ -91,7 +92,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
             $productNumber = $product->getProductNumber();
             $twConfiguration['crossSellProductId'] = sprintf('%s (%s - %x)', $productNumber, $event->getRequest()->getLocale(), crc32($domainId));
         }
-        if ($page instanceof Page) {
+        if ($page instanceof Page || $page instanceof ErrorTemplateStruct) {
             $page->addExtensions([
                 'twConfiguration' => new ArrayStruct($twConfiguration),
             ]);

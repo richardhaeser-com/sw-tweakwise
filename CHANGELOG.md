@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - In some cases cross-selling on products with variants didn't work. This update fixes this behaviour and will show cross-sellings based on the variant that is within the Tweakwise feed.
+- Fixed search on 404 pages
 
 ## [3.0.7] - 24-12-2024
 
