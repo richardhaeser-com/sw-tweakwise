@@ -16,13 +16,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class ProductDataService
 {
-    private string $shopwareVersion;
     private EntityRepository $productRepository;
     private ProductListingLoader $listingLoader;
 
-    public function __construct(EntityRepository $productRepository, string $shopwareVersion, ProductListingLoader $listingLoader)
+    public function __construct(EntityRepository $productRepository, ProductListingLoader $listingLoader)
     {
-        $this->shopwareVersion = $shopwareVersion;
         $this->productRepository = $productRepository;
         $this->listingLoader = $listingLoader;
     }

@@ -67,7 +67,6 @@
 
         <service id="RH\Tweakwise\Service\ProductDataService" public="true">
             <argument type="service" id="product.repository"/>
-            <argument>%kernel.shopware_version%</argument>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
         </service>
         <service id="RH\Tweakwise\Service\TweakwiseCategoryLoader" public="true">
