@@ -2,7 +2,6 @@
 
 namespace RH\Tweakwise\Subscriber;
 
-use Shopware\Storefront\Framework\Twig\ErrorTemplateStruct;
 use function crc32;
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
 use RH\Tweakwise\Service\ProductDataService;
@@ -13,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Storefront\Event\StorefrontRenderEvent;
+use Shopware\Storefront\Framework\Twig\ErrorTemplateStruct;
 use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Page\Product\ProductPage;
 use function sprintf;
