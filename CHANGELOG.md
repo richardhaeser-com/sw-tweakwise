@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [3.2.0] - 28-01-2025
+
+### Added
+- If no specific variant is selected for inclusion in the feed, all variants' options, attributes, and stock levels are now included by default.
+
 ## [3.1.0] - 14-01-2025
 
 ### Added
