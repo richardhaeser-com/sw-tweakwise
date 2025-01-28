@@ -473,19 +473,11 @@ class FeedService
             echo '.';
             $productId = $product->getProductNumber() . ' (' . $domain->getLanguage()->getTranslationCode()->getCode() . ' - ' . crc32($domain->getId()) . ')';
             if (!in_array($productId, $this->uniqueProductIds, true)) {
-                $otherVariants = null;
+                $childFilter = null;
+                $getVariants = false;
                 if ($product->getParentId()) {
                     $criteria = new Criteria([$product->getParentId()]);
                     $criteria->addAssociation('children');
-
-                    if (!$feed->isExcludeOptions()) {
-                        $criteria->addAssociation('children.options');
-                        $criteria->addAssociation('children.options.group');
-                    }
-                    if (!$feed->isExcludeProperties()) {
-                        $criteria->addAssociation('children.properties');
-                        $criteria->addAssociation('children.properties.group');
-                    }
 
                     /** @var ProductEntity $parent */
                     $parent = $this->productRepository->search($criteria, $salesChannelContext->getContext())->first();
@@ -503,7 +495,6 @@ class FeedService
                         }
 
                         $getVariants = true;
-                        //                        if (!$parent->getMainVariantId()) {
                         foreach ($configurationGroupConfigArray as $configurationGroupConfig) {
                             if (
                                 is_array($configurationGroupConfig)
@@ -514,33 +505,40 @@ class FeedService
                                 break;
                             }
                         }
-                        //                        }
+
                         if ($getVariants === true) {
-                            $otherVariants = $parent->getChildren();
+                            $childFilter = new EqualsFilter('parentId', $parent->getId());
                         }
 
                     }
                 }
+
+                if ($product->getChildCount() > 0) {
+                    $getVariants = true;
+                    $childFilter = new EqualsFilter('parentId', $product->getId());
+                }
+
                 $otherVariantsXml = '';
 
-                if ($product->getChildCount() > 0 && !$feed->isExcludeChildren() && (!$feed->isExcludeOptions() || !$feed->isExcludeProperties())) {
+                if ($getVariants && $childFilter) {
                     $criteria = new Criteria();
-                    $criteria->addFilter(new EqualsFilter('parentId', $product->getId()));
-
-                    if (!$feed->isExcludeOptions()) {
-                        $criteria->addAssociation('options');
-                        $criteria->addAssociation('options.group');
-                    }
-                    if (!$feed->isExcludeProperties()) {
-                        $criteria->addAssociation('properties');
-                        $criteria->addAssociation('properties.group');
-                    }
+                    $criteria->addFilter($childFilter);
+                    $criteria->addFilter(new EqualsFilter('active', 1));
+                    $criteria->addAssociation('options');
+                    $criteria->addAssociation('options.group');
+                    $criteria->addAssociation('properties');
+                    $criteria->addAssociation('properties.group');
 
                     $criteria->setLimit(1);
                     $criteria->setOffset(0);
                     while ($childProducts = $this->productRepository->search($criteria, $salesChannelContext->getContext())->getElements()) {
                         /** @var ProductEntity $childProduct */
                         foreach ($childProducts as $childProduct) {
+                            $otherVariantsXml .= $this->twig->render($this->resolveView('variantAttributes.xml.twig', $feed), [
+                                'name' => 'sw-stock',
+                                'value' => $childProduct->getStock(),
+                            ]);
+
                             foreach ($childProduct->getOptions() as $option) {
                                 $otherVariantsXml .= $this->twig->render($this->resolveView('variantAttributes.xml.twig', $feed), [
                                     'name' => $option->getGroup()->getTranslated()['name'],
