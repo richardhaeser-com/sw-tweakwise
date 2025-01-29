@@ -353,15 +353,10 @@ class FeedService
 
     private function generateHeader(FeedEntity $feed): void
     {
-        $version = null;
-        if (class_exists(InstalledVersions::class)) {
-            $version = InstalledVersions::getVersion('richardhaeser/sw-tweakwise');
-        }
-        if ($version === null) {
-            $filename = __DIR__ . '/../../composer.json';
-            $composerData = json_decode(file_get_contents($filename), true);
-            $version = $composerData['version'] ?: '-';
-        }
+        $filename = __DIR__ . '/../../composer.json';
+        $composerData = json_decode(file_get_contents($filename), true);
+        $version = $composerData['version'] ?: '-';
+
         $variables = [
             'pluginVersion' => $version,
             'shopwareVersion' => $this->shopwareVersion,
