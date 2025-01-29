@@ -4,7 +4,9 @@ namespace RH\Tweakwise;
 
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
+use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
+use Doctrine\DBAL\Connection;
 
 class RhaeTweakwise extends Plugin
 {
@@ -14,5 +16,17 @@ class RhaeTweakwise extends Plugin
 
     public function update(UpdateContext $updateContext): void
     {
+    }
+
+    public function uninstall(UninstallContext $uninstallContext): void
+    {
+        $connection = $this->container->get(Connection::class);
+        $connection->executeStatement('DROP TABLE IF EXISTS s_plugin_rhae_tweakwise_frontend_sales_channel_domains');
+        $connection->executeStatement('DROP TABLE IF EXISTS s_plugin_rhae_tweakwise_sales_channel_domains');
+        $connection->executeStatement('DROP TABLE IF EXISTS s_plugin_rhae_tweakwise_frontend');
+        $connection->executeStatement('DROP TABLE IF EXISTS s_plugin_rhae_tweakwise_feed');
+        $connection->executeStatement('ALTER TABLE `product_cross_selling` DROP FOREIGN KEY `fk.product_cross_selling.product_cross_selling_tweakwise_id`;');
+        $connection->executeStatement('ALTER TABLE `product_cross_selling` DROP COLUMN `product_cross_selling_tweakwise_id`;');
+        $connection->executeStatement('DROP TABLE IF EXISTS product_cross_selling_tweakwise');
     }
 }
