@@ -83,6 +83,10 @@
                     {% if otherVariants %}
                         {% for variant in otherVariants %}
                             {% if variant.active !== false %}
+                                <attribute>
+                                    <name>sw-stock</name>
+                                    <value>{{ variant.stock }}</value>
+                                </attribute>
                                 {% for option in variant.options %}
                                     {% if not (option.id in optionIds) %}
                                         <attribute>
