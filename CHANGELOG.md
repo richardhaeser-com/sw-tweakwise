@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.10.1] - 05-02-2025
+
+### Changed
+- A Twig block definition `feed_item_other_variants` has been added to the feed to make it possible to override this part of the feed.
+
 ## [2.10.0] - 03-02-2025
 
 ### Added
