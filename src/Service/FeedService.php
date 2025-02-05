@@ -2,11 +2,10 @@
 
 namespace RH\Tweakwise\Service;
 
-use Cron\CronExpression;
-use GuzzleHttp\Client;
 use function array_key_exists;
 use function array_unique;
 use function crc32;
+use Cron\CronExpression;
 use DateInterval;
 use DateTime;
 use function dirname;
@@ -14,6 +13,7 @@ use const FILE_APPEND;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
+use GuzzleHttp\Client;
 use function in_array;
 use function is_array;
 use function is_dir;
