@@ -7,7 +7,7 @@
 <item>
     {% block feed_item_inner %}
         <id>{% block feed_item_id %}{{ product.productNumber }} ({{ lang }} - {{ crc32(domainId) }}){% endblock %}</id>
-        <price>{{ price.unitPrice|round(2, 'common') }}</price>
+        <price>{% block feed_item_price %}{{ price.unitPrice|round(2, 'common') }}{% endif %}</price>
         <name>{% block feed_item_name %}<![CDATA[{{ product.translated.name|raw }}]]>{% endblock %}</name>
         <stock>{% block feed_item_stock %}{{ product.availableStock }}{% endblock %}</stock>
         {% if product.manufacturer %}
@@ -155,7 +155,7 @@
                     {% if price.listPrice.price %}
                         <attribute>
                             <name>sw-price-from</name>
-                            <value>{{ price.listPrice.price|round(2, 'common') }}</value>
+                            <value>{% block feed_item_price_from %}{{ price.listPrice.price|round(2, 'common') }}{% endblock %}</value>
                         </attribute>
                     {% endif %}
                     {% if price.listPrice.price %}
