@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - In Shopware 6.6 instances it is now possible to add the Featured Product CMS element again.
+- Use proper product id for recommendations and cross-selling when no variants are used.
 
 ## [3.3.1] - 06-02-2025
 
