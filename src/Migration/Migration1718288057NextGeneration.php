@@ -28,4 +28,9 @@ ALTER TABLE `s_plugin_rhae_tweakwise_feed`
 SQL;
         $connection->executeUpdate($sql);
     }
+
+    public function updateDestructive(Connection $connection): void
+    {
+        // implement update destructive
+    }
 }
