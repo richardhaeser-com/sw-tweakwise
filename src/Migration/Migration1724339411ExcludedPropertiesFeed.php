@@ -30,7 +30,7 @@ SQL;
         $connection->executeUpdate($sql);
 
     }
-    
+
     public function updateDestructive(Connection $connection): void
     {
         // implement update destructive
