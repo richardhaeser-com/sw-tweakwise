@@ -111,6 +111,7 @@ As said, you can add your own fields, but always think about do I need that info
 ## Customize feed
 The feed will be created based on Twig templates. You can override these templates the same way as you override templates of other plugins. The only thing that is different is the path. So you can just add your templates in your own theme extension.
 
+### Add product attributes
 For example if you want to add an extra attribute to a product within the feed:
 
 Path: _/src/Resources/views/tweakwise/product.xml.twig_
@@ -126,6 +127,21 @@ Path: _/src/Resources/views/tweakwise/product.xml.twig_
     </attribute>
 {% endblock %}
 ```
+
+### Add data of variants
+You can also add some additional information of other variants that are not included in the feed. By default the fields stock, options and properties are added to the feed, but if you, for example, want to add the product numbers of the other variants, you do something like:
+
+Path: _src/Resources/views/tweakwise/otherVariants.xml.twig_
+```html
+<attribute>
+    <name>sw-product-number</name>
+    <value>{{ variant.productNumber }}</value>
+</attribute>
+```
+
+You are also able to add logic to the attributes if you want to add the data to the feed or not. 
+
+If you want to remove the data of variants that are added by default, you can just create an empty file in the path _src/Resources/views/tweakwise/variantAttributes.xml.twig_.
 
 <a name="frontend-config"></a>
 ## Create frontend config

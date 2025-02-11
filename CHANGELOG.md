@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [3.3.1] - 06-02-2025
+
+### Changed
+- Some twig block definitions are added to the feed template.
+
+## [3.3.0] - 05-02-2025
+
+### Added
+- Added the option to be able to add logic to the data of variants which is added to the feed. Check the [documentation](https://github.com/richardhaeser-com/sw-tweakwise/blob/main/DOC.md#add-data-of-variants) for more information.
+
 ## [3.2.0] - 28-01-2025
 
 ### Added

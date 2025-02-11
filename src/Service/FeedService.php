@@ -529,6 +529,10 @@ class FeedService
                     while ($childProducts = $this->productRepository->search($criteria, $salesChannelContext->getContext())->getElements()) {
                         /** @var ProductEntity $childProduct */
                         foreach ($childProducts as $childProduct) {
+                            $otherVariantsXml .= $this->twig->render($this->resolveView('otherVariants.xml.twig', $feed), [
+                                'variant' => $childProduct,
+                            ]);
+
                             $otherVariantsXml .= $this->twig->render($this->resolveView('variantAttributes.xml.twig', $feed), [
                                 'name' => 'sw-stock',
                                 'value' => $childProduct->getStock(),
