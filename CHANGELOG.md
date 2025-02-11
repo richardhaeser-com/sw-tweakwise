@@ -6,7 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [3.4.0] - 11-02-2025
+
+> ### SHOPWARE 6.5 BREAKING
+> **We now made sure the 3.x version of the Tweakwise for Shopware plugin, is now working with Shopware 6.5 as well. Please be aware updating from version 2.x to 3.x is a major update with breaking changes. Please test it well before using it in production. For installations that already used v3.x of the plugin, this is not a breaking change!** 
 
 ### Fixed
 - In Shopware 6.6 instances it is now possible to add the Featured Product CMS element again.
