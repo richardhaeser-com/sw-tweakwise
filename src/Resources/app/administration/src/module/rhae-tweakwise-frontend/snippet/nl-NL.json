@@ -40,7 +40,7 @@
           "featured-products": "Toon uitgelichte producten",
           "recommendations": "Toon aanbevelingen gebaseerd op het laatst toegevoegde product"
         },
-        "checkoutSalesFeaturedProductsId": "ID van uitegelichte producten groep",
+        "checkoutSalesFeaturedProductsId": "Uitgelichte producten ID",
         "checkoutSalesRecommendationsGroupKey": "Groep sleutel gebruikt voor cross-sell",
         "salesChannelDomains": "Domeinen",
         "productsDesktop": "Aantal producten per rij op desktop",

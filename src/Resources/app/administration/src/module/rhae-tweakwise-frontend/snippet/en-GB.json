@@ -40,7 +40,7 @@
           "featured-products": "Show featured products",
           "recommendations": "Show recommendations based on last item in cart"
         },
-        "checkoutSalesFeaturedProductsId": "ID of Featured Products group",
+        "checkoutSalesFeaturedProductsId": "Featured recommendation ID",
         "checkoutSalesRecommendationsGroupKey": "Group key used for cross-sell",
         "salesChannelDomains": "Domains",
         "productsDesktop": "Products per row on desktop",
