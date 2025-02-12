@@ -90,7 +90,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
 
             /** @phpstan-ignore-next-line */
             $productNumber = $product->getProductNumber();
-            $twConfiguration['crossSellProductId'] = sprintf('%s (%s - %x)', $productNumber, $event->getRequest()->getLocale(), crc32($domainId));
+            $twConfiguration['crossSellProductId'] = ProductDataService::getTweakwiseProductId($productNumber, $event->getRequest()->getLocale(), $domainId);
         }
         if ($page instanceof Page || $page instanceof ErrorTemplateStruct) {
             $page->addExtensions([

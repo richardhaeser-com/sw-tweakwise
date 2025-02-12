@@ -30,7 +30,7 @@ class ProductDataExtension extends AbstractExtension
 
     public function getCrossSellId(array $twigContext, string $productNumber, string $locale, string $domainId): string
     {
-        return sprintf('%s (%s - %x)', $productNumber, $locale, crc32($domainId));
+        return ProductDataService::getTweakwiseProductId($productNumber, $locale, $domainId);
     }
 
     public function getProductFromProductNumber(array $twigContext, string $productNumber): ?ProductEntity

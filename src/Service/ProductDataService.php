@@ -75,4 +75,9 @@ class ProductDataService
 
         return $product;
     }
+
+    public static function getTweakwiseProductId(string $productNumber, string $locale, string $domainId)
+    {
+        return sprintf('%s (%s - %x)', $productNumber, $locale, crc32($domainId));
+    }
 }
