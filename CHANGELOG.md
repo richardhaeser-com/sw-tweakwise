@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+### Added
+- An option Plugin studio integration is now available in the Frontend configuration of the plugin. Please check with your customer success manager if this setting is needed for your installation. 
+
+### Changed
+- Refactored hasing of products to make them unique in Tweakwise. This refactoring made it sure that the same code is used in feed as well as cross-selling.
+- Renamed some field to match the naming within Tweakwise
+
 ## [3.4.0] - 11-02-2025
 
 > ### SHOPWARE 6.5 BREAKING
