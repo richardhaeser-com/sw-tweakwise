@@ -4,8 +4,6 @@ namespace RH\Tweakwise\Service;
 
 use function array_key_exists;
 use function array_unique;
-use function class_exists;
-use Composer\InstalledVersions;
 use function crc32;
 use Cron\CronExpression;
 use DateInterval;
@@ -353,15 +351,10 @@ class FeedService
 
     private function generateHeader(FeedEntity $feed): void
     {
-        $version = null;
-        if (class_exists(InstalledVersions::class)) {
-            $version = InstalledVersions::getVersion('richardhaeser/sw-tweakwise');
-        }
-        if ($version === null) {
-            $filename = __DIR__ . '/../../composer.json';
-            $composerData = json_decode(file_get_contents($filename), true);
-            $version = $composerData['version'] ?: '-';
-        }
+        $filename = __DIR__ . '/../../composer.json';
+        $composerData = json_decode(file_get_contents($filename), true);
+        $version = $composerData['version'] ?: '-';
+
         $variables = [
             'pluginVersion' => $version,
             'shopwareVersion' => $this->shopwareVersion,
