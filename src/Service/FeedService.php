@@ -6,7 +6,6 @@ use function array_key_exists;
 use function array_unique;
 use function class_exists;
 use Composer\InstalledVersions;
-use function crc32;
 use Cron\CronExpression;
 use DateInterval;
 use DateTime;
