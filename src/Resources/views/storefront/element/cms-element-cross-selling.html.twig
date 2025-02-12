@@ -1,18 +1,21 @@
 {% sw_extends '@Storefront/storefront/element/cms-element-cross-selling.html.twig' %}
 
 {% block cms_element_cross_selling_tabs_content_container_slider %}
-    {% if page.extensions.twConfiguration.integration == 'javascript' and item.crossSelling.type == "tweakwiseRecommendation" %}
+    {% if (page.extensions.twConfiguration.integration == 'javascript' or page.extensions.twConfiguration.integration == 'pluginstudio') and item.crossSelling.type == "tweakwiseRecommendation" %}
         {% if item.crossSelling.extensions.tweakwise.groupKey %}
             {% set groupKey = item.crossSelling.extensions.tweakwise.groupKey %}
         {% else %}
             {% set groupKey = "sw-cross-sell" %}
         {% endif %}
-
+        {% set event = 'twn.recommendations.ready' %}
+        {% if page.extensions.twConfiguration.integration == 'javascript' %}
+            {% set event = 'DOMContentLoaded' %}
+        {% endif %}
         <div id="related-recommendations-{{ id }}"></div>
 
         <script>
-            window.addEventListener("DOMContentLoaded", function () {
-                window.tweakwiseRecommendations({
+            window.addEventListener("{{ event }}", function () {
+                tweakwiseRecommendations({
                     output: "#related-recommendations-{{ id }}",
                     instancekey: "{{ page.extensions.twConfiguration.instanceKey|escape }}",
                     related: {
@@ -29,15 +32,11 @@
                             });
                             window.dispatchEvent(addToCartEvent);
                         },
-                        "twn.request.navigation.completed": function (event) {
-                            let navSuccessEvent = new CustomEvent('twNavigationSuccess', {
-                                detail: {}
-                            });
-                            window.dispatchEvent(navSuccessEvent);
-                        },
-                        "twn.request.completed'": function (event) {
+                       "twn.request.success": function (event) {
                             let navSuccessEvent = new CustomEvent('twSuccess', {
-                                detail: {}
+                                detail: {
+                                    data: event.data
+                                }
                             });
                             window.dispatchEvent(navSuccessEvent);
                         },

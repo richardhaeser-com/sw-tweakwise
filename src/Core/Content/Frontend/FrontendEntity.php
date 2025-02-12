@@ -14,7 +14,7 @@ class FrontendEntity extends Entity
 
     protected ?string $token;
 
-    protected ?string $integration;
+    protected ?string $integration = 'pluginstudio';
 
     protected ?string $wayOfSearch;
 

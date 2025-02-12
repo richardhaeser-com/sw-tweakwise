@@ -26,7 +26,8 @@
         "integration": "Manier van integreren",
         "integrationOptions": {
           "no-integration": "Geen integratie",
-          "javascript": "JavaScript integratie"
+          "javascript": "JavaScript integratie",
+          "pluginstudio": "Plugin Studio implementatie"
         },
         "wayOfSearch": "Manier van zoeken",
         "wayOfSearchOptions": {

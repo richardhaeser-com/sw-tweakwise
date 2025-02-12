@@ -4,6 +4,14 @@
     {{ parent() }}
 
     {% block tweakwise_config %}
+        {% if page.extensions.twConfiguration.integration == 'pluginstudio' %}
+            {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
+            {% set languageKey = page.header.activeLanguage.translationCode.code|split('-')[0]|escape %}
+            {% set wayOfSearch = page.extensions.twConfiguration.wayOfSearch|escape %}
+
+            {% sw_include '@Storefront/storefront/layout/tweakwise/pluginstudio.html.twig' %}
+        {% endif %}
+
         {% if page.extensions.twConfiguration.integration == 'javascript' %}
             {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
             {% set languageKey = page.header.activeLanguage.translationCode.code|split('-')[0]|escape %}
@@ -17,12 +25,13 @@
                 {% sw_include '@Storefront/storefront/layout/tweakwise/instant-search.html.twig' %}
 
             {% endif %}
+
+            <script
+                    src="https://gateway.tweakwisenavigator.net/js/recommendations.js"
+                    data-failover="https://gateway.tweakwisenavigator.com/js/recommendations.js"
+                    onerror="window.tweakwiseFailover(this.dataset.failover)"
+            ></script>
         {% endif %}
 
-        <script
-                src="https://gateway.tweakwisenavigator.net/js/recommendations.js"
-                data-failover="https://gateway.tweakwisenavigator.com/js/recommendations.js"
-                onerror="window.tweakwiseFailover(this.dataset.failover)"
-        ></script>
     {% endblock %}
 {% endblock %}
