@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace RH\Tweakwise;
 
@@ -10,16 +12,18 @@ use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 
 class RhaeTweakwise extends Plugin
 {
-    public function install(InstallContext $installContext): void
-    {
-    }
+    public function install(InstallContext $installContext): void {}
 
-    public function update(UpdateContext $updateContext): void
-    {
-    }
+    public function update(UpdateContext $updateContext): void {}
 
     public function uninstall(UninstallContext $uninstallContext): void
     {
+        parent::uninstall($uninstallContext);
+
+        if ($uninstallContext->keepUserData()) {
+            return;
+        }
+
         $connection = $this->container->get(Connection::class);
         $connection->executeStatement('DROP TABLE IF EXISTS s_plugin_rhae_tweakwise_frontend_sales_channel_domains');
         $connection->executeStatement('DROP TABLE IF EXISTS s_plugin_rhae_tweakwise_sales_channel_domains');
