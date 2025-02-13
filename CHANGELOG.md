@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+### Fixed
+- Fixed resetting the instant search when choosing suggestions in Plugin Studio mode
+
 ## [3.5.0] - 12-02-2025
 
 ### Added

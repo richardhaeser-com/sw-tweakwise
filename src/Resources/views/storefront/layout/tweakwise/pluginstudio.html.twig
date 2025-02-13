@@ -20,6 +20,7 @@
 
 <script>
     {% block tweakwise_starter_config %}
+    window["twn-starter-config"].cid = "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}";
     window["twn-starter-config"].on = {
         "twn.add-to-cart": function (event) {
             let addToCartEvent = new CustomEvent('twAddToCart', {
@@ -60,6 +61,8 @@
 
 {% if wayOfSearch == 'suggestions' %}
     <script>
+        window["twn-starter-config"].input = null;
+
         window.addEventListener("twn.suggestions.ready", function () {
             window.tweakwiseSuggestions({
                 input: "#tweakwise-suggestions",
