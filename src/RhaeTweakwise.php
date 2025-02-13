@@ -25,6 +25,7 @@ class RhaeTweakwise extends Plugin
         $connection->executeStatement('DROP TABLE IF EXISTS s_plugin_rhae_tweakwise_sales_channel_domains');
         $connection->executeStatement('DROP TABLE IF EXISTS s_plugin_rhae_tweakwise_frontend');
         $connection->executeStatement('DROP TABLE IF EXISTS s_plugin_rhae_tweakwise_feed');
+        $connection->executeStatement("DELETE FROM  product_cross_selling WHERE type = 'tweakwiseRecommendation'");
         $connection->executeStatement('ALTER TABLE `product_cross_selling` DROP FOREIGN KEY `fk.product_cross_selling.product_cross_selling_tweakwise_id`;');
         $connection->executeStatement('ALTER TABLE `product_cross_selling` DROP COLUMN `product_cross_selling_tweakwise_id`;');
         $connection->executeStatement('DROP TABLE IF EXISTS product_cross_selling_tweakwise');
