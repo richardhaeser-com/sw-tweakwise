@@ -21,6 +21,7 @@
 <script>
     {% block tweakwise_starter_config %}
     window["twn-starter-config"].cid = "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}";
+    window["twn-starter-config"].lang = "{{ languageKey }}";
     window["twn-starter-config"].on = {
         "twn.add-to-cart": function (event) {
             let addToCartEvent = new CustomEvent('twAddToCart', {
