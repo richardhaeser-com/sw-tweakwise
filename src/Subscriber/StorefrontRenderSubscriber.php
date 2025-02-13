@@ -2,7 +2,6 @@
 
 namespace RH\Tweakwise\Subscriber;
 
-use function crc32;
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
 use RH\Tweakwise\Service\ProductDataService;
 use Shopware\Core\Content\Category\Service\NavigationLoader;
@@ -15,7 +14,6 @@ use Shopware\Storefront\Event\StorefrontRenderEvent;
 use Shopware\Storefront\Framework\Twig\ErrorTemplateStruct;
 use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Page\Product\ProductPage;
-use function sprintf;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class StorefrontRenderSubscriber implements EventSubscriberInterface
@@ -90,7 +88,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
 
             /** @phpstan-ignore-next-line */
             $productNumber = $product->getProductNumber();
-            $twConfiguration['crossSellProductId'] = sprintf('%s (%s - %x)', $productNumber, $event->getRequest()->getLocale(), crc32($domainId));
+            $twConfiguration['crossSellProductId'] = ProductDataService::getTweakwiseProductId($productNumber, $event->getRequest()->getLocale(), $domainId);
         }
         if ($page instanceof Page || $page instanceof ErrorTemplateStruct) {
             $page->addExtensions([

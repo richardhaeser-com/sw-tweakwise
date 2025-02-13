@@ -1,11 +1,14 @@
 {% sw_extends '@Storefront/storefront/element/cms-element-product-listing.html.twig' %}
 
 {% block element_product_listing %}
+
     {% if element.translated.config.boxLayout.value == 'tweakwise' %}
-        {% if page.extensions.twConfiguration.integration == 'javascript' and page.extensions.twConfiguration.instanceKey|escape('js')%}
+
+        {% if (page.extensions.twConfiguration.integration == 'javascript' || page.extensions.twConfiguration.integration == 'pluginstudio' ) and page.extensions.twConfiguration.instanceKey|escape('js')%}
             <script>
-                window["twn-starter-config"]["navigation"]["output"] = 'tweakwise-output-listing';
-                window["twn-starter-config"]["navigation"]["cid"] = '{{ md5(page.navigationId ~ '_' ~ context.domainId) }}';
+                window["twn-starter-config"].navigation = window["twn-starter-config"].navigation || {};
+                window["twn-starter-config"].navigation.output = window["twn-starter-config"].navigation.output || 'tweakwise-output-listing';
+                window["twn-starter-config"].navigation.cid = '{{ md5(page.navigationId ~ '_' ~ context.domainId) }}';
             </script>
 
             <div id="tweakwise-output-listing"></div>

@@ -2,11 +2,9 @@
 
 namespace RH\Tweakwise\Twig;
 
-use function crc32;
 use RH\Tweakwise\Service\ProductDataService;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use function sprintf;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -30,7 +28,7 @@ class ProductDataExtension extends AbstractExtension
 
     public function getCrossSellId(array $twigContext, string $productNumber, string $locale, string $domainId): string
     {
-        return sprintf('%s (%s - %x)', $productNumber, $locale, crc32($domainId));
+        return ProductDataService::getTweakwiseProductId($productNumber, $locale, $domainId);
     }
 
     public function getProductFromProductNumber(array $twigContext, string $productNumber): ?ProductEntity

@@ -1,7 +1,7 @@
 {% sw_extends '@Storefront/storefront/layout/header/search.html.twig' %}
 
 {% block layout_header_search %}
-    {% if page.extensions.twConfiguration.integration == 'javascript' %}
+    {% if page.extensions.twConfiguration.integration == 'javascript' || page.extensions.twConfiguration.integration == 'pluginstudio' %}
         <form>
         {% if page.extensions.twConfiguration.wayOfSearch == 'suggestions' %}
             <div class="collapse" id="searchCollapse">

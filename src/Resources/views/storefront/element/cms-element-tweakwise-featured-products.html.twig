@@ -1,10 +1,14 @@
 {% block tweakwise_featured_products %}
     {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
     {% if element.config.groupId.value and instanceKey %}
+        {% set event = 'twn.recommendations.ready' %}
+        {% if page.extensions.twConfiguration.integration == 'javascript' %}
+            {% set event = 'DOMContentLoaded' %}
+        {% endif %}
 
         <div id="tweakwise-featured-recommendations-{{ element.id }}"></div>
         <script type="text/javascript">
-            window.addEventListener("DOMContentLoaded", function () {
+            window.addEventListener("{{ event }}", function () {
                 tweakwiseRecommendations({
                     instancekey: "{{ instanceKey }}",
                     output: "#tweakwise-featured-recommendations-{{ element.id }}",
@@ -21,15 +25,11 @@
                             });
                             window.dispatchEvent(addToCartEvent);
                         },
-                        "twn.request.navigation.completed": function (event) {
-                            let navSuccessEvent = new CustomEvent('twNavigationSuccess', {
-                                detail: {}
-                            });
-                            window.dispatchEvent(navSuccessEvent);
-                        },
-                        "twn.request.completed'": function (event) {
+                        "twn.request.success": function (event) {
                             let navSuccessEvent = new CustomEvent('twSuccess', {
-                                detail: {}
+                                detail: {
+                                    data: event.data
+                                }
                             });
                             window.dispatchEvent(navSuccessEvent);
                         },

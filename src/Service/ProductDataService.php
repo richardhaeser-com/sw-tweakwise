@@ -40,9 +40,15 @@ class ProductDataService
     public function getProductShownInListing(ProductEntity $product, SalesChannelContext $context): ProductEntity
     {
         $criteria = new Criteria();
-        $criteria->addFilter(
-            new EqualsFilter('parentId', $product->getParentId())
-        );
+        if (!$product->getParentId()) {
+            $criteria->addFilter(
+                new EqualsFilter('id', $product->getId())
+            );
+        } else {
+            $criteria->addFilter(
+                new EqualsFilter('parentId', $product->getParentId())
+            );
+        }
         $criteria->addAssociation('options');
         $criteria->addAssociation('options.group');
         $criteria->setOffset(0);
@@ -68,5 +74,10 @@ class ProductDataService
         }
 
         return $product;
+    }
+
+    public static function getTweakwiseProductId(string $productNumber, string $locale, string $domainId)
+    {
+        return sprintf('%s (%s - %x)', $productNumber, $locale, crc32($domainId));
     }
 }

@@ -5,9 +5,9 @@
         "label": "Tweakwise Featured Products",
         "config": {
           "groupId": {
-            "label": "Group ID",
-            "helpText": "You can find the group ID on the tab Implementation of the selected featured products group in the Tweakwise app. Can't find this id? Contact customer service of Tweakwise to retrieve this ID.",
-            "placeHolder": "Enter the group ID"
+            "label": "Featured recommendation ID",
+            "helpText": "You can find the Featured recommendation ID in the URL (featuredRecId) of the selected featured products group in the Tweakwise app. Can't find this id? Contact customer service of Tweakwise to retrieve this ID.",
+            "placeHolder": "Enter the Featured recommendation ID"
           }
         }
       }

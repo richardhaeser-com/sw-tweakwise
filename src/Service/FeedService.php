@@ -464,7 +464,7 @@ class FeedService
         /** @var ProductEntity $product */
         foreach ($products as $product) {
             echo '.';
-            $productId = $product->getProductNumber() . ' (' . $domain->getLanguage()->getTranslationCode()->getCode() . ' - ' . crc32($domain->getId()) . ')';
+            $productId = ProductDataService::getTweakwiseProductId($product->getProductNumber(), $domain->getLanguage()->getTranslationCode()->getCode(), $domain->getId());
             if (!in_array($productId, $this->uniqueProductIds, true)) {
                 $childFilter = null;
                 $getVariants = false;
@@ -576,6 +576,7 @@ class FeedService
                     'domainId' => $domain->getId(),
                     'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
                     'product' => $product,
+                    'productId' => $productId,
                     'prices' => $this->getLowestAndHighestPrice($product, $salesChannelContext),
                     'otherVariantsXml' => $otherVariantsXml,
                     'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),

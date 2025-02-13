@@ -35,7 +35,7 @@
 
                     <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.integration')"
                                      v-model:value="item.integration">
-                        <option v-for="value in ['no-integration','javascript']" :value="value">
+                        <option v-for="value in ['no-integration','pluginstudio','javascript']" :value="value">
                             {{ $tc('rhae-tweakwise-frontend.detail.label.integrationOptions.' + value) }}
                         </option>
                     </sw-select-field>
@@ -43,11 +43,10 @@
                 </sw-card-section>
 
             </sw-card>
-            <sw-card v-if="item && item.integration === 'javascript'" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.search')">
+            <sw-card v-if="item && (item.integration === 'javascript' || item.integration === 'pluginstudio')" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.search')">
                 <sw-card-section>
                     <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.wayOfSearch')"
-                                     v-model:value="item.wayOfSearch"
-                                     v-if="item.integration === 'javascript'">
+                                     v-model:value="item.wayOfSearch">
                         <option v-for="value in ['instant-search','suggestions']" :value="value">
                             {{ $tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.' + value) }}
                         </option>
@@ -56,6 +55,7 @@
                     <sw-container
                             columns="2fr 2fr 2fr"
                             gap="0px 30px"
+                            v-if="item.integration === 'javascript'"
                     >
                         <sw-number-field numberType="int" :label="$t('rhae-tweakwise-frontend.detail.label.productsDesktop')"
                                          v-model:value="item.productsDesktop">
@@ -69,7 +69,9 @@
                     </sw-container>
 
                     <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.paginationType')"
-                                     v-model:value="item.paginationType">
+                                     v-model:value="item.paginationType"
+                                     v-if="item.integration === 'javascript'"
+                    >
                         <option v-for="value in ['default','button', 'infinite']" :value="value">
                             {{ $tc('rhae-tweakwise-frontend.detail.label.paginationTypeOptions.' + value) }}
                         </option>
@@ -77,22 +79,21 @@
 
                 </sw-card-section>
             </sw-card>
-            <sw-card v-if="item && item.integration === 'javascript'" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.checkoutSales')">
+            <sw-card v-if="item && (item.integration === 'javascript' || item.integration === 'pluginstudio')" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.checkoutSales')">
                 <sw-card-section>
                     <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSales')"
-                                     v-model:value="item.checkoutSales"
-                                     v-if="item.integration === 'javascript'">
+                                     v-model:value="item.checkoutSales">
                         <option v-for="value in ['no-checkout-sales','featured-products','recommendations']" :value="value">
                             {{ $tc('rhae-tweakwise-frontend.detail.label.checkoutSalesOptions.' + value) }}
                         </option>
                     </sw-select-field>
 
                     <sw-text-field :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSalesFeaturedProductsId')"
-                              v-if="item.integration === 'javascript' && item.checkoutSales === 'featured-products'"
+                              v-if="item.checkoutSales === 'featured-products'"
                               v-model:value="item.checkoutSalesFeaturedProductsId"></sw-text-field>
 
                     <sw-text-field :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSalesRecommendationsGroupKey')"
-                              v-if="item.integration === 'javascript' && item.checkoutSales === 'recommendations'"
+                              v-if="item.checkoutSales === 'recommendations'"
                               v-model:value="item.checkoutSalesRecommendationsGroupKey"></sw-text-field>
                 </sw-card-section>
             </sw-card>

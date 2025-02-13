@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [3.5.1] - 13-02-2025
+
+### Fixed
+- Fixed resetting the instant search when choosing suggestions in Plugin Studio mode
+- Fixed language issue in Plugin Studio mode
+- Fixed search page showing instant search and merchandise
+
+## [3.5.0] - 12-02-2025
+
+### Added
+- An option Plugin studio integration is now available in the Frontend configuration of the plugin. Please check with your customer success manager if this setting is needed for your installation. 
+
+### Changed
+- Refactored hashing of products to make them unique in Tweakwise. This refactoring made it sure that the same code is used in feed as well as cross-selling.
+- Renamed some field to match the naming within Tweakwise
+
+## [3.4.0] - 11-02-2025
+
+> ### SHOPWARE 6.5 BREAKING
+> **We now made sure the 3.x version of the Tweakwise for Shopware plugin, is now working with Shopware 6.5 as well. Please be aware updating from version 2.x to 3.x is a major update with breaking changes. Please test it well before using it in production. For installations that already used v3.x of the plugin, this is not a breaking change!** 
+
+### Fixed
+- In Shopware 6.6 instances it is now possible to add the Featured Product CMS element again.
+- Use proper product id for recommendations and cross-selling when no variants are used.
+
 ## [3.3.1] - 06-02-2025
 
 ### Changed

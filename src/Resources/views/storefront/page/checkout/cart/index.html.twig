@@ -2,8 +2,13 @@
 
 {% block page_checkout_main_content %}
     {{ parent() }}
-
+    {% set event = 'twn.recommendations.ready' %}
     {% if page.extensions.twConfiguration.integration == 'javascript' %}
+        {% set event = 'DOMContentLoaded' %}
+    {% endif %}
+
+
+    {% if page.extensions.twConfiguration.integration == 'javascript' or page.extensions.twConfiguration.integration == 'pluginstudio' %}
         {% if page.extensions.twConfiguration.checkoutSales.type == 'featured-products' and page.extensions.twConfiguration.checkoutSales.featuredProductsId %}
             {% block page_checkout_main_content_checkout_sales_featured_products %}
                 {% block page_checkout_main_content_checkout_sales_featured_products_inner %}
@@ -14,7 +19,7 @@
                 {% endblock %}
 
                 <script type="text/javascript">
-                    window.addEventListener("DOMContentLoaded", function () {
+                    window.addEventListener("{{ event }}", function () {
                         tweakwiseRecommendations({
                             instancekey: "{{ page.extensions.twConfiguration.instanceKey }}",
                             output: "#tweakwise-checkout-sales-featured-products",
@@ -31,15 +36,11 @@
                                     });
                                     window.dispatchEvent(addToCartEvent);
                                 },
-                                "twn.request.navigation.completed": function (event) {
-                                    let navSuccessEvent = new CustomEvent('twNavigationSuccess', {
-                                        detail: {}
-                                    });
-                                    window.dispatchEvent(navSuccessEvent);
-                                },
-                                "twn.request.completed'": function (event) {
+                                "twn.request.success": function (event) {
                                     let navSuccessEvent = new CustomEvent('twSuccess', {
-                                        detail: {}
+                                        detail: {
+                                            data: event.data
+                                        }
                                     });
                                     window.dispatchEvent(navSuccessEvent);
                                 },
@@ -71,13 +72,32 @@
 
 
                     <script type="text/javascript">
-                        window.addEventListener("DOMContentLoaded", function () {
+                        window.addEventListener("{{ event }}", function () {
                             tweakwiseRecommendations({
                                 instancekey: "{{ page.extensions.twConfiguration.instanceKey }}",
                                 output: "#tweakwise-checkout-sales-recommendations",
                                 related: {
                                     productId: "{{ tweakwise_cross_sell_product_id(tweakwise_product_number(lastProduct), app.request.locale, context.domainId) }}",
                                     groupKey: "{{ page.extensions.twConfiguration.checkoutSales.recommendationsGroupKey }}"
+                                },
+                                on: {
+                                    "twn.add-to-cart": function (event) {
+                                        let addToCartEvent = new CustomEvent('twAddToCart', {
+                                            detail: {
+                                                addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
+                                                data: event.data
+                                            }
+                                        });
+                                        window.dispatchEvent(addToCartEvent);
+                                    },
+                                    "twn.request.success": function (event) {
+                                        let navSuccessEvent = new CustomEvent('twSuccess', {
+                                            detail: {
+                                                data: event.data
+                                            }
+                                        });
+                                        window.dispatchEvent(navSuccessEvent);
+                                    },
                                 }
                             });
                         });

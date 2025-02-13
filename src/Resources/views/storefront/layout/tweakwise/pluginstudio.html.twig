@@ -1,0 +1,105 @@
+<link rel="preload" as="script" href="https://gateway.tweakwisenavigator.net/js/starter.js" />
+<link rel="preload" as="script" href="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js" />
+
+<script>window["twn-starter-config"] = window["twn-starter-config"] || {};</script>
+
+<script>
+    window.tweakwiseFailover = function (src) {
+        var script = document.createElement("script");
+        script.async = true;
+        script.src = src;
+        document.head.appendChild(script);
+    };
+</script>
+
+<script
+        src="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"
+        data-failover="https://gateway.tweakwisenavigator.com/js/{{ instanceKey }}/tweakwise.js"
+        onerror="window.tweakwiseFailover(this.dataset.failover)"
+></script>
+
+<script>
+    {% block tweakwise_starter_config %}
+    window["twn-starter-config"].cid = "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}";
+    window["twn-starter-config"].lang = "{{ languageKey }}";
+    window["twn-starter-config"].on = {
+        "twn.add-to-cart": function (event) {
+            let addToCartEvent = new CustomEvent('twAddToCart', {
+                detail: {
+                    addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
+                    data: event.data
+                }
+            });
+            window.dispatchEvent(addToCartEvent);
+        },
+        "twn.request.navigation.success": function (event) {
+            let navSuccessEvent = new CustomEvent('twNavigationSuccess', {
+                detail: {
+                    data: event.data
+                }
+            });
+            window.dispatchEvent(navSuccessEvent);
+        },
+        "twn.request.success": function (event) {
+            let navSuccessEvent = new CustomEvent('twSuccess', {
+                detail: {
+                    data: event.data
+                }
+            });
+            window.dispatchEvent(navSuccessEvent);
+        },
+        "twn.container.close": function (event) {
+            let navCloseEvent = new CustomEvent('twContainerClose', {
+                detail: {
+                    data: event.data
+                }
+            });
+            window.dispatchEvent(navCloseEvent);
+        },
+    };
+    {% endblock %}
+</script>
+
+{% if wayOfSearch == 'suggestions' %}
+    <script>
+        window["twn-starter-config"].input = null;
+
+        window.addEventListener("twn.suggestions.ready", function () {
+            window.tweakwiseSuggestions({
+                input: "#tweakwise-suggestions",
+                instancekey: "{{ instanceKey }}",
+                cid: "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}",
+                searchPhrases: {
+                    handle: function (event) {
+                        var suggestion = event.data;
+
+                        window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=" + encodeURIComponent(suggestion.match);
+                    }
+                },
+                categories: {
+                    handle: function (event) {
+                        var categoryContext = event.data;
+                        var categoryData = [];
+                        {% for categoryHash, categoryId in page.extensions.twConfiguration.categoryData %}{% apply spaceless %}categoryData['{{ categoryHash }}'] = '{{ seoUrl('frontend.navigation.page', { navigationId: categoryId }) }}';{% endapply %}{% endfor %}
+
+                        const contextCategoryIds = categoryContext.navigationLink.context.category.path.split('-');
+                        const contextlastCategoryId = contextCategoryIds[contextCategoryIds.length - 1];
+
+                        if (categoryData[contextlastCategoryId] !== undefined) {
+                            window.location.href =  categoryData[contextlastCategoryId];
+                        } else {
+                            console.log('No category found')
+                        }
+                    }
+                },
+                facetFilters: {
+                    handle: function (event) {
+                        var suggestion = event.data;
+
+                        window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=&tn_fk_" + suggestion.navigationLink.context.facetFilters[0].key + "=" + encodeURIComponent(suggestion.navigationLink.context.facetFilters[0].values[0]);
+                    }
+                }
+            });
+        });
+    </script>
+{% endif %}
