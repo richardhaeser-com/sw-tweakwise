@@ -59,7 +59,6 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 use function unlink;
-use function version_compare;
 
 class FeedService
 {
