@@ -482,15 +482,9 @@ class FeedService
                     $parent = $this->productRepository->search($criteria, $salesChannelContext->getContext())->first();
                     if ($parent->getChildCount() > 0) {
                         $configurationGroupConfigArray = [];
-                        if (version_compare($this->shopwareVersion, '6.4.15', '>=')) {
-                            /** @phpstan-ignore-next-line */
-                            $listingConfig = $parent->getVariantListingConfig();
-                            if ($listingConfig) {
-                                $configurationGroupConfigArray = $listingConfig->getConfiguratorGroupConfig() ?: [];
-                            }
-                        } else {
-                            /** @phpstan-ignore-next-line */
-                            $configurationGroupConfigArray = $parent->getConfiguratorGroupConfig() ?: [];
+                        $listingConfig = $parent->getVariantListingConfig();
+                        if ($listingConfig && !$listingConfig->getDisplayParent() && !$listingConfig->getMainVariantId()) {
+                            $configurationGroupConfigArray = $listingConfig->getConfiguratorGroupConfig() ?: [];
                         }
 
                         $getVariants = true;
