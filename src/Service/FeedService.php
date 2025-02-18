@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Service;
 
+use Symfony\Component\Translation\LocaleSwitcher;
 use function array_key_exists;
 use function array_unique;
 use function class_exists;
@@ -80,6 +81,7 @@ class FeedService
     private AbstractRuleLoader $ruleLoader;
     private string $path;
     private EventDispatcherInterface $eventDispatcher;
+    private LocaleSwitcher $localeSwitcher;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -93,7 +95,8 @@ class FeedService
         string $shopwareVersion,
         AbstractRuleLoader $ruleLoader,
         string $path,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        LocaleSwitcher $localeSwitcher
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -107,6 +110,7 @@ class FeedService
         $this->ruleLoader = $ruleLoader;
         $this->path = $path;
         $this->eventDispatcher = $eventDispatcher;
+        $this->localeSwitcher = $localeSwitcher;
     }
 
     public function fixFeedRecords(bool $forceFeedGeneration = false): void
@@ -276,6 +280,7 @@ class FeedService
         /** @var SalesChannelDomainEntity $salesChannelDomain */
         foreach ($feed->getSalesChannelDomains() as $salesChannelDomain) {
 
+            $this->localeSwitcher->setLocale($salesChannelDomain->getLanguage()->getTranslationCode()->getCode());
             /** @var SalesChannelEntity $salesChannel */
             $salesChannel = $salesChannelDomain->getSalesChannel();
             $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $salesChannelDomain->getLanguageId()]);
