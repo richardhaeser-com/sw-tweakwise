@@ -2,12 +2,11 @@
 
 namespace RH\Tweakwise\Twig;
 
-use Shopware\Core\Framework\Feature;
 use Shopware\Storefront\Framework\Csrf\CsrfPlaceholderHandler;
+use function sprintf;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
-use function sprintf;
 use function version_compare;
 
 class CsrfTokenExtension extends AbstractExtension
