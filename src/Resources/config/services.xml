@@ -20,6 +20,10 @@
             <argument type="service" id="Shopware\Core\Framework\Adapter\Translation\Translator"/>
             <tag name="twig.extension"/>
         </service>
+        <service id="RH\Tweakwise\Twig\CsrfTokenExtension">
+            <argument>%kernel.shopware_version%</argument>
+            <tag name="twig.extension"/>
+        </service>
         <service id="RH\Tweakwise\Subscriber\StorefrontRenderSubscriber">
             <argument type="service" id="s_plugin_rhae_tweakwise_frontend.repository"/>
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader" />
