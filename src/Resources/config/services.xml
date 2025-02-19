@@ -63,6 +63,7 @@
             <argument type="service" id="Shopware\Core\Checkout\Cart\RuleLoader"/>
             <argument>%shopware.filesystem.private.config.root%</argument>
             <argument type="service" id="Symfony\Component\EventDispatcher\EventDispatcherInterface"/>
+            <argument type="service" id="Symfony\Component\Translation\LocaleSwitcher"/>
         </service>
 
         <service id="RH\Tweakwise\Service\ProductDataService" public="true">

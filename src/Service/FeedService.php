@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Service;
 
+use Symfony\Component\Translation\LocaleSwitcher;
 use function array_key_exists;
 use function array_unique;
 use Cron\CronExpression;
@@ -57,7 +58,6 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 use function unlink;
-use function version_compare;
 
 class FeedService
 {
@@ -79,6 +79,7 @@ class FeedService
     private AbstractRuleLoader $ruleLoader;
     private string $path;
     private EventDispatcherInterface $eventDispatcher;
+    private LocaleSwitcher $localeSwitcher;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -92,7 +93,8 @@ class FeedService
         string $shopwareVersion,
         AbstractRuleLoader $ruleLoader,
         string $path,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        LocaleSwitcher $localeSwitcher
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -106,6 +108,7 @@ class FeedService
         $this->ruleLoader = $ruleLoader;
         $this->path = $path;
         $this->eventDispatcher = $eventDispatcher;
+        $this->localeSwitcher = $localeSwitcher;
     }
 
     public function fixFeedRecords(bool $forceFeedGeneration = false): void
@@ -275,6 +278,7 @@ class FeedService
         /** @var SalesChannelDomainEntity $salesChannelDomain */
         foreach ($feed->getSalesChannelDomains() as $salesChannelDomain) {
 
+            $this->localeSwitcher->setLocale($salesChannelDomain->getLanguage()->getTranslationCode()->getCode());
             /** @var SalesChannelEntity $salesChannel */
             $salesChannel = $salesChannelDomain->getSalesChannel();
             $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $salesChannelDomain->getLanguageId()]);
@@ -475,15 +479,9 @@ class FeedService
                     $parent = $this->productRepository->search($criteria, $salesChannelContext->getContext())->first();
                     if ($parent->getChildCount() > 0) {
                         $configurationGroupConfigArray = [];
-                        if (version_compare($this->shopwareVersion, '6.4.15', '>=')) {
-                            /** @phpstan-ignore-next-line */
-                            $listingConfig = $parent->getVariantListingConfig();
-                            if ($listingConfig) {
-                                $configurationGroupConfigArray = $listingConfig->getConfiguratorGroupConfig() ?: [];
-                            }
-                        } else {
-                            /** @phpstan-ignore-next-line */
-                            $configurationGroupConfigArray = $parent->getConfiguratorGroupConfig() ?: [];
+                        $listingConfig = $parent->getVariantListingConfig();
+                        if ($listingConfig && !$listingConfig->getDisplayParent() && !$listingConfig->getMainVariantId()) {
+                            $configurationGroupConfigArray = $listingConfig->getConfiguratorGroupConfig() ?: [];
                         }
 
                         $getVariants = true;
