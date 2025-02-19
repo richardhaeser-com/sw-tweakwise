@@ -48,6 +48,7 @@ class TweakwiseCategoryLoader
 
         $criteria = new Criteria();
         $criteria->setTitle('header::navigation');
+        $criteria->addAssociation('seoUrls');
 
         $categories = $this->navigationRoute
             ->load($activeId, $rootId, $request, $context, $criteria)
