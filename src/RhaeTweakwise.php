@@ -12,9 +12,13 @@ use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 
 class RhaeTweakwise extends Plugin
 {
-    public function install(InstallContext $installContext): void {}
+    public function install(InstallContext $installContext): void
+    {
+    }
 
-    public function update(UpdateContext $updateContext): void {}
+    public function update(UpdateContext $updateContext): void
+    {
+    }
 
     public function uninstall(UninstallContext $uninstallContext): void
     {
