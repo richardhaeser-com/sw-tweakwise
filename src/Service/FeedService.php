@@ -2,11 +2,8 @@
 
 namespace RH\Tweakwise\Service;
 
-use Symfony\Component\Translation\LocaleSwitcher;
 use function array_key_exists;
 use function array_unique;
-use function class_exists;
-use Composer\InstalledVersions;
 use Cron\CronExpression;
 use DateInterval;
 use DateTime;
@@ -54,6 +51,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use function sprintf;
 use function str_replace;
+use Symfony\Component\Translation\LocaleSwitcher;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
@@ -356,15 +354,10 @@ class FeedService
 
     private function generateHeader(FeedEntity $feed): void
     {
-        $version = null;
-        if (class_exists(InstalledVersions::class)) {
-            $version = InstalledVersions::getVersion('richardhaeser/sw-tweakwise');
-        }
-        if ($version === null) {
-            $filename = __DIR__ . '/../../composer.json';
-            $composerData = json_decode(file_get_contents($filename), true);
-            $version = $composerData['version'] ?: '-';
-        }
+        $filename = __DIR__ . '/../../composer.json';
+        $composerData = json_decode(file_get_contents($filename), true);
+        $version = $composerData['version'] ?: '-';
+
         $variables = [
             'pluginVersion' => $version,
             'shopwareVersion' => $this->shopwareVersion,
