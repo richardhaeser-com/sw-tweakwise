@@ -2,7 +2,6 @@
 
 namespace RH\Tweakwise\Service;
 
-use Symfony\Component\Translation\LocaleSwitcher;
 use function array_key_exists;
 use function array_unique;
 use Cron\CronExpression;
@@ -52,6 +51,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use function sprintf;
 use function str_replace;
+use Symfony\Component\Translation\LocaleSwitcher;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
