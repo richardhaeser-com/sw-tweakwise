@@ -56,9 +56,6 @@ class CsrfTokenExtension extends AbstractExtension
     private function createInput(string $intent): string
     {
         /** @phpstan-ignore-next-line */
-        return sprintf(
-            '<input type="hidden" name="_csrf_token" value="%s">',
-            CsrfPlaceholderHandler::CSRF_PLACEHOLDER . $intent . '#'
-        );
+        return sprintf('<input type="hidden" name="_csrf_token" value="%s">', CsrfPlaceholderHandler::CSRF_PLACEHOLDER . $intent . '#');
     }
 }
