@@ -11,7 +11,7 @@
     <rank>{{ rank }}</rank>
     {% if category.seoUrls is not empty %}
         {% set seoUrl = category.seoUrls|first.seoPathInfo %}
-    <url>/{{ seoUrl | lower }}</url>
+    <url>{{ (domainUrl ~ seoUrl) | lower }}</url>
     {% endif %}
 
     {% if parentElementId %}
