@@ -1,0 +1,34 @@
+{% block sw_cms_element_tweakwise_cross_selling %}
+    <div class="sw-cms-el-tweakwise-cross-selling">
+        <h2 class="sw-cms-el-tweakwise-cross-selling__title">{{ placeholder(tweakwiseCrossSelling, 'name', tweakwiseCrossSelling.name) }}</h2>
+        <div class="sw-cms-el-tweakwise-cross-selling__content">
+            <div class="sw-cms-el-tweakwise-cross-selling__navigation">
+                <sw-icon
+                        class="sw-cms-el-tweakwise-cross-selling__navigation-button"
+                        name="regular-chevron-left"
+                        size="24"
+                />
+            </div>
+
+            <div
+                    ref="productHolder"
+                    class="sw-cms-el-cross-selling__product-holder"
+                    :style="sliderBoxMinWidth"
+            >
+                <sw-cms-el-product-box
+                        v-for="index in 4"
+                        :key="index"
+                        :element="demoProductElement"
+                />
+            </div>
+
+            <div class="sw-cms-el-tweakwise-cross-selling__navigation">
+                <sw-icon
+                        class="sw-cms-el-tweakwise-cross-selling__navigation-button"
+                        name="regular-chevron-right"
+                        size="24"
+                />
+            </div>
+        </div>
+    </div>
+{% endblock %}

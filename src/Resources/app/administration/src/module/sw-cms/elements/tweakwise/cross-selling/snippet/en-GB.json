@@ -1,0 +1,16 @@
+{
+  "sw-cms": {
+    "elements": {
+      "tweakwiseCrossSelling": {
+        "label": "Tweakwise Cross Selling",
+        "config": {
+          "groupKey": {
+            "label": "Group key",
+            "helpText": "You can find the group key in the overview of Upselling & cross-selling",
+            "placeHolder": "Enter the Group key"
+          }
+        }
+      }
+    }
+  }
+}
