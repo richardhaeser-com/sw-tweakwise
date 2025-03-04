@@ -15,11 +15,6 @@ jobs:
         php: ['8.2', '8.3']
         experimental: [false]
         dependencies: ['lowest', 'highest']
-        include:
-          - os: 'ubuntu-22.04'
-            php: '8.2'
-            experimental: false
-            dependencies: highest
 
     continue-on-error: ${{ matrix.experimental }}
 
