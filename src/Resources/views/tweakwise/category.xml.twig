@@ -9,10 +9,9 @@
     <categoryid>{{ elementId }}</categoryid>
     <name>{{ category.translated.name }}</name>
     <rank>{{ rank }}</rank>
-    {% if category.seoUrls is not empty %}
-        {% set seoUrl = category.seoUrls|first.seoPathInfo %}
-    <url>{{ (domainUrl ~ seoUrl) | lower }}</url>
-    {% endif %}
+    {% for url in category.seoUrls %}
+        <url>{{ domainUrl ~ url.seoPathInfo }}</url>
+    {% endfor %}
 
     {% if parentElementId %}
     <parents>
