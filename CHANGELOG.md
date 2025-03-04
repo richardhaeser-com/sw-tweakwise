@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Rolled back using `Symfony\Component\Routing\Annotation\Route` for controller routes to make sure Shopware 6.5.7 and lower 6.5 versions are also supported.
 
+### Fixed
+- Made sure that if you compile the frontend javascript in Shopware 6.5, you won't get errors about the frontend plugins already being registered
+
 ## [3.5.3] - 18-02-2025
 
 ### Fixed
