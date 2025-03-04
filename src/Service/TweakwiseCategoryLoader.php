@@ -9,6 +9,7 @@ use Shopware\Core\Content\Category\SalesChannel\AbstractNavigationRoute;
 use Shopware\Core\Content\Category\Tree\Tree;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Util\AfterSort;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,6 +49,11 @@ class TweakwiseCategoryLoader
 
         $criteria = new Criteria();
         $criteria->setTitle('header::navigation');
+        $criteria->getAssociation('seoUrls')
+            ->setLimit(1)
+            ->addFilter(new EqualsFilter('isCanonical', true));
+
+        $criteria->addAssociation('seoUrls.url');
 
         $categories = $this->navigationRoute
             ->load($activeId, $rootId, $request, $context, $criteria)

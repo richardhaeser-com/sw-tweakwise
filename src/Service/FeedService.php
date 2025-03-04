@@ -440,6 +440,7 @@ class FeedService
     {
         $content = $this->twig->render($this->resolveView('category.xml.twig', $feed), [
             'domainId' => $domain->getId(),
+            'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
             'category' => $category,
             'rank' => $this->categoryRank,
             'feed' => $feed
