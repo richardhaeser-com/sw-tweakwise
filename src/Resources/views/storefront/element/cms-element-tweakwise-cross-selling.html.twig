@@ -1,5 +1,5 @@
 {% block tweakwise_cross_selling %}
-    {% if (page.extensions.twConfiguration.integration == 'javascript' or page.extensions.twConfiguration.integration == 'pluginstudio') %}
+    {% if (page.extensions.twConfiguration.integration == 'javascript' or page.extensions.twConfiguration.integration == 'pluginstudio') and page.extensions.twConfiguration.crossSellProductId %}
 
         {% set groupKey = "sw-cross-sell" %}
         {% set event = 'twn.recommendations.ready' %}
