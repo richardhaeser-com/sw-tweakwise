@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added the support of add-to-wishlist. If you have a button with an add-to-wishlist / add-to-favorites event on your product tile, it will add the product to the Shopware wishlist.
 - The URL of a category is now added to the feed as well. This will make it possible to automatically link to a category in for example category suggestions.
+- Added the possibility to add a Cross-Sell element in the Shopping Experience editor in Shopware. The element is only working on a product page and will show the cross-sells based on the groupkey you have set in the element configuration
 
 ### Changed
 - Rolled back using `Symfony\Component\Routing\Annotation\Route` for controller routes to make sure Shopware 6.5.7 and lower 6.5 versions are also supported.
