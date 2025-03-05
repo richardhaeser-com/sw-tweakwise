@@ -28,22 +28,6 @@
                     window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=" + encodeURIComponent(suggestion.match);
                 }
             },
-            categories: {
-                handle: function (event) {
-                    var categoryContext = event.data;
-                    var categoryData = [];
-                    {% for categoryHash, categoryId in page.extensions.twConfiguration.categoryData %}{% apply spaceless %}categoryData['{{ categoryHash }}'] = '{{ seoUrl('frontend.navigation.page', { navigationId: categoryId }) }}';{% endapply %}{% endfor %}
-
-                    const contextCategoryIds = categoryContext.navigationLink.context.category.path.split('-');
-                    const contextlastCategoryId = contextCategoryIds[contextCategoryIds.length - 1];
-
-                    if (categoryData[contextlastCategoryId] !== undefined) {
-                        window.location.href =  categoryData[contextlastCategoryId];
-                    } else {
-                        console.log('No category found')
-                    }
-                }
-            },
             facetFilters: {
                 handle: function (event) {
                     var suggestion = event.data;
