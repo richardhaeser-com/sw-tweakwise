@@ -30,6 +30,9 @@ Shopware.Component.register('sw-cms-el-tweakwise-cross-selling', {
                 },
             };
         },
+        sliderBoxMinWidth() {
+            return `repeat(auto-fit, minmax(200px, 1fr))`;
+        },
         tweakwiseCrossSelling() {
             return {
                 name: 'Tweakwise Cross Selling',

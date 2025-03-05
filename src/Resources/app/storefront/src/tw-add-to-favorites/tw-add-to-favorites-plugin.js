@@ -41,10 +41,10 @@ export default class TwAddToCartPlugin extends Plugin {
             var productId = shopwareIdAttribute.values[0];
             if (!this._wishlistStorage.has(productId)) continue;
 
-            var element = document.getElementById(`twn-${product.itemno}`);
-            if (!element) continue;
-
-            element.classList.add('in-wishlist');
+            var elements = document.querySelectorAll(`[data-item-id="${product.itemno}"]`);
+            elements.forEach(element => {
+                element.classList.add('in-wishlist');
+            });
         }
     }
 
@@ -60,18 +60,18 @@ export default class TwAddToCartPlugin extends Plugin {
         const routerAdd = {'path': e.detail.routerAddPath.replace('idPlaceholder', productId), 'afterLoginPath': e.detail.routerAddAfterLoginPath.replace('idPlaceholder', productId)};
         const routerRemove = {'path': e.detail.routerRemovePath.replace('idPlaceholder', productId)};
 
-        var element = document.getElementById(`twn-${e.detail.data.itemno}`);
+        var elements = document.querySelectorAll(`[data-item-id="${e.detail.data.itemno}"]`);
 
         if (this._wishlistStorage.has(productId)) {
             this._wishlistStorage.remove(productId, routerRemove);
-            if (element) {
+            elements.forEach(element => {
                 element.classList.remove('in-wishlist');
-            }
+            })
         } else {
             this._wishlistStorage.add(productId, routerAdd);
-            if (element) {
+            elements.forEach(element => {
                 element.classList.add('in-wishlist');
-            }
+            })
         }
     }
 

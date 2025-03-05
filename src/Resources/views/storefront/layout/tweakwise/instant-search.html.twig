@@ -17,6 +17,17 @@
                 });
                 window.dispatchEvent(addToCartEvent);
             },
+            "twn.add-to-favorites": function (event) {
+                let addToFavoritesEvent = new CustomEvent('twAddToFavorites', {
+                    detail: {
+                        routerAddPath: '{{ path('frontend.wishlist.product.add', { productId: 'idPlaceholder' }) }}',
+                        routerAddAfterLoginPath: '{{ path('frontend.wishlist.add.after.login', { productId: 'idPlaceholder' }) }}',
+                        routerRemovePath: '{{ path('frontend.wishlist.product.remove', { productId: 'idPlaceholder' }) }}',
+                        data: event.data
+                    }
+                });
+                window.dispatchEvent(addToFavoritesEvent);
+            },
             "twn.request.navigation.success": function (event) {
                 let navSuccessEvent = new CustomEvent('twNavigationSuccess', {
                     detail: {}

@@ -1,4 +1,4 @@
-.sw-cms-preview-tweakwise-featured-products {
+.sw-cms-preview-tweakwise-cross-selling {
   align-items: center;
   display: grid;
   grid-template-columns: 20px 1fr 20px;
@@ -6,14 +6,14 @@
   padding: 15px;
 
   img {
-	margin: 0;
-	display: block;
-	max-width: 100%;
+    margin: 0;
+    display: block;
+    max-width: 100%;
   }
 
-  .sw-cms-preview-tweakwise-featured-products__product-box {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-gap: 0 15px;
+  .sw-cms-preview-tweakwise-cross-selling__product-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 0 15px;
   }
 }
