@@ -1,19 +1,20 @@
-{% block tweakwise_featured_products %}
-    {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
-    {% if element.config.groupId.value and instanceKey %}
+{% block tweakwise_cross_selling %}
+    {% if (page.extensions.twConfiguration.integration == 'javascript' or page.extensions.twConfiguration.integration == 'pluginstudio') and page.extensions.twConfiguration.crossSellProductId %}
+
         {% set event = 'twn.recommendations.ready' %}
         {% if page.extensions.twConfiguration.integration == 'javascript' %}
             {% set event = 'DOMContentLoaded' %}
         {% endif %}
+        <div id="tweakwise-crossselling-{{ element.id }}"></div>
 
-        <div id="tweakwise-featured-recommendations-{{ element.id }}"></div>
-        <script type="text/javascript">
+        <script>
             window.addEventListener("{{ event }}", function () {
                 tweakwiseRecommendations({
-                    instancekey: "{{ instanceKey }}",
-                    output: "#tweakwise-featured-recommendations-{{ element.id }}",
-                    featured: {
-                        id: "{{ element.config.groupId.value }}"
+                    output: "#tweakwise-crossselling-{{ element.id }}",
+                    instancekey: "{{ page.extensions.twConfiguration.instanceKey|escape }}",
+                    related: {
+                        productId: "{{ page.extensions.twConfiguration.crossSellProductId }}",
+                        groupKey: "{{ element.config.groupKey.value }}"
                     },
                     on: {
                         "twn.add-to-cart": function (event) {

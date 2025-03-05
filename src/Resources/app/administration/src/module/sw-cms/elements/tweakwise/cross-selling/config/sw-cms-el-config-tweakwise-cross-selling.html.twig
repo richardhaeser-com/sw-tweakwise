@@ -1,0 +1,13 @@
+{% block sw_cms_element_dailymotion_config %}
+    <sw-text-field
+            v-model="groupKey"
+            class="swag-groupkey-field"
+            :label="$tc('sw-cms.elements.tweakwiseCrossSelling.config.groupKey.label')"
+            :help-text="$tc('sw-cms.elements.tweakwiseCrossSelling.config.groupKey.helpText')"
+            required
+            :placeholder="$tc('sw-cms.elements.tweakwiseCrossSelling.config.groupKey.placeHolder')"
+            @input="onElementUpdate"
+            @change="onElementUpdate"
+            @update:value="onElementUpdate">
+    </sw-text-field>
+{% endblock %}

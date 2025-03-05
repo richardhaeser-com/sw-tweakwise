@@ -1,0 +1,16 @@
+{
+  "sw-cms": {
+    "elements": {
+      "tweakwiseCrossSelling": {
+        "label": "Tweakwise Cross Selling",
+        "config": {
+          "groupKey": {
+            "label": "Groeperingscode",
+            "helpText": "Je kunt de groeperingscode vinden in het overzicht van de Up- & cross-selling in Tweakwise",
+            "placeHolder": "Geef de groeperingscode"
+          }
+        }
+      }
+    }
+  }
+}
