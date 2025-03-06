@@ -86,9 +86,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         if ($page instanceof ProductPage) {
             $product = $this->productDataService->getProductShownInListing($page->getProduct(), $event->getSalesChannelContext());
 
-            /** @phpstan-ignore-next-line */
-            $productNumber = $product->getProductNumber();
-            $twConfiguration['crossSellProductId'] = ProductDataService::getTweakwiseProductId($productNumber, $event->getRequest()->getLocale(), $domainId);
+            $twConfiguration['crossSellProductId'] = ProductDataService::getTweakwiseProductId($product, $domainId);
         }
         if ($page instanceof Page || $page instanceof ErrorTemplateStruct) {
             $page->addExtensions([

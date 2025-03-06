@@ -77,7 +77,7 @@
                                 instancekey: "{{ page.extensions.twConfiguration.instanceKey }}",
                                 output: "#tweakwise-checkout-sales-recommendations",
                                 related: {
-                                    productId: "{{ tweakwise_cross_sell_product_id(tweakwise_product_number(lastProduct), app.request.locale, context.domainId) }}",
+                                    productId: "{{ tweakwise_cross_sell_product_id(lastProduct, app.request.locale, context.domainId) }}",
                                     groupKey: "{{ page.extensions.twConfiguration.checkoutSales.recommendationsGroupKey }}"
                                 },
                                 on: {
