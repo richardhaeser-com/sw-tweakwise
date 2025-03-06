@@ -329,7 +329,7 @@ class FeedService
 
             $criteria->addSorting(new FieldSorting('productNumber', FieldSorting::ASCENDING));
             $criteria->addFilter(
-                new ProductAvailableFilter($salesChannel->getId(), ProductVisibilityDefinition::VISIBILITY_SEARCH)
+                new ProductAvailableFilter($salesChannel->getId(), ProductVisibilityDefinition::VISIBILITY_LINK)
             );
 
             $this->eventDispatcher->dispatch(

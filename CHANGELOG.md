@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 > ### BREAKING
-> **Be aware that this is a breaking change! This update will respect the visibility settings per sales channel which can be set on a product level. When you hide a product in listings, the product will not be shown in the category listings, but will show up on search. When set to hide in listings and search, the product will not be added to the feed.**
+> **Be aware that this is a breaking change! This update will respect the visibility settings per sales channel which can be set on a product level. When you hide a product in listings, the product will not be shown in the category listings, but will show up on search. When set to hide in listings and search, the product will only be shown in featured recommendations and cross- & upsells.**
 
 ### Added
 - Added the support of add-to-wishlist. If you have a button with an add-to-wishlist / add-to-favorites event on your product tile, it will add the product to the Shopware wishlist.
