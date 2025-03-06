@@ -27,7 +27,7 @@ _All features are tested on a default Shopware 6.4 and 6.5 installation and in a
 Do you want an overview of all changes in the past versions? Just have a look at the [changelog](CHANGELOG.md).
 
 ## Documentation
-[Checkout the documentation](DOC.md)
+[Checkout the documentation](https://docs.tweakwise.com/reference/integrate-shopware)
 
 
 ## Support
