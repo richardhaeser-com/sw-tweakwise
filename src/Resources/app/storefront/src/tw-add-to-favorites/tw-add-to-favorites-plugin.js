@@ -1,6 +1,6 @@
 import Plugin from 'src/plugin-system/plugin.class';
 import DomAccess from 'src/helper/dom-access.helper';
-export default class TwAddToCartPlugin extends Plugin {
+export default class TwAddToFavoritesPlugin extends Plugin {
     init() {
         this.classList = {
             isLoading: 'product-wishlist-loading',
