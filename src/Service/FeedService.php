@@ -2,6 +2,8 @@
 
 namespace RH\Tweakwise\Service;
 
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Symfony\Component\Routing\RouterInterface;
 use function array_key_exists;
 use function array_unique;
 use Cron\CronExpression;
@@ -80,6 +82,7 @@ class FeedService
     private string $path;
     private EventDispatcherInterface $eventDispatcher;
     private LocaleSwitcher $localeSwitcher;
+    private RouterInterface $router;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -94,7 +97,8 @@ class FeedService
         AbstractRuleLoader $ruleLoader,
         string $path,
         EventDispatcherInterface $eventDispatcher,
-        LocaleSwitcher $localeSwitcher
+        LocaleSwitcher $localeSwitcher,
+        RouterInterface $router
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -109,6 +113,7 @@ class FeedService
         $this->path = $path;
         $this->eventDispatcher = $eventDispatcher;
         $this->localeSwitcher = $localeSwitcher;
+        $this->router = $router;
     }
 
     public function fixFeedRecords(bool $forceFeedGeneration = false): void
@@ -438,14 +443,39 @@ class FeedService
     }
     private function renderCategory(CategoryEntity $category, SalesChannelDomainEntity $domain, FeedEntity $feed)
     {
+
         $content = $this->twig->render($this->resolveView('category.xml.twig', $feed), [
             'domainId' => $domain->getId(),
             'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
             'category' => $category,
             'rank' => $this->categoryRank,
-            'feed' => $feed
+            'feed' => $feed,
+            'url' => ltrim($this->getUrlOfEntity($category), '/')
         ]);
         $this->writeContent($content, $feed);
+    }
+
+    private function getUrlOfEntity(Entity $entity): string
+    {
+        if ($entity instanceof CategoryEntity || $entity instanceof ProductEntity) {
+            foreach ($entity->getSeoUrls() as $seoUrl) {
+                if ($seoUrl->getIsCanonical()) {
+                    return $seoUrl->getSeoPathInfo();
+                }
+            }
+
+            if ($entity instanceof CategoryEntity) {
+                return $this->router->generate('frontend.navigation.page', [
+                    'navigationId' => $entity->getId(),
+                ]);
+            }
+            if ($entity instanceof ProductEntity) {
+                return $this->router->generate('frontend.detail.page', [
+                    'productId' => $entity->getId(),
+                ]);
+            }
+        }
+        return '';
     }
 
     private function writeContent(string $content, FeedEntity $feed)
@@ -579,7 +609,8 @@ class FeedService
                     'otherVariantsXml' => $otherVariantsXml,
                     'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
                     'salesChannel' => $domain->getSalesChannel(),
-                    'feed' => $feed
+                    'feed' => $feed,
+                    'url' => ltrim($this->getUrlOfEntity($product), '/')
                 ]);
                 $this->uniqueProductIds[] = $productId;
             }

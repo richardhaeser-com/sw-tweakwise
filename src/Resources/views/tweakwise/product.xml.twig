@@ -13,9 +13,7 @@
         {% if product.manufacturer %}
             <brand>{% block feed_item_manufacturer %}<![CDATA[{{ product.manufacturer.translated.name|raw }}]]>{% endblock %}</brand>
         {% endif %}
-        {% for url in product.seoUrls %}
-            <url>{% block feed_item_url %}{{ domainUrl ~ url.seoPathInfo }}{% endblock %}</url>
-        {% endfor %}
+        <url>{% block feed_item_url %}{{ domainUrl ~ url }}{% endblock %}</url>
 
         {% block feed_item_image %}
             {% if product.cover.media is defined and product.cover.media.url %}
