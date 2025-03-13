@@ -506,7 +506,7 @@ class FeedService
         /** @var ProductEntity $product */
         foreach ($products as $product) {
             echo '.';
-            $productId = ProductDataService::getTweakwiseProductId($product->getProductNumber(), $domain->getLanguage()->getTranslationCode()->getCode(), $domain->getId());
+            $productId = ProductDataService::getTweakwiseProductId($product, $domain->getId());
             if (!in_array($productId, $this->uniqueProductIds, true)) {
                 $childFilter = null;
                 $getVariants = false;

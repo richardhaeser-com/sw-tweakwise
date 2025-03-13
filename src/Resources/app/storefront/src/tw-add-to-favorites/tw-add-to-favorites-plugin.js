@@ -32,13 +32,11 @@ export default class TwAddToFavoritesPlugin extends Plugin {
         var products = e.detail.data.items;
 
         for (var product of products) {
-            let shopwareIdAttribute = product.attributes.find(attribute => {
-                return attribute.name === 'product_id'
-            });
-            if (shopwareIdAttribute === undefined) {
-                console.log('An error occurred');
+            const productId = this._extractShopwareUUID(product.itemno);
+            if (!productId) {
+                console.log('Not a valid product id given', e.event.detail.itemno);
+                return;
             }
-            var productId = shopwareIdAttribute.values[0];
             if (!this._wishlistStorage.has(productId)) continue;
 
             var elements = document.querySelectorAll(`[data-item-id="${product.itemno}"]`);
@@ -48,14 +46,17 @@ export default class TwAddToFavoritesPlugin extends Plugin {
         }
     }
 
+    _extractShopwareUUID(input) {
+        const match = input.match(/-([a-f0-9]{32})$/i);
+        return match ? match[1] : null;
+    }
+
     _addToFavorites(e) {
-        let shopwareIdAttribute = e.detail.data.attributes.find(attribute => {
-            return attribute.name === 'product_id'
-        });
-        if (shopwareIdAttribute === undefined) {
-            console.log('An error occurred');
+        const productId = this._extractShopwareUUID(e.detail.data.itemno);
+        if (!productId) {
+            console.log('Not a valid product id given', e.event.detail.itemno);
+            return;
         }
-        const productId = shopwareIdAttribute.values[0];
 
         const routerAdd = {'path': e.detail.routerAddPath.replace('idPlaceholder', productId), 'afterLoginPath': e.detail.routerAddAfterLoginPath.replace('idPlaceholder', productId)};
         const routerRemove = {'path': e.detail.routerRemovePath.replace('idPlaceholder', productId)};

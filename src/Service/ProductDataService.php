@@ -76,8 +76,8 @@ class ProductDataService
         return $product;
     }
 
-    public static function getTweakwiseProductId(string $productNumber, string $locale, string $domainId)
+    public static function getTweakwiseProductId(ProductEntity $product, string $domainId)
     {
-        return sprintf('%s (%s - %x)', $productNumber, $locale, crc32($domainId));
+        return sprintf('%x-%s', crc32($domainId), $product->getId());
     }
 }

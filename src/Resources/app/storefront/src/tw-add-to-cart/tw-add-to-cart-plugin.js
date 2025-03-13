@@ -14,15 +14,17 @@ export default class TwAddToCartPlugin extends Plugin {
         window.addEventListener('twAddToCart', twAddToCart);
     }
 
+    _extractShopwareUUID(input) {
+        const match = input.match(/-([a-f0-9]{32})$/i);
+        return match ? match[1] : null;
+    }
     _addToCart(e) {
-        let shopwareIdAttribute = e.detail.data.attributes.find(attribute => {
-            return attribute.name === 'product_id'
-        });
-        if (shopwareIdAttribute === undefined) {
-            alert('An error occurred');
-        }
-        const productId = shopwareIdAttribute.values[0];
 
+        const productId = this._extractShopwareUUID(e.detail.data.itemno);
+        if (!productId) {
+            console.log('Not a valid product id given', e.detail.itemno);
+            return;
+        }
 
         let form = document.createElement('form');
         form.dataset.addToCart = 'true';
