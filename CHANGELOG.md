@@ -5,15 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 13-03-2025
+
+> ### BREAKING
+> **This is a breaking change. Like every normal update you need to test the update on your environment, but especially the breaking change needs to be tested thoroughly on a non-production environment.**
+
+### Breaking
+- This update will respect the visibility settings per sales channel which can be set on a product level. When you hide a product in listings, the product will not be shown in the category listings, but will show up on search. When set to hide in listings and search, the product will only be shown in featured recommendations and cross- & upsells.
+- Removed unnecessary config on the search page. When you have implemented handlers for the success events, you might want to check if they are still working.
+- The ID in Tweakwise is changed a bit. It now just have the Shopware ID of the product as well as a hash which will represent the domain. If you have implemented your own handlers for add-to-cart and add-to-favorites or your own way of showing cross-sellings, please test it thoroughly. Also make sure to generate a new feed as soon as the plugin is updated as the new add-to-cart and add-to-favorites will not work with the old data.  
+
+### Added
+- If for some reason no SEO-url is available for a category or a product, it will now fall-back to the default urls for categories and products. This way, there will always be an url.
+
 ## [3.5.5] - 10-03-2025
 
 ### Fixed
 - The add to favorites JS plugin was exposing the wrong class name. This is now fixed.
 
 ## [3.5.4] - 06-03-2025
-
-> ### BREAKING
-> **Be aware that this is a breaking change! This update will respect the visibility settings per sales channel which can be set on a product level. When you hide a product in listings, the product will not be shown in the category listings, but will show up on search. When set to hide in listings and search, the product will only be shown in featured recommendations and cross- & upsells.**
 
 ### Added
 - Added the support of add-to-wishlist. If you have a button with an add-to-wishlist / add-to-favorites event on your product tile, it will add the product to the Shopware wishlist.
