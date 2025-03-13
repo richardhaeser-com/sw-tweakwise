@@ -2,8 +2,6 @@
 
 namespace RH\Tweakwise\Service;
 
-use Shopware\Core\Framework\DataAbstractionLayer\Entity;
-use Symfony\Component\Routing\RouterInterface;
 use function array_key_exists;
 use function array_unique;
 use Cron\CronExpression;
@@ -39,6 +37,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Adapter\Twig\TemplateFinder;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -53,6 +52,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use function sprintf;
 use function str_replace;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\LocaleSwitcher;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Twig\Environment;
