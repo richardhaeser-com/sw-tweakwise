@@ -64,6 +64,7 @@
             <argument>%shopware.filesystem.private.config.root%</argument>
             <argument type="service" id="Symfony\Component\EventDispatcher\EventDispatcherInterface"/>
             <argument type="service" id="Symfony\Component\Translation\LocaleSwitcher"/>
+            <argument type="service" id="router" />
         </service>
 
         <service id="RH\Tweakwise\Service\ProductDataService" public="true">

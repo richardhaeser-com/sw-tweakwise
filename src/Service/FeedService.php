@@ -37,6 +37,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Adapter\Twig\TemplateFinder;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -51,6 +52,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use function sprintf;
 use function str_replace;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\LocaleSwitcher;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Twig\Environment;
@@ -63,6 +65,9 @@ class FeedService
 {
     public const EXPORT_PATH = 'tweakwise/feed-{id}.xml';
     public const TMP_EXPORT_PATH = 'tweakwise/feed-{id}-tmp.xml';
+    public const PRODUCT_NOT_VISIBLE = 1;
+    public const PRODUCT_VISIBILITY_SEARCH = 3;
+    public const PRODUCT_VISIBILITY_CATALOG_SEARCH = 4;
     private EntityRepository $categoryRepository;
     private Environment $twig;
     private TemplateFinder $templateFinder;
@@ -80,6 +85,7 @@ class FeedService
     private string $path;
     private EventDispatcherInterface $eventDispatcher;
     private LocaleSwitcher $localeSwitcher;
+    private RouterInterface $router;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -94,7 +100,8 @@ class FeedService
         AbstractRuleLoader $ruleLoader,
         string $path,
         EventDispatcherInterface $eventDispatcher,
-        LocaleSwitcher $localeSwitcher
+        LocaleSwitcher $localeSwitcher,
+        RouterInterface $router
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -109,6 +116,7 @@ class FeedService
         $this->path = $path;
         $this->eventDispatcher = $eventDispatcher;
         $this->localeSwitcher = $localeSwitcher;
+        $this->router = $router;
     }
 
     public function fixFeedRecords(bool $forceFeedGeneration = false): void
@@ -319,9 +327,14 @@ class FeedService
                 ->addFilter(new EqualsFilter('isCanonical', true));
 
             $criteria->addAssociation('seoUrls.url');
+            $criteria->getAssociation('visibilities')
+                ->setLimit(1)
+                ->addFilter(new EqualsFilter('salesChannelId', $salesChannel->getId()));
+            $criteria->addAssociation('visibilities');
+
             $criteria->addSorting(new FieldSorting('productNumber', FieldSorting::ASCENDING));
             $criteria->addFilter(
-                new ProductAvailableFilter($salesChannel->getId(), ProductVisibilityDefinition::VISIBILITY_ALL)
+                new ProductAvailableFilter($salesChannel->getId(), ProductVisibilityDefinition::VISIBILITY_LINK)
             );
 
             $this->eventDispatcher->dispatch(
@@ -438,14 +451,39 @@ class FeedService
     }
     private function renderCategory(CategoryEntity $category, SalesChannelDomainEntity $domain, FeedEntity $feed)
     {
+
         $content = $this->twig->render($this->resolveView('category.xml.twig', $feed), [
             'domainId' => $domain->getId(),
             'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
             'category' => $category,
             'rank' => $this->categoryRank,
-            'feed' => $feed
+            'feed' => $feed,
+            'url' => ltrim($this->getUrlOfEntity($category), '/')
         ]);
         $this->writeContent($content, $feed);
+    }
+
+    private function getUrlOfEntity(Entity $entity): string
+    {
+        if ($entity instanceof CategoryEntity || $entity instanceof ProductEntity) {
+            foreach ($entity->getSeoUrls() as $seoUrl) {
+                if ($seoUrl->getIsCanonical()) {
+                    return $seoUrl->getSeoPathInfo();
+                }
+            }
+
+            if ($entity instanceof CategoryEntity) {
+                return $this->router->generate('frontend.navigation.page', [
+                    'navigationId' => $entity->getId(),
+                ]);
+            }
+            if ($entity instanceof ProductEntity) {
+                return $this->router->generate('frontend.detail.page', [
+                    'productId' => $entity->getId(),
+                ]);
+            }
+        }
+        return '';
     }
 
     private function writeContent(string $content, FeedEntity $feed)
@@ -574,18 +612,38 @@ class FeedService
                     'domainId' => $domain->getId(),
                     'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
                     'product' => $product,
+                    'visibility' => $this->getVisibility($product),
                     'productId' => $productId,
                     'prices' => $this->getLowestAndHighestPrice($product, $salesChannelContext),
                     'otherVariantsXml' => $otherVariantsXml,
                     'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
                     'salesChannel' => $domain->getSalesChannel(),
-                    'feed' => $feed
+                    'feed' => $feed,
+                    'url' => ltrim($this->getUrlOfEntity($product), '/')
                 ]);
                 $this->uniqueProductIds[] = $productId;
             }
         }
 
         $this->writeContent($content, $feed);
+    }
+
+    private function getVisibility(ProductEntity $product): int
+    {
+        if ($product->getVisibilities()->count() === 0) {
+            return self::PRODUCT_VISIBILITY_CATALOG_SEARCH;
+        }
+
+        $visibility = $product->getVisibilities()->first();
+        switch ($visibility->getVisibility()) {
+            case 10:
+                return self::PRODUCT_NOT_VISIBLE;
+            case 20:
+                return self::PRODUCT_VISIBILITY_SEARCH;
+            case 30:
+            default:
+                return self::PRODUCT_VISIBILITY_CATALOG_SEARCH;
+        }
     }
 
     private function getLowestAndHighestPrice(ProductEntity $product, SalesChannelContext $salesChannelContext): array
