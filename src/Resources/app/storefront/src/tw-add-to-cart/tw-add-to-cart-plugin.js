@@ -15,14 +15,14 @@ export default class TwAddToCartPlugin extends Plugin {
     }
 
     _extractShopwareUUID(input) {
-        const match = input.match(/^([a-f0-9]{32})-/i);
+        const match = input.match(/-([a-f0-9]{32})$/i);
         return match ? match[1] : null;
     }
     _addToCart(e) {
 
         const productId = this._extractShopwareUUID(e.detail.data.itemno);
         if (!productId) {
-            console.log('Not a valid product id given', e.event.detail.itemno);
+            console.log('Not a valid product id given', e.detail.itemno);
             return;
         }
 

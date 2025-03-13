@@ -47,7 +47,7 @@ export default class TwAddToFavoritesPlugin extends Plugin {
     }
 
     _extractShopwareUUID(input) {
-        const match = input.match(/^([a-f0-9]{32})-/i);
+        const match = input.match(/-([a-f0-9]{32})$/i);
         return match ? match[1] : null;
     }
 
