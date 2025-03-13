@@ -1,11 +1,9 @@
 {% sw_extends '@Storefront/storefront/base.html.twig' %}
 
 {% block base_content %}
-    {% if page.extensions.twConfiguration.integration == 'javascript' %}
+    {% if page.extensions.twConfiguration.integration == 'javascript' or page.extensions.twConfiguration.integration == 'pluginstudio' %}
         <script>
             window["twn-starter-config"]["output"] = 'tweakwise-output-listing';
-            window["twn-starter-config"]["navigation"]["output"] = 'tweakwise-output-listing';
-            window["twn-starter-config"]["navigation"]["cid"] = '{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}';
             window["twn-starter-config"].parameters = "visibility=3%7C4";
         </script>
     {% endif %}
