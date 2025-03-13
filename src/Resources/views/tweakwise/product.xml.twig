@@ -339,6 +339,13 @@
                             <value>{{ prices.highest.quantity_end }}</value>
                         </attribute>
                     {% endblock %}
+                    {% block feed_item_visibility %}
+                        <attribute>
+                            <name>visibility</name>
+                            <value>{{ visibility }}</value>
+                        </attribute>
+                    {% endblock %}
+
                     {% for image in product.media %}
                         {% block feed_item_media_item %}
                             {% if image.media is defined and image.media.url %}

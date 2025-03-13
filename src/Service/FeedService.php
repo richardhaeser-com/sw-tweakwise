@@ -65,6 +65,9 @@ class FeedService
 {
     public const EXPORT_PATH = 'tweakwise/feed-{id}.xml';
     public const TMP_EXPORT_PATH = 'tweakwise/feed-{id}-tmp.xml';
+    public const PRODUCT_NOT_VISIBLE = 1;
+    public const PRODUCT_VISIBILITY_SEARCH = 3;
+    public const PRODUCT_VISIBILITY_CATALOG_SEARCH = 4;
     private EntityRepository $categoryRepository;
     private Environment $twig;
     private TemplateFinder $templateFinder;
@@ -324,9 +327,14 @@ class FeedService
                 ->addFilter(new EqualsFilter('isCanonical', true));
 
             $criteria->addAssociation('seoUrls.url');
+            $criteria->getAssociation('visibilities')
+                ->setLimit(1)
+                ->addFilter(new EqualsFilter('salesChannelId', $salesChannel->getId()));
+            $criteria->addAssociation('visibilities');
+
             $criteria->addSorting(new FieldSorting('productNumber', FieldSorting::ASCENDING));
             $criteria->addFilter(
-                new ProductAvailableFilter($salesChannel->getId(), ProductVisibilityDefinition::VISIBILITY_ALL)
+                new ProductAvailableFilter($salesChannel->getId(), ProductVisibilityDefinition::VISIBILITY_LINK)
             );
 
             $this->eventDispatcher->dispatch(
@@ -604,6 +612,7 @@ class FeedService
                     'domainId' => $domain->getId(),
                     'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
                     'product' => $product,
+                    'visibility' => $this->getVisibility($product),
                     'productId' => $productId,
                     'prices' => $this->getLowestAndHighestPrice($product, $salesChannelContext),
                     'otherVariantsXml' => $otherVariantsXml,
@@ -617,6 +626,24 @@ class FeedService
         }
 
         $this->writeContent($content, $feed);
+    }
+
+    private function getVisibility(ProductEntity $product): int
+    {
+        if ($product->getVisibilities()->count() === 0) {
+            return self::PRODUCT_VISIBILITY_CATALOG_SEARCH;
+        }
+
+        $visibility = $product->getVisibilities()->first();
+        switch ($visibility->getVisibility()) {
+            case 10:
+                return self::PRODUCT_NOT_VISIBLE;
+            case 20:
+                return self::PRODUCT_VISIBILITY_SEARCH;
+            case 30:
+            default:
+                return self::PRODUCT_VISIBILITY_CATALOG_SEARCH;
+        }
     }
 
     private function getLowestAndHighestPrice(ProductEntity $product, SalesChannelContext $salesChannelContext): array
