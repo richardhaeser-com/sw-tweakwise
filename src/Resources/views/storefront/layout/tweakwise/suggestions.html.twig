@@ -1,42 +1,57 @@
-<link rel="preload" as="script" href="https://gateway.tweakwisenavigator.net/js/suggestions.js" />
-<script>
-    window.tweakwiseFailover = function (src) {
-        var script = document.createElement("script");
-        script.async = true;
-        script.src = src;
-        document.head.appendChild(script);
-    };
-</script>
-<script
-        src="https://gateway.tweakwisenavigator.net/js/suggestions.js"
-        data-failover="https://gateway.tweakwisenavigator.com/js/suggestions.js"
-        onerror="window.tweakwiseFailover(this.dataset.failover)"
-></script>
+{% block tweakwise_suggestions %}
+    {% block tweakwise_suggestions_preload %}
+        <link rel="preload" as="script" href="https://gateway.tweakwisenavigator.net/js/suggestions.js" />
+    {% endblock %}
 
+    {% block tweakwise_suggestions_failover %}
+        <script>
+            window.tweakwiseFailover = function (src) {
+                var script = document.createElement("script");
+                script.async = true;
+                script.src = src;
+                document.head.appendChild(script);
+            };
+        </script>
+    {% endif %}
 
-{% block tweakwise_suggestions_config %}
-<script>
-    window.addEventListener("DOMContentLoaded", function () {
-        window.tweakwiseSuggestions({
-            input: "#tweakwise-suggestions",
-            instancekey: "{{ instanceKey }}",
-            parameters: "visibility=3%7C4",
-            cid: "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}",
-            searchPhrases: {
-                handle: function (event) {
-                    var suggestion = event.data;
+    {% block tweakwise_suggestions_js %}
+    <script
+            src="https://gateway.tweakwisenavigator.net/js/suggestions.js"
+            data-failover="https://gateway.tweakwisenavigator.com/js/suggestions.js"
+            onerror="window.tweakwiseFailover(this.dataset.failover)"
+    ></script>
+    {% endblock %}
 
-                    window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=" + encodeURIComponent(suggestion.match);
-                }
-            },
-            facetFilters: {
-                handle: function (event) {
-                    var suggestion = event.data;
+    {% block tweakwise_suggestions_config %}
+    <script>
+        window.addEventListener("DOMContentLoaded", function () {
+            window.tweakwiseSuggestions({
+                input: "#tweakwise-suggestions",
+                instancekey: "{{ instanceKey }}",
+                parameters: "visibility=3%7C4",
+                cid: "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}",
+                searchPhrases: {
+                    {% block tweakwise_suggestions_searchphrase_handler %}
+                    handle: function (event) {
+                        var suggestion = event.data;
 
-                    window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=&tn_fk_" + suggestion.navigationLink.context.facetFilters[0].key + "=" + encodeURIComponent(suggestion.navigationLink.context.facetFilters[0].values[0]);
-                }
-            }
+                        window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=" + encodeURIComponent(suggestion.match);
+                    }
+                    {% endblock %}
+                },
+                facetFilters: {
+                    {% block tweakwise_suggestions_facet_filter_handler %}
+                    handle: function (event) {
+                        var suggestion = event.data;
+
+                        window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=&tn_fk_" + suggestion.navigationLink.context.facetFilters[0].key + "=" + encodeURIComponent(suggestion.navigationLink.context.facetFilters[0].values[0]);
+                    }
+                    {% endblock %}
+                },
+                {% block tweakwise_suggestions_other_handlers %}
+                {% endblock %}
+            });
         });
-    });
-</script>
+    </script>
+    {% endblock %}
 {% endblock %}

@@ -1,146 +1,174 @@
-<link rel="preload" as="script" href="https://gateway.tweakwisenavigator.net/js/starter.js" />
-<link rel="preload" as="script" href="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js" />
-
-<script>window["twn-starter-config"] = window["twn-starter-config"] || {};</script>
-
-<script>
-    window.tweakwiseFailover = function (src) {
-        var script = document.createElement("script");
-        script.async = true;
-        script.src = src;
-        document.head.appendChild(script);
-    };
-</script>
-
-<script
-        src="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"
-        data-failover="https://gateway.tweakwisenavigator.com/js/{{ instanceKey }}/tweakwise.js"
-        onerror="window.tweakwiseFailover(this.dataset.failover)"
-></script>
-
-<script>
-    {% block tweakwise_starter_config %}
-    window["twn-starter-config"].cid = "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}";
-    window["twn-starter-config"].lang = "{{ languageKey }}";
-    window["twn-starter-config"].on = {
-        "twn.add-to-cart": function (event) {
-            let addToCartEvent = new CustomEvent('twAddToCart', {
-                detail: {
-                    addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
-                    data: event.data
-                }
-            });
-            window.dispatchEvent(addToCartEvent);
-        },
-        "twn.add-to-favorites": function (event) {
-            let addToFavoritesEvent = new CustomEvent('twAddToFavorites', {
-                detail: {
-                    routerAddPath: '{{ path('frontend.wishlist.product.add', { productId: 'idPlaceholder' }) }}',
-                    routerAddAfterLoginPath: '{{ path('frontend.wishlist.add.after.login', { productId: 'idPlaceholder' }) }}',
-                    routerRemovePath: '{{ path('frontend.wishlist.product.remove', { productId: 'idPlaceholder' }) }}',
-                    data: event.data
-                }
-            });
-            window.dispatchEvent(addToFavoritesEvent);
-        },
-        "twn.request.navigation.success": function (event) {
-            let navSuccessEvent = new CustomEvent('twNavigationSuccess', {
-                detail: {
-                    data: event.data
-                }
-            });
-            window.dispatchEvent(navSuccessEvent);
-        },
-        "twn.request.success": function (event) {
-            let successEvent = new CustomEvent('twSuccess', {
-                detail: {
-                    data: event.data
-                }
-            });
-            window.dispatchEvent(successEvent);
-        },
-        "twn.container.close": function (event) {
-            let navCloseEvent = new CustomEvent('twContainerClose', {
-                detail: {
-                    data: event.data
-                }
-            });
-            window.dispatchEvent(navCloseEvent);
-        },
-    };
+{% block tweakwise_plugin_studio %}
+    {% block tweakwise_js_preload %}
+        <link rel="preload" as="script" href="https://gateway.tweakwisenavigator.net/js/starter.js" />
+        <link rel="preload" as="script" href="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js" />
     {% endblock %}
 
-    {% block tweakwise_whishlist_initialisation %}
-    let wishlistProductsLoaded = false;
+    <script>window["twn-starter-config"] = window["twn-starter-config"] || {};</script>
 
-    window.addEventListener("twNavigationSuccess", function(event) {
-        waitFor(() => initializeFavoritesCondition())
-            .then(() => {
-                let initFavoritesEvent = new CustomEvent('twInitFavorites', {
-                    detail: event.detail
-                });
-                window.dispatchEvent(initFavoritesEvent);
-            })
-    });
-
-    function initializeFavoritesCondition() {
-        if (!window.PluginManager.getPluginInstances('TwAddToFavoritesPlugin').length) {
-            return false;
-        }
-
-        var wishlistStorage = window.PluginManager.getPluginInstances('WishlistStorage');
-        if (!wishlistStorage.length) {
-            return false;
-        }
-
-        return !!Object.keys(wishlistStorage[0].products).length;
-    }
-
-    function waitFor(conditionFunction, timeout = 5000, interval = 100) {
-        return new Promise((resolve, reject) => {
-           const startTime = Date.now();
-
-           const checkCondition = () => {
-               if (conditionFunction()) {
-                   resolve();
-               } else if (Date.now() - startTime >= timeout) {
-                   // continue
-               } else {
-                   setTimeout(checkCondition, interval);
-               }
-           };
-
-           checkCondition();
-        });
-    }
-    {% endblock %}
-</script>
-
-{% if wayOfSearch == 'suggestions' %}
+    {% block tweakwise_js_failover %}
     <script>
-        window["twn-starter-config"].input = null;
-
-        window.addEventListener("twn.suggestions.ready", function () {
-            window.tweakwiseSuggestions({
-                input: "#tweakwise-suggestions",
-                instancekey: "{{ instanceKey }}",
-                parameters: "visibility=3%7C4",
-                cid: "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}",
-                searchPhrases: {
-                    handle: function (event) {
-                        var suggestion = event.data;
-
-                        window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=" + encodeURIComponent(suggestion.match);
-                    }
-                },
-                facetFilters: {
-                    handle: function (event) {
-                        var suggestion = event.data;
-
-                        window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=&tn_fk_" + suggestion.navigationLink.context.facetFilters[0].key + "=" + encodeURIComponent(suggestion.navigationLink.context.facetFilters[0].values[0]);
-                    }
-                }
-            });
-        });
+        window.tweakwiseFailover = function (src) {
+            var script = document.createElement("script");
+            script.async = true;
+            script.src = src;
+            document.head.appendChild(script);
+        };
     </script>
-{% endif %}
+    {% endblock %}
+
+    {% block tweakwise_js_loader %}
+    <script
+            src="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"
+            data-failover="https://gateway.tweakwisenavigator.com/js/{{ instanceKey }}/tweakwise.js"
+            onerror="window.tweakwiseFailover(this.dataset.failover)"
+    ></script>
+    {% endblock %}
+
+    <script>
+        {% block tweakwise_starter_config %}
+            window["twn-starter-config"].cid = "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}";
+            window["twn-starter-config"].lang = "{{ languageKey }}";
+            window["twn-starter-config"].on = {
+                "twn.add-to-cart": function (event) {
+                    {% block tweakwise_starter_config_on_twn_addtocart %}
+                        let addToCartEvent = new CustomEvent('twAddToCart', {
+                            detail: {
+                                addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
+                                data: event.data
+                            }
+                        });
+                        window.dispatchEvent(addToCartEvent);
+                    {% endblock %}
+                },
+                "twn.add-to-favorites": function (event) {
+                    {% block tweakwise_starter_config_on_twn_addtofavorites %}
+                        let addToFavoritesEvent = new CustomEvent('twAddToFavorites', {
+                            detail: {
+                                routerAddPath: '{{ path('frontend.wishlist.product.add', { productId: 'idPlaceholder' }) }}',
+                                routerAddAfterLoginPath: '{{ path('frontend.wishlist.add.after.login', { productId: 'idPlaceholder' }) }}',
+                                routerRemovePath: '{{ path('frontend.wishlist.product.remove', { productId: 'idPlaceholder' }) }}',
+                                data: event.data
+                            }
+                        });
+                        window.dispatchEvent(addToFavoritesEvent);
+                    {% endblock %}
+                },
+                "twn.request.navigation.success": function (event) {
+                    {% block tweakwise_starter_config_on_twn_request_navigation_success %}
+                        let navSuccessEvent = new CustomEvent('twNavigationSuccess', {
+                            detail: {
+                                data: event.data
+                            }
+                        });
+                    window.dispatchEvent(navSuccessEvent);
+                    {% endblock %}
+                },
+                "twn.request.success": function (event) {
+                    {% block tweakwise_starter_config_on_twn_request_success %}
+                        let successEvent = new CustomEvent('twSuccess', {
+                            detail: {
+                                data: event.data
+                            }
+                        });
+                        window.dispatchEvent(successEvent);
+                    {% endblock %}
+                },
+                "twn.container.close": function (event) {
+                    {% block tweakwise_starter_config_on_twn_container_close %}
+                        let navCloseEvent = new CustomEvent('twContainerClose', {
+                            detail: {
+                                data: event.data
+                            }
+                        });
+                    window.dispatchEvent(navCloseEvent);
+                    {% endblock %}
+                },
+                {% block tweakwise_starter_config_on_additional_handlers %}
+                {% endblock %}
+            };
+        {% endblock %}
+
+        {% block tweakwise_whishlist_initialisation %}
+            let wishlistProductsLoaded = false;
+
+            window.addEventListener("twNavigationSuccess", function(event) {
+                waitFor(() => initializeFavoritesCondition())
+                    .then(() => {
+                        let initFavoritesEvent = new CustomEvent('twInitFavorites', {
+                            detail: event.detail
+                        });
+                        window.dispatchEvent(initFavoritesEvent);
+                    })
+            });
+
+            function initializeFavoritesCondition() {
+                if (!window.PluginManager.getPluginInstances('TwAddToFavoritesPlugin').length) {
+                    return false;
+                }
+
+                var wishlistStorage = window.PluginManager.getPluginInstances('WishlistStorage');
+                if (!wishlistStorage.length) {
+                    return false;
+                }
+
+                return !!Object.keys(wishlistStorage[0].products).length;
+            }
+
+            function waitFor(conditionFunction, timeout = 5000, interval = 100) {
+                return new Promise((resolve, reject) => {
+                   const startTime = Date.now();
+
+                   const checkCondition = () => {
+                       if (conditionFunction()) {
+                           resolve();
+                       } else if (Date.now() - startTime >= timeout) {
+                           // continue
+                       } else {
+                           setTimeout(checkCondition, interval);
+                       }
+                   };
+
+                   checkCondition();
+                });
+            }
+        {% endblock %}
+    </script>
+
+    {% if wayOfSearch == 'suggestions' %}
+        {% block tweakwise_suggestions %}
+            <script>
+                window["twn-starter-config"].input = null;
+
+                window.addEventListener("twn.suggestions.ready", function () {
+                    window.tweakwiseSuggestions({
+                        input: "#tweakwise-suggestions",
+                        instancekey: "{{ instanceKey }}",
+                        parameters: "visibility=3%7C4",
+                        cid: "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}",
+                        searchPhrases: {
+                            {% block tweakwise_suggestions_searchphrase_handler %}
+                                handle: function (event) {
+                                    var suggestion = event.data;
+
+                                    window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=" + encodeURIComponent(suggestion.match);
+                                }
+                            {% endblock %}
+                        },
+                        facetFilters: {
+                            {% block tweakwise_suggestions_facet_filter_handler %}
+                                handle: function (event) {
+                                    var suggestion = event.data;
+
+                                    window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=&tn_fk_" + suggestion.navigationLink.context.facetFilters[0].key + "=" + encodeURIComponent(suggestion.navigationLink.context.facetFilters[0].values[0]);
+                                }
+                            {% endblock %}
+                        },
+                        {% block tweakwise_suggestions_other_handlers %}
+                        {% endblock %}
+                    });
+                });
+            </script>
+        {% endblock %}
+    {% endif %}
+{% endblock %}
