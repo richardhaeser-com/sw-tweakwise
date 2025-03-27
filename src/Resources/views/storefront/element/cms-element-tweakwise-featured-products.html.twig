@@ -6,7 +6,11 @@
             {% set event = 'DOMContentLoaded' %}
         {% endif %}
 
+        {% block tweakwise_featured_products_container %}
         <div id="tweakwise-featured-recommendations-{{ element.id }}"></div>
+        {% endblock %}
+
+        {% block tweakwise_featured_products_js %}
         <script type="text/javascript">
             window.addEventListener("{{ event }}", function () {
                 tweakwiseRecommendations({
@@ -17,6 +21,7 @@
                     },
                     on: {
                         "twn.add-to-cart": function (event) {
+                            {% block tweakwise_featured_products_on_twn_addtocart %}
                             let addToCartEvent = new CustomEvent('twAddToCart', {
                                 detail: {
                                     addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
@@ -24,8 +29,10 @@
                                 }
                             });
                             window.dispatchEvent(addToCartEvent);
+                            {% endblock %}
                         },
                         "twn.add-to-favorites": function (event) {
+                            {% block tweakwise_featured_products_on_twn_addtofavorites %}
                             let addToFavoritesEvent = new CustomEvent('twAddToFavorites', {
                                 detail: {
                                     routerAddPath: '{{ path('frontend.wishlist.product.add', { productId: 'idPlaceholder' }) }}',
@@ -35,18 +42,23 @@
                                 }
                             });
                             window.dispatchEvent(addToFavoritesEvent);
+                            {% endblock %}
                         },
                         "twn.request.success": function (event) {
+                            {% block tweakwise_featured_products_on_twn_request_succes %}
                             let navSuccessEvent = new CustomEvent('twSuccess', {
                                 detail: {
                                     data: event.data
                                 }
                             });
                             window.dispatchEvent(navSuccessEvent);
+                            {% endblock %}
                         },
+                        {% block tweakwise_featured_products_on_additional_handlers %}{% endblock %}
                     }
                 });
             });
         </script>
+        {% endblock %}
     {% endif %}
 {% endblock %}
