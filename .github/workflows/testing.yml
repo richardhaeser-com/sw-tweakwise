@@ -48,4 +48,4 @@ jobs:
       - name: Run Tests
         run: |
           cd custom/plugins/RhaeTweakwise/
-          php -d pcov.enabled=1 ../../../vendor/bin/phpunit  --configuration=./custom/plugins/RhaeTweakwise/phpunit.xml.dist
+          php -d pcov.enabled=1 ../../../vendor/bin/phpunit
