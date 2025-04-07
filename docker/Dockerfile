@@ -29,6 +29,7 @@ WORKDIR /var/www/html
 
 # Install the Symfony profiler pack to debug the application
 RUN composer require --dev symfony/profiler-pack
+RUN composer require --dev phpunit/phpunit
 
 # Switch back to the dockware user
 USER dockware
