@@ -1,0 +1,20 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "22:22"
+      - "3306:3306"
+      - "800:80"
+      - "8888:8888"
+      - "9999:9999"
+    volumes:
+      - "./:/var/www/html/custom/plugins/RhaeTweakwise/"
+    environment:
+      - XDEBUG_ENABLED=1
+      - APP_ENV=dev
+      - APP_DEBUG=1 # Needed to enable the Symfony profiler pack
+      - SHOP_DOMAIN=${APP_SUBDOMAIN}.${EXPOSE_HOST}
+    entrypoint: "sh /entrypoint-tweakwise.sh"
+

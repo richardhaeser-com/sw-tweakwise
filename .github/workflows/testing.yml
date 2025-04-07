@@ -1,0 +1,51 @@
+# This is the name of the workflow
+name: Testing
+
+# This defines when the workflow will run
+on: [push, pull_request]
+
+# This defines the jobs that will run in the workflow
+jobs:
+  # This is the job for running the unit tests
+  phpunit:
+    # This defines the environment in which the job will run
+    runs-on: ubuntu-latest
+    steps:
+      # Step to set up Shopware
+      - name: Setup Shopware
+        uses: shopware/setup-shopware@main
+        with:
+          # Shopware version to use
+          shopware-version: 'v6.6.2.0'
+          # PHP version to use
+          php-version: 8.2
+          # Environment in which Shopware will run
+          env: test
+          # Required PHP extensions
+          php-extensions: pcov
+          # Install Shopware
+          install: true
+
+      # Step to check out the code
+      - name: Checkout Tweakwise module
+        uses: actions/checkout@v3
+        with:
+          # This needs to be placed in this location, so when addActivePlugins() in the
+          # custom ./tests/TestBootstrap.php is called, it will be able to find the plugin
+          # as this is the usual path for them
+          path: custom/plugins/RhaeTweakwise
+
+      # Step to install the dependencies, matching the repository with the usual plugin location,
+      - name: Install Shopware 6 Tweakwise module
+        run: |
+          composer config repositories.tweakwise.shopware6 "path" "custom/plugins/RhaeTweakwise"
+          composer config allow-plugins.php-http/discovery false
+          composer require richardhaeser/sw-tweakwise
+          bin/console plugin:refresh
+          bin/console plugin:install -c -a RhaeTweakwise
+
+      # Run PHPUnit to execute the tests and generate a coverage report
+      - name: Run Tests
+        run: |
+          cd custom/plugins/RhaeTweakwise/
+          php -d pcov.enabled=1 ../../../vendor/bin/phpunit  --configuration=./custom/plugins/RhaeTweakwise/phpunit.xml.dist
