@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace RH\Tweakwise\Tests\Service;
+namespace RH\Tweakwise\Tests\Unit\Service;
 
 use PHPUnit\Framework\TestCase;
 use RH\Tweakwise\Service\ProductDataService;

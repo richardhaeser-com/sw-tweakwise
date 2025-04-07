@@ -13,7 +13,7 @@ services:
       - "./:/var/www/html/custom/plugins/RhaeTweakwise/"
     environment:
       - XDEBUG_ENABLED=1
-      - APP_ENV=dev
+      - APP_ENV=test
       - APP_DEBUG=1 # Needed to enable the Symfony profiler pack
       - SHOP_DOMAIN=${APP_SUBDOMAIN}.${EXPOSE_HOST}
     entrypoint: "sh /entrypoint-tweakwise.sh"
