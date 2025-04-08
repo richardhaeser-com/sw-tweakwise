@@ -47,8 +47,11 @@
                 <sw-card-section>
                     <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.wayOfSearch')"
                                      v-model:value="item.wayOfSearch">
-                        <option v-for="value in ['instant-search','suggestions']" :value="value">
-                            {{ $tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.' + value) }}
+                        <option value="instant-search">
+                            {{ $tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.instant-search') }}
+                        </option>
+                        <option value="suggestions" v-if="suggestionsAvailable">
+                            {{ $tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.suggestions') }}
                         </option>
                     </sw-select-field>
 
