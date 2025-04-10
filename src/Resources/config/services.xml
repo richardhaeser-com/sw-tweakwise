@@ -45,6 +45,11 @@
             </call>
             <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
         </service>
+        <service id="RH\Tweakwise\Controller\AdminController" public="true">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
         <service id="RH\Tweakwise\Command\GenerateFeedCommand" public="true">
             <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
             <tag name="console.command"/>

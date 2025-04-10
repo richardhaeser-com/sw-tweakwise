@@ -28,6 +28,10 @@ Component.register('rhae-tweakwise-frontend-detail', {
             item: null,
             salesChannelDomains: null,
             isLoading: false,
+            validToken: false,
+            tokenError: null,
+            suggestionsAvailable: false,
+            recommendationsAvailable: false,
             processSuccess: false,
             salesChannelDomainIds: [],
         };
@@ -62,6 +66,40 @@ Component.register('rhae-tweakwise-frontend-detail', {
     },
 
     methods: {
+        async checkPossibilities() {
+            this.validToken = false;
+            this.suggestionsAvailable = false
+            this.recommendationsAvailable = false
+
+            if (this.item.token) {
+                try {
+                    this.isLoading = true;
+                    const httpClient = Shopware.Application.getContainer('init').httpClient;
+                    const headers = {
+                        headers: {
+                            Authorization: `Bearer ${Shopware.Service('loginService').getToken()}`,
+                        },
+                    };
+
+                    const response = await httpClient.get('/_action/rhae-tweakwise/check-possibilities/' + this.item.token, headers);
+
+                    this.validToken = response.data.validToken === true;
+                    this.suggestionsAvailable = response.data.features.suggestions === true;
+                    this.recommendationsAvailable = response.data.features.recommendations === true;
+                } catch (e) {
+                } finally {
+                    this.tokenError = null;
+                    if (!this.validToken) {
+                        this.tokenError = {
+                            detail: this.$tc('rhae-tweakwise-frontend.notification.tokenError')
+                        };
+                    }
+
+                    this.isLoading = false;
+                }
+            }
+        },
+
         getSalesChannelDomains() {
             this.salesChannelDomains = new EntityCollection(
                 this.salesChannelDomainRepository.route,
@@ -78,6 +116,7 @@ Component.register('rhae-tweakwise-frontend-detail', {
                 .get(this.$route.params.id, Context.api, criteria)
                 .then((entity) => {
                     this.item = entity;
+                    this.checkPossibilities();
                 });
         },
         onClickSave() {

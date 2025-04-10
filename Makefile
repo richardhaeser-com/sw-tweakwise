@@ -4,6 +4,16 @@ export
 # ------------------------------------------------------------------------------------------------------------
 ## Docker installation commands
 
+
+.PHONY: start
+start:
+	docker-compose up -d
+
+.PHONY: stop
+stop:
+	docker-compose down
+
+
 .PHONY: update-host
 update-host:
 	docker-compose exec app mysql -uroot -proot shopware -e "update sales_channel_domain set url='https://${APP_SUBDOMAIN}.${EXPOSE_HOST}' where url LIKE '%localhost%'"
@@ -16,6 +26,14 @@ install:
 .PHONY: phpunit
 phpunit:
 	docker-compose exec --workdir=/var/www/html app vendor/bin/phpunit --configuration=./custom/plugins/RhaeTweakwise/phpunit.xml.dist
+
+.PHONY: cgl
+cgl:
+	docker-compose exec --workdir=/var/www/html/custom/plugins/RhaeTweakwise app php -d memory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --using-cache=no --diff
+
+.PHONY: cgl-fix
+cgl-fix:
+	docker-compose exec --workdir=/var/www/html/custom/plugins/RhaeTweakwise app php -d memory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --using-cache=no --diff
 
 #administration-build:
 #	docker-compose exec app php psh.phar administration:build --DB_HOST="127.0.0.1" --DB_USER="root" --DB_PASSWORD="root"
