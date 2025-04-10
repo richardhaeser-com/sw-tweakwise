@@ -1,22 +1,18 @@
 {% sw_extends '@Storefront/storefront/layout/meta.html.twig' %}
 
 {% block layout_head_meta_tags %}
+    {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
+    {% set languageKey = page.header.activeLanguage.translationCode.code|split('-')[0]|escape %}
+    {% set wayOfSearch = page.extensions.twConfiguration.wayOfSearch|escape %}
+
     {{ parent() }}
 
     {% block tweakwise_config %}
         {% if page.extensions.twConfiguration.integration == 'pluginstudio' %}
-            {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
-            {% set languageKey = page.header.activeLanguage.translationCode.code|split('-')[0]|escape %}
-            {% set wayOfSearch = page.extensions.twConfiguration.wayOfSearch|escape %}
-
             {% sw_include '@Storefront/storefront/layout/tweakwise/pluginstudio.html.twig' %}
         {% endif %}
 
         {% if page.extensions.twConfiguration.integration == 'javascript' %}
-            {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
-            {% set languageKey = page.header.activeLanguage.translationCode.code|split('-')[0]|escape %}
-            {% set wayOfSearch = page.extensions.twConfiguration.wayOfSearch|escape %}
-
             {% if instanceKey %}
                 {% if wayOfSearch == 'suggestions' %}
                     {% sw_include '@Storefront/storefront/layout/tweakwise/suggestions.html.twig' %}
@@ -33,5 +29,20 @@
             ></script>
         {% endif %}
 
+        {% if instanceKey %}
+        <script>
+            (function(w, d, l, i, u) {
+                w['_twa'] = l;
+                w[l] = w[l] || [];
+                w[l].push({ 'twa.start': new Date().getTime(), event: 'twa.js' });
+                w[l].push({ 'twa.instance': i, event: 'twa.init' });
+                var f = d.getElementsByTagName('script')[0],
+                    j = d.createElement('script');
+                j.async = true;
+                j.src = u;
+                f.parentNode.insertBefore(j, f);
+            })(window, document, 'tweakwiseLayer', '{{ instanceKey }}', "//navigator-analytics.tweakwise.com/bundles/scout.js");
+        </script>
+        {% endif %}
     {% endblock %}
 {% endblock %}

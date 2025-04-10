@@ -24,9 +24,15 @@
             <argument type="service" id="s_plugin_rhae_tweakwise_frontend.repository"/>
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader" />
             <argument type="service" id="RH\Tweakwise\Service\ProductDataService" />
+            <argument type="service" id="request_stack" />
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="RH\Tweakwise\Subscriber\CrossSellingSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="RH\Tweakwise\Subscriber\CustomerLoginSubscriber">
+            <argument type="service" id="request_stack" />
+            <argument type="service" id="customer.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="RH\Tweakwise\Controller\TweakwiseFeedController" public="true">

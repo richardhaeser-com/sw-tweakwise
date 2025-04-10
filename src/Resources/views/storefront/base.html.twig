@@ -3,6 +3,7 @@
 {% block base_main %}
     {% set wayOfSearch = page.extensions.twConfiguration.wayOfSearch|escape %}
 
+    {{ dump(page.extensions.twConfiguration.profileKey) }}
     <div id="tweakwise-output" class="tweakwise-{{ wayOfSearch }}">
         {{ parent() }}
     </div>
