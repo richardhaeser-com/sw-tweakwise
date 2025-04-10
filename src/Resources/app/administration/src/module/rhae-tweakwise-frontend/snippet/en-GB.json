@@ -11,6 +11,9 @@
         "name": "Frontend name"
       }
     },
+    "notification": {
+      "tokenError": "Invalid instance key given"
+    },
     "detail": {
       "cancelButtonText": "Cancel",
       "saveButtonText": "Save",

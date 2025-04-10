@@ -31,9 +31,9 @@
                               required validation="required" ></sw-text-field>
 
                     <sw-text-field :label="$t('rhae-tweakwise-frontend.detail.label.token')"
-                              v-model:value="item.token"></sw-text-field>
+                              v-model:value="item.token" :error="tokenError" @blur="checkPossibilities"></sw-text-field>
 
-                    <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.integration')"
+                    <sw-select-field v-if="validToken" :label="$t('rhae-tweakwise-frontend.detail.label.integration')"
                                      v-model:value="item.integration">
                         <option v-for="value in ['no-integration','pluginstudio','javascript']" :value="value">
                             {{ $tc('rhae-tweakwise-frontend.detail.label.integrationOptions.' + value) }}
@@ -43,7 +43,7 @@
                 </sw-card-section>
 
             </sw-card>
-            <sw-card v-if="item && (item.integration === 'javascript' || item.integration === 'pluginstudio')" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.search')">
+            <sw-card v-if="validToken && (item.integration === 'javascript' || item.integration === 'pluginstudio')" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.search')">
                 <sw-card-section>
                     <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.wayOfSearch')"
                                      v-model:value="item.wayOfSearch">
@@ -82,7 +82,7 @@
 
                 </sw-card-section>
             </sw-card>
-            <sw-card v-if="item && (item.integration === 'javascript' || item.integration === 'pluginstudio')" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.checkoutSales')">
+            <sw-card v-if="validToken && recommendationsAvailable && (item.integration === 'javascript' || item.integration === 'pluginstudio')" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.checkoutSales')">
                 <sw-card-section>
                     <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSales')"
                                      v-model:value="item.checkoutSales">

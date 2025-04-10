@@ -3,6 +3,7 @@
 namespace RH\Tweakwise\Api;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
 class FrontendApi
 {
@@ -13,16 +14,22 @@ class FrontendApi
         $this->client = new Client();
     }
 
-    public function getInstance()
+    public function getInstance(): array
     {
-        $response = $this->client->request('GET', $this->apiUrl . '/instance/' . $this->instanceKey,
-            [
-                'headers' => [
-                    'TWN-Source' => 'Shopware plugin',
-                    'accept' => 'application/json',
-                ],
-            ]
-    );
-        return json_decode($response->getBody()->getContents());
+        try {
+            $response = $this->client->request('GET', $this->apiUrl . '/instance/' . $this->instanceKey,
+                [
+                    'headers' => [
+                        'TWN-Source' => 'Shopware plugin',
+                        'accept' => 'application/json',
+                    ],
+                ]
+            );
+        } catch (GuzzleException $exception) {
+            return ['validToken' => false, 'error' => $exception->getMessage()];
+        }
+
+        $data = json_decode($response->getBody()->getContents(), true);
+        return array_merge($data, ['validToken' => true]);
     }
 }

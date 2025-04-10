@@ -15,12 +15,16 @@ class AdminController extends AbstractController
     {
         $frontendApi = new FrontendApi($token);
         $instanceData = $frontendApi->getInstance();
+        $validToken = $instanceData['validToken'] ?: false;
         $features = [];
-        foreach ($instanceData->features as $featureLine) {
-            $features[$featureLine->name] = $featureLine->value;
+        if (array_key_exists('features', $instanceData)) {
+            foreach ($instanceData['features'] as $featureLine) {
+                $features[$featureLine['name']] = $featureLine['value'];
+            }
         }
 
         return new JsonResponse([
+            'validToken' => $validToken,
             'features' => $features,
             'token' => $token
         ]);

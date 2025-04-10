@@ -11,6 +11,9 @@
         "name": "Frontend naam"
       }
     },
+    "notification": {
+      "tokenError": "Ongeldige instance key opgegeven"
+    },
     "detail": {
       "cancelButtonText": "Annuleren",
       "saveButtonText": "Opslaan",

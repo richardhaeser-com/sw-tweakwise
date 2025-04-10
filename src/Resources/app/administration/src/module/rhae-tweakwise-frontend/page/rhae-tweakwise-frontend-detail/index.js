@@ -28,7 +28,10 @@ Component.register('rhae-tweakwise-frontend-detail', {
             item: null,
             salesChannelDomains: null,
             isLoading: false,
+            validToken: false,
+            tokenError: null,
             suggestionsAvailable: false,
+            recommendationsAvailable: false,
             processSuccess: false,
             salesChannelDomainIds: [],
         };
@@ -64,6 +67,10 @@ Component.register('rhae-tweakwise-frontend-detail', {
 
     methods: {
         async checkPossibilities() {
+            this.validToken = false;
+            this.suggestionsAvailable = false
+            this.recommendationsAvailable = false
+
             if (this.item.token) {
                 try {
                     this.isLoading = true;
@@ -76,10 +83,18 @@ Component.register('rhae-tweakwise-frontend-detail', {
 
                     const response = await httpClient.get('/_action/rhae-tweakwise/check-possibilities/' + this.item.token, headers);
 
+                    this.validToken = response.data.validToken === true;
                     this.suggestionsAvailable = response.data.features.suggestions === true;
+                    this.recommendationsAvailable = response.data.features.recommendations === true;
                 } catch (e) {
-                    this.suggestionsAvailable = false
                 } finally {
+                    this.tokenError = null;
+                    if (!this.validToken) {
+                        this.tokenError = {
+                            detail: this.$tc('rhae-tweakwise-frontend.notification.tokenError')
+                        };
+                    }
+
                     this.isLoading = false;
                 }
             }
