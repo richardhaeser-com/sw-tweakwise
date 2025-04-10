@@ -17,7 +17,9 @@ class FrontendApi
     public function getInstance(): array
     {
         try {
-            $response = $this->client->request('GET', $this->apiUrl . '/instance/' . $this->instanceKey,
+            $response = $this->client->request(
+                'GET',
+                $this->apiUrl . '/instance/' . $this->instanceKey,
                 [
                     'headers' => [
                         'TWN-Source' => 'Shopware plugin',
