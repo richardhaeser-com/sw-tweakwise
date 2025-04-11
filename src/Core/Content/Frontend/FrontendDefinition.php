@@ -4,6 +4,7 @@ namespace RH\Tweakwise\Core\Content\Frontend;
 
 use RH\Tweakwise\Core\Content\Aggregate\FrontendSalesChannelDomain\FrontendSalesChannelDomainDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
@@ -48,6 +49,7 @@ class FrontendDefinition extends EntityDefinition
             (new StringField('integration', 'integration'))->addFlags(new ApiAware()),
             (new StringField('wayOfSearch', 'wayOfSearch'))->addFlags(new ApiAware()),
             (new StringField('checkoutSales', 'checkoutSales'))->addFlags(new ApiAware()),
+            (new BoolField('eventTagEnabled', 'eventTagEnabled'))->addFlags(new ApiAware()),
             (new IntField('productsDesktop', 'productsDesktop'))->addFlags(new ApiAware()),
             (new IntField('productsTablet', 'productsTablet'))->addFlags(new ApiAware()),
             (new IntField('productsMobile', 'productsMobile'))->addFlags(new ApiAware()),

@@ -119,6 +119,14 @@ Component.register('rhae-tweakwise-frontend-detail', {
                     this.checkPossibilities();
                 });
         },
+        onChangeValue(value, fieldName, valueChange = true) {
+            this.item[fieldName] = value;
+
+            this.$emit('change-value', fieldName, value);
+        },
+        onChangeToggle(value, fieldName) {
+            this.onChangeValue(value, fieldName, false);
+        },
         onClickSave() {
             this.isLoading = true;
             this.repository

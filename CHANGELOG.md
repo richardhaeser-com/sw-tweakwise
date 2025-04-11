@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- When configuring the frontend in Settings > Extensions > Tweakwise frontend we will now check your instance key and only show options that are available for the selected instance.
+- When configuring the frontend in Settings > Extensions > Tweakwise frontend we will now check your instance key and only show options that are available for the selected instance. 
 
 ## [4.0.0] - 13-03-2025
 

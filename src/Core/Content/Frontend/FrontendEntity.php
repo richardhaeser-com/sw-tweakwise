@@ -20,6 +20,8 @@ class FrontendEntity extends Entity
 
     protected ?string $checkoutSales;
 
+    protected bool $eventTagEnabled = true;
+
     protected ?string $checkoutSalesFeaturedProductsId;
 
     protected ?string $checkoutSalesRecommendationsGroupKey;
@@ -153,5 +155,15 @@ class FrontendEntity extends Entity
     public function setPaginationType(?string $paginationType): void
     {
         $this->paginationType = $paginationType;
+    }
+
+    public function isEventTagEnabled(): bool
+    {
+        return $this->eventTagEnabled;
+    }
+
+    public function setEventTagEnabled(bool $eventTagEnabled): void
+    {
+        $this->eventTagEnabled = $eventTagEnabled;
     }
 }

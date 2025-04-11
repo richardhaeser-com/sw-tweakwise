@@ -17,7 +17,6 @@ use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class StorefrontRenderSubscriber implements EventSubscriberInterface
 {
@@ -82,6 +81,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
             'instanceKey' => $result->getToken(),
             'integration' => $result->getIntegration(),
             'wayOfSearch' => $result->getWayOfSearch(),
+            'eventTagEnabled' => $result->isEventTagEnabled(),
             'products' => [
                 'desktop' => $result->getProductsDesktop(),
                 'tablet' => $result->getProductsTablet(),

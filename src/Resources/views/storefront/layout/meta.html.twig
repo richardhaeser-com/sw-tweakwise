@@ -29,20 +29,25 @@
             ></script>
         {% endif %}
 
-        {% if instanceKey %}
-        <script>
-            (function(w, d, l, i, u) {
-                w['_twa'] = l;
-                w[l] = w[l] || [];
-                w[l].push({ 'twa.start': new Date().getTime(), event: 'twa.js' });
-                w[l].push({ 'twa.instance': i, event: 'twa.init' });
-                var f = d.getElementsByTagName('script')[0],
-                    j = d.createElement('script');
-                j.async = true;
-                j.src = u;
-                f.parentNode.insertBefore(j, f);
-            })(window, document, 'tweakwiseLayer', '{{ instanceKey }}', "//navigator-analytics.tweakwise.com/bundles/scout.js");
-        </script>
+        {% if instanceKey and page.extensions.twConfiguration.eventTagEnabled %}
+            <script>
+                var profileKey = '{{ page.extensions.twConfiguration.profileKey }}';
+                (function(w, d, l, i, p, u) {
+                    w['_twa'] = l;
+                    w[l] = w[l] || [];
+                    w[l].push({ 'twa.start': new Date().getTime(), event: 'twa.js' });
+                    w[l].push({ 'twa.instance': i, event: 'twa.init' });
+
+                    p && w[l].push({ 'twa.profile': p, event: 'twa.profile' });
+                                if(p){ w[l].getProfileKey = function(){ return p; } }
+
+                    var f = d.getElementsByTagName('script')[0],
+                        j = d.createElement('script');
+                    j.async = true;
+                    j.src = u;
+                    f.parentNode.insertBefore(j, f);
+                })(window, document, 'tweakwiseLayer', '{{ instanceKey }}', profileKey, "//navigator-analytics.tweakwise.com/bundles/scout.js");
+            </script>
         {% endif %}
     {% endblock %}
 {% endblock %}
