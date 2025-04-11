@@ -35,6 +35,13 @@ cgl:
 cgl-fix:
 	docker-compose exec --workdir=/var/www/html/custom/plugins/RhaeTweakwise app php -d memory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --using-cache=no --diff
 
+.PHONY: phpstan
+phpstan:
+	docker-compose exec --workdir=/var/www/html/custom/plugins/RhaeTweakwise app php -d memory_limit=-1 vendor/bin/phpstan analyse --configuration phpstan.neon --debug
+
+.PHONY: check-all
+check-all: phpunit cgl phpstan
+
 #administration-build:
 #	docker-compose exec app php psh.phar administration:build --DB_HOST="127.0.0.1" --DB_USER="root" --DB_PASSWORD="root"
 #	mv ./src/Resources/public/administration/js/mltisafemultisafepay.js ./src/Resources/public/administration/js/mltisafe-multi-safepay.js
