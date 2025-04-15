@@ -40,6 +40,11 @@
                         </option>
                     </sw-select-field>
 
+                    <sw-checkbox-field
+                            v-model:value="item.eventTagEnabled"
+                            :label="$t('rhae-tweakwise-frontend.detail.label.eventTagEnabled')"
+                            @update:value="onChangeToggle($event, 'eventTagEnabled')"
+                    />
                 </sw-card-section>
 
             </sw-card>

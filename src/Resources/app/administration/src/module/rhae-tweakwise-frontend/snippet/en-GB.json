@@ -32,6 +32,7 @@
           "javascript": "JavaScript implementation",
           "pluginstudio": "Plugin Studio implementation"
         },
+        "eventTagEnabled": "Enable data collection in frontend to get better insights in the usage of Tweakwise. This is also mandatory if you want to add personalisation.",
         "wayOfSearch": "Way of search",
         "wayOfSearchOptions": {
           "instant-search": "Instant search",

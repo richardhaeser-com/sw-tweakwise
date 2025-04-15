@@ -9,4 +9,21 @@
     {% endif %}
 
     <div id="tweakwise-output-listing"></div>
+
+    {% if page.extensions.twConfiguration.eventTagEnabled %}
+    <script>
+        window.addEventListener('twSuccess', function(e) {
+            const searchTerm = e?.detail?.data?.properties?.searchterm;
+            if (searchTerm !== undefined) {
+                tweakwiseLayer.push({
+                     event: 'search',
+                     data: {
+                         profileKey: '{{ page.extensions.twConfiguration.profileKey }}',
+                         searchTerm: searchTerm
+                     }
+                 });
+            }
+        });
+    </script>
+    {% endif %}
 {% endblock %}

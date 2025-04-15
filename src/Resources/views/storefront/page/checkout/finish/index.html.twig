@@ -1,0 +1,22 @@
+{% sw_extends '@Storefront/storefront/page/checkout/finish/index.html.twig' %}
+
+{% block base_header %}
+    {{ parent() }}
+
+    {% if page.extensions.twConfiguration.eventTagEnabled %}
+        {% set tweakwiseBoughtItems = [] %}
+        {% for item in page.order.nestedLineItems %}
+            {% set tweakwiseBoughtItems = tweakwiseBoughtItems|merge([tweakwise_product_id_by_product_number(item.payload.productNumber, context.domainId)]) %}
+        {% endfor %}
+
+        <script>
+            tweakwiseLayer.push({
+                event: 'purchase',
+                data: {
+                    profileKey: '{{ page.extensions.twConfiguration.profileKey }}',
+                    productKeys: [{{ tweakwiseBoughtItems|map(i => '"' ~ i ~ '"')|join(',')|raw }}]
+                }
+            });
+        </script>
+    {% endif %}
+{% endblock %}
