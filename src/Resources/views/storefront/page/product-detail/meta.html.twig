@@ -1,0 +1,17 @@
+{% sw_extends '@Storefront/storefront/page/product-detail/meta.html.twig' %}
+
+{% block layout_head_canonical %}
+    {{ parent() }}
+
+    {% if page.extensions.twConfiguration.eventTagEnabled and page.extensions.twConfiguration.crossSellProductId  %}
+<script>
+    tweakwiseLayer.push({
+        event: 'productView',
+        data: {
+            profileKey: '{{ page.extensions.twConfiguration.profileKey }}',
+            productKey: '{{ page.extensions.twConfiguration.crossSellProductId }}'
+        }
+    });
+</script>
+    {% endif %}
+{% endblock %}

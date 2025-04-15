@@ -29,7 +29,7 @@
             ></script>
         {% endif %}
 
-        {% if instanceKey and page.extensions.twConfiguration.eventTagEnabled %}
+        {% if instanceKey %}
             <script>
                 var profileKey = '{{ page.extensions.twConfiguration.profileKey }}';
                 (function(w, d, l, i, p, u) {
