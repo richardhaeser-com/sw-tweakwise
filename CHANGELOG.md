@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - When configuring the frontend in Settings > Extensions > Tweakwise frontend we will now check your instance key and only show options that are available for the selected instance. 
+- The Tweakwise Event tag is now implemented. Gathering basic information by default and more personalised information when approved in the Frontend settings of the plugin.
 
 ## [4.0.0] - 13-03-2025
 
