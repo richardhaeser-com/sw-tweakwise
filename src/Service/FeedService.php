@@ -2,6 +2,10 @@
 
 namespace RH\Tweakwise\Service;
 
+use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
+use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use function array_key_exists;
 use function array_unique;
 use Cron\CronExpression;
@@ -86,6 +90,7 @@ class FeedService
     private EventDispatcherInterface $eventDispatcher;
     private LocaleSwitcher $localeSwitcher;
     private RouterInterface $router;
+    private AbstractProductPriceCalculator $calculator;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -101,7 +106,8 @@ class FeedService
         string $path,
         EventDispatcherInterface $eventDispatcher,
         LocaleSwitcher $localeSwitcher,
-        RouterInterface $router
+        RouterInterface $router,
+        AbstractProductPriceCalculator $calculator
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -117,6 +123,7 @@ class FeedService
         $this->eventDispatcher = $eventDispatcher;
         $this->localeSwitcher = $localeSwitcher;
         $this->router = $router;
+        $this->calculator = $calculator;
     }
 
     public function fixFeedRecords(bool $forceFeedGeneration = false): void
@@ -342,7 +349,7 @@ class FeedService
             );
 
             /** @var ProductListingResult $result */
-            while (($result = $this->loadProducts($criteria, $salesChannelContext)) !== null) {
+            while (($result = $this->loadProducts($criteria, $salesChannelContext, $feed->isGroupedProducts())) !== null) {
                 $this->eventDispatcher->dispatch(
                     new TweakwiseProductFeedResultEvent($result, $salesChannelContext)
                 );
@@ -353,9 +360,31 @@ class FeedService
         }
     }
 
-    private function loadProducts(Criteria $criteria, SalesChannelContext $salesChannelContext)
+    private function loadProducts(Criteria $criteria, SalesChannelContext $salesChannelContext, bool $grouped = false)
     {
-        $entities = $this->listingLoader->load($criteria, $salesChannelContext);
+        if ($grouped) {
+            $criteria->addFilter(
+                new MultiFilter(MultiFilter::CONNECTION_OR, [
+                    new NotFilter(NotFilter::CONNECTION_AND, [
+                        new EqualsFilter('parentId', null),
+                    ]),
+                    new EqualsFilter('childCount', 0),
+                ])
+            );
+            $entities = $this->productRepository->search($criteria, $salesChannelContext->getContext());
+            foreach ($entities as $entity) {
+                $entity->assign([
+                    'calculatedPrices' => new PriceCollection(),
+                    'calculatedListingPrice' => null,
+                    'calculatedPrice' => null,
+                    'cheapestPrice' => null,
+                ]);
+            }
+            $this->calculator->calculate($entities, $salesChannelContext);
+        } else {
+            $entities = $this->listingLoader->load($criteria, $salesChannelContext);
+        }
+
         $result = ProductListingResult::createFrom($entities);
         if ($result->getTotal() > 0) {
             $result->addState(...$entities->getStates());
@@ -506,6 +535,7 @@ class FeedService
         /** @var ProductEntity $product */
         foreach ($products as $product) {
             echo '.';
+            $parent = null;
             $productId = ProductDataService::getTweakwiseProductId($product, $domain->getId());
             if (!in_array($productId, $this->uniqueProductIds, true)) {
                 $childFilter = null;
@@ -545,6 +575,10 @@ class FeedService
                 if ($product->getChildCount() > 0) {
                     $getVariants = true;
                     $childFilter = new EqualsFilter('parentId', $product->getId());
+                }
+
+                if ($feed->isGroupedProducts()) {
+                    $getVariants = false;
                 }
 
                 $otherVariantsXml = '';
@@ -606,6 +640,15 @@ class FeedService
                     }
                 }
 
+                $groupCode = '';
+                if ($feed->isGroupedProducts()) {
+                    $groupCode = $product->getProductNumber();
+
+                    if ($parent instanceof ProductEntity) {
+                        $groupCode = $parent->getProductNumber();
+                    }
+                }
+
                 $content .= $this->twig->render($this->resolveView('product.xml.twig', $feed), [
                     'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
                     'categories' => $categories,
@@ -614,6 +657,7 @@ class FeedService
                     'product' => $product,
                     'visibility' => $this->getVisibility($product),
                     'productId' => $productId,
+                    'groupCode' => $groupCode,
                     'prices' => $this->getLowestAndHighestPrice($product, $salesChannelContext),
                     'otherVariantsXml' => $otherVariantsXml,
                     'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
