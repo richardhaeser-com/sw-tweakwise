@@ -1,7 +1,6 @@
 {% block tweakwise_plugin_studio %}
     {% block tweakwise_js_preload %}
-        <link rel="preload" as="script" href="https://gateway.tweakwisenavigator.net/js/starter.js" />
-        <link rel="preload" as="script" href="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js" />
+        {# Deprecated. We will not preload the scripts anymore #}
     {% endblock %}
 
     <script>window["twn-starter-config"] = window["twn-starter-config"] || {};</script>
@@ -22,6 +21,7 @@
             src="https://gateway.tweakwisenavigator.net/js/{{ instanceKey }}/tweakwise.js"
             data-failover="https://gateway.tweakwisenavigator.com/js/{{ instanceKey }}/tweakwise.js"
             onerror="window.tweakwiseFailover(this.dataset.failover)"
+            defer
     ></script>
     {% endblock %}
 
