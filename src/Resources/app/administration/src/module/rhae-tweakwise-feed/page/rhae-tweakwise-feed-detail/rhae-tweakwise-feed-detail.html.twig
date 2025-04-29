@@ -3,8 +3,8 @@
     <template #smart-bar-actions>
         {% block sw_tweakwise_feed_detail_actions %}
             {% block sw_tweakwise_feed_detail_actions_refresh %}
-            <sw-button @click="getItem">
-                <sw-icon name="regular-undo" />
+            <sw-button @click="getItem" square>
+                <sw-icon name="regular-undo" small />
             </sw-button>
             {% endblock %}
 
@@ -40,7 +40,21 @@
                                 {{ $t('rhae-tweakwise-feed.detail.label.feedUrl') }}
                             </p>
 
-                            <p>{{ item.salesChannelDomains[0].url }}/tweakwise/feed-{{item.id}}.xml</p>
+                            <p>
+                                {{ item.salesChannelDomains[0].url }}/tweakwise/feed-{{item.id}}.xml
+                                <sw-button
+                                    size="small"
+                                    square
+                                    style="margin-left: 0.5rem;"
+                                    @click="copyLinkToClipboard"
+                                    @keydown.enter="copyLinkToClipboard"
+                                >
+                                    <sw-icon
+                                            small
+                                            name="regular-copy"
+                                    />
+                                </sw-button>
+                            </p>
                         </div>
                         {% endblock %}
                     </sw-container>

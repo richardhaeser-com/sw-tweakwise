@@ -63,6 +63,11 @@ Component.register('rhae-tweakwise-feed-list', {
                     property: 'domains',
                     dataIndex: 'domains',
                     label: this.$t('rhae-tweakwise-feed.list.columns.domains'),
+                },
+                {
+                    property: 'lastGeneratedAt',
+                    dataIndex: 'lastGeneratedAt',
+                    label: this.$t('rhae-tweakwise-feed.list.columns.lastGeneratedAt'),
                 }
             ]
         }

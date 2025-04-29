@@ -10,7 +10,8 @@
             "columns": {
                 "name": "Feed name",
                 "type": "Type of feed",
-                "domains": "Domains"
+                "domains": "Domains",
+                "lastGeneratedAt": "Last generated at"
             }
         },
         "detail": {

@@ -10,7 +10,8 @@
             "columns": {
                 "name": "Feed naam",
                 "type": "Soort feed",
-                "domains": "Domeinnamen"
+                "domains": "Domeinnamen",
+                "lastGeneratedAt": "Laatst gegenereerd op"
             }
         },
         "detail": {

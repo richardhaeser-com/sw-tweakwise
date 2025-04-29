@@ -1,9 +1,10 @@
 import template from './rhae-tweakwise-feed-detail.html.twig';
 import './rhae-tweakwise-feed-detail.scss';
 
-const { Component, Mixin, Context } = Shopware;
+const { Component, Mixin, Context, Utils } = Shopware;
 const { EntityCollection, Criteria } = Shopware.Data;
 const { mapPropertyErrors } = Shopware.Component.getComponentHelper();
+const { dom, format } = Utils;
 
 Component.register('rhae-tweakwise-feed-detail', {
     template,
@@ -77,6 +78,9 @@ Component.register('rhae-tweakwise-feed-detail', {
                 Context.api,
             );
         },
+        getFeedUrl() {
+            return this.item.salesChannelDomains[0].url + '/tweakwise/feed-' + this.item.id + '.xml';
+        },
         resetButtons() {
             this.processSuccess = {
                 general: false,
@@ -145,6 +149,21 @@ Component.register('rhae-tweakwise-feed-detail', {
 
         saveFinish() {
             this.processSuccess = false;
+        },
+        async copyLinkToClipboard() {
+            if (this.item) {
+                try {
+                    await dom.copyStringToClipboard(this.getFeedUrl());
+                    this.createNotificationSuccess({
+                        message: this.$tc('sw-media.general.notification.urlCopied.message'),
+                    });
+                } catch (err) {
+                    this.createNotificationError({
+                        title: this.$tc('global.default.error'),
+                        message: this.$tc('global.sw-field.notification.notificationCopyFailureMessage'),
+                    });
+                }
+            }
         },
     }
 });
