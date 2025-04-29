@@ -146,6 +146,13 @@
                             @update:value="onChangeToggle($event, 'includeHiddenCategories')"
                     />
                     {% endblock %}
+                    {% block sw_tweakwise_feed_detail_content_settings_full_grouped_products %}
+                    <sw-checkbox-field
+                            v-model:value="item.groupedProducts"
+                            :label="$t('rhae-tweakwise-feed.detail.label.groupedProducts')"
+                            @update:value="onChangeToggle($event, 'groupedProducts')"
+                    />
+                    {% endblock %}
                 </sw-card-section>
             </sw-card>
             {% endblock %}
