@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.1] - 02-05-2025
+
+### Changed
+- Fixed some unclear labels on collecting data
+- Removed preloads and added defer tag to plugin studio JS
+- Some small UX enhancements in the admin module to manage Tweakwise feeds
+
 ## [4.1.0] - 15-04-2025
 
 ### Added
