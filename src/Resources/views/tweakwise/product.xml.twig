@@ -15,6 +15,11 @@
         {% endif %}
         <url>{% block feed_item_url %}{{ domainUrl ~ url }}{% endblock %}</url>
 
+        {% block feed_item_groupcode %}
+            {% if groupCode %}
+                <groupcode>{{ groupCode }}</groupcode>
+            {% endif %}
+        {% endblock %}
         {% block feed_item_image %}
             {% if product.cover.media is defined and product.cover.media.url %}
                 {% set width = 0 %}

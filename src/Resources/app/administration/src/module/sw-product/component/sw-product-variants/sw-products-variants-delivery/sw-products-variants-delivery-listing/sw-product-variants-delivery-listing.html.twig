@@ -1,0 +1,27 @@
+{% block sw_product_variants_delivery_listing_config_single_main_variant_explanation %}
+    {% parent %}
+
+<sw-alert
+        variant="warning"
+        :title="$tc('sw-product.listing.warningTitle')"
+        :closable="false"
+        style="margin-top: 1rem;"
+        v-if="!isDisabledListingMode('single')"
+>
+    {{ $tc('sw-product.listing.warning') }}
+</sw-alert>
+{% endblock %}
+
+{% block sw_product_variants_delivery_listing_config_expanded_group_list %}
+    {% parent %}
+
+<sw-alert
+        variant="warning"
+        :title="$tc('sw-product.listing.warningTitle')"
+        :closable="false"
+        style="margin-top: 1rem;"
+        v-if="!isDisabledListingMode('expanded')"
+>
+    {{ $tc('sw-product.listing.warning') }}
+</sw-alert>
+{% endblock %}
