@@ -2,10 +2,6 @@
 
 namespace RH\Tweakwise\Service;
 
-use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
-use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use function array_key_exists;
 use function array_unique;
 use Cron\CronExpression;
@@ -29,6 +25,7 @@ use RH\Tweakwise\Events\TweakwiseProductFeedResultEvent;
 use function rtrim;
 use Shopware\Core\Checkout\Cart\AbstractRuleLoader;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceEntity;
@@ -36,6 +33,7 @@ use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityD
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
+use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Adapter\Twig\TemplateFinder;
@@ -46,6 +44,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -650,9 +650,6 @@ class FeedService
                     }
                 }
 
-                if ($product->getProductNumber() === 'SWDEMO10002') {
-//                    dd($product);
-                }
                 $content .= $this->twig->render($this->resolveView('product.xml.twig', $feed), [
                     'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
                     'categories' => $categories,
