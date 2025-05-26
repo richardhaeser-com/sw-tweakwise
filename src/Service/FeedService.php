@@ -371,6 +371,7 @@ class FeedService
                     new EqualsFilter('childCount', 0),
                 ])
             );
+            $criteria->addAssociation('prices');
             $entities = $this->productRepository->search($criteria, $salesChannelContext->getContext());
             foreach ($entities as $entity) {
                 $entity->assign([
@@ -649,6 +650,9 @@ class FeedService
                     }
                 }
 
+                if ($product->getProductNumber() === 'SWDEMO10002') {
+//                    dd($product);
+                }
                 $content .= $this->twig->render($this->resolveView('product.xml.twig', $feed), [
                     'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
                     'categories' => $categories,
