@@ -6,7 +6,10 @@
     </template>
 
     <template #smart-bar-actions>
-        <sw-button variant="primary" :routerLink="{ name: 'rhae.tweakwise.feed.create' }">
+        <sw-button
+            variant="primary"
+            :routerLink="{ name: 'rhae.tweakwise.feed.create' }"
+        >
             {{ $tc('rhae-tweakwise-feed.list.addButtonText') }}
         </sw-button>
     </template>
@@ -20,15 +23,23 @@
             :columns="columns"
             detailRoute="rhae.tweakwise.feed.detail"
             @select-item="updateSelection"
-            @update-records="updateTotal">
+            @update-records="updateTotal"
+        >
             <template #column-type="{ item }">
                 {{ $tc('rhae-tweakwise-feed.detail.label.typeOptions.' + item.type) }}
             </template>
+
             <template #column-domains="{ item }">
-                <template v-for="(domain, index) in item.salesChannelDomains">{{ domain.url }}<span v-if="index < (item.salesChannelDomains.length - 1)"><br></span></template>
+                <template v-for="(domain, index) in item.salesChannelDomains">
+                    {{ domain.url }}
+                    <span v-if="index < (item.salesChannelDomains.length - 1)">
+                        <br/>
+                    </span>
+                </template>
             </template>
+
             <template #column-lastGeneratedAt="{ item }">
-                <sw-time-ago :date="item.lastGeneratedAt" />
+                <sw-time-ago :date="item.lastGeneratedAt"/>
             </template>
         </sw-entity-listing>
     </template>

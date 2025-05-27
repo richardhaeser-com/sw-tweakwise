@@ -24,7 +24,7 @@ ALTER TABLE `s_plugin_rhae_tweakwise_feed`
                 ADD `type` VARCHAR(10) DEFAULT 'full'
                 ;
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
 
     }
 

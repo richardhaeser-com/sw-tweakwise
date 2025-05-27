@@ -1,5 +1,5 @@
-import Plugin from 'src/plugin-system/plugin.class';
-import DomAccess from 'src/helper/dom-access.helper';
+const Plugin = window.PluginBaseClass;
+
 export default class TwAddToFavoritesPlugin extends Plugin {
     init() {
         this.classList = {
@@ -77,7 +77,7 @@ export default class TwAddToFavoritesPlugin extends Plugin {
     }
 
     _getWishlistStorage() {
-        const wishlistBasketElement = DomAccess.querySelector(document, '#wishlist-basket', false);
+        const wishlistBasketElement = document.querySelector('#wishlist-basket');
 
         if (!wishlistBasketElement) {
             return;

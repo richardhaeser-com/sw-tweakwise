@@ -26,7 +26,7 @@ ALTER TABLE `s_plugin_rhae_tweakwise_feed`
                 ADD `interval` VARCHAR(10) NULL
                 ;
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

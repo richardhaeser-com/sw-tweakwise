@@ -9,21 +9,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'tweakwise:generate-feed')]
+#[AsCommand(name: 'tweakwise:generate-feed', description: 'Generate Tweakwise feed to prepare for download')]
 class GenerateFeedCommand extends Command
 {
-    protected static $defaultName = 'tweakwise:generate-feed';
-    private FeedService $feedService;
-
-    public function __construct(FeedService $feedService)
+    public function __construct(private readonly FeedService $feedService)
     {
-        $this->feedService = $feedService;
         parent::__construct();
     }
 
     protected function configure(): void
     {
-        $this->setDescription('Generate Tweakwise feed to prepare for download');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

@@ -19,7 +19,7 @@ ALTER TABLE `s_plugin_rhae_tweakwise_feed`
                 MODIFY COLUMN `interval` VARCHAR(255) NULL
                 ;
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

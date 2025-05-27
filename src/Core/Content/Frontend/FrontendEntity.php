@@ -10,27 +10,27 @@ class FrontendEntity extends Entity
 {
     use EntityIdTrait;
 
-    protected ?string $name;
+    protected ?string $name = null;
 
-    protected ?string $token;
+    protected ?string $token = null;
 
     protected ?string $integration = 'pluginstudio';
 
-    protected ?string $wayOfSearch;
+    protected ?string $wayOfSearch = null;
 
-    protected ?string $checkoutSales;
+    protected ?string $checkoutSales = null;
 
     protected bool $eventTagEnabled = true;
 
-    protected ?string $checkoutSalesFeaturedProductsId;
+    protected ?string $checkoutSalesFeaturedProductsId = null;
 
-    protected ?string $checkoutSalesRecommendationsGroupKey;
+    protected ?string $checkoutSalesRecommendationsGroupKey = null;
 
     protected int $productsDesktop = 3;
     protected int $productsTablet = 2;
     protected int $productsMobile = 1;
 
-    protected ?string $paginationType;
+    protected ?string $paginationType = null;
 
     /**
      * @var SalesChannelDomainCollection|null

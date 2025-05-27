@@ -10,20 +10,17 @@ use Twig\TwigFunction;
 
 class ProductDataExtension extends AbstractExtension
 {
-    private ProductDataService $productDataService;
-
-    public function __construct(ProductDataService $productDataService)
+    public function __construct(private readonly ProductDataService $productDataService)
     {
-        $this->productDataService = $productDataService;
     }
 
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('tweakwise_cross_sell_product_id', [$this, 'getCrossSellId'], ['needs_context' => true]),
-            new TwigFunction('tweakwise_product_id_by_product_number', [$this, 'getCrossSellIdByProductNumber'], ['needs_context' => true]),
-            new TwigFunction('tweakwise_product_number', [$this, 'getProductNumber'], ['needs_context' => true]),
-            new TwigFunction('tweakwise_product_from_product_number', [$this, 'getProductFromProductNumber'], ['needs_context' => true]),
+            new TwigFunction('tweakwise_cross_sell_product_id', $this->getCrossSellId(...), ['needs_context' => true]),
+            new TwigFunction('tweakwise_product_id_by_product_number', $this->getCrossSellIdByProductNumber(...), ['needs_context' => true]),
+            new TwigFunction('tweakwise_product_number', $this->getProductNumber(...), ['needs_context' => true]),
+            new TwigFunction('tweakwise_product_from_product_number', $this->getProductFromProductNumber(...), ['needs_context' => true]),
         ];
     }
 

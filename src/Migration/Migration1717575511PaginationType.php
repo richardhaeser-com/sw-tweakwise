@@ -18,7 +18,7 @@ class Migration1717575511PaginationType extends MigrationStep
 ALTER TABLE `s_plugin_rhae_tweakwise_frontend`
                 ADD `paginationType` VARCHAR(50) NULL;
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

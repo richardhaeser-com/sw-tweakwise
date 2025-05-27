@@ -1,13 +1,14 @@
 {% block sw_cms_element_dailymotion_config %}
     <sw-text-field
-            v-model="groupId"
-            class="swag-groupid-field"
-            :label="$tc('sw-cms.elements.tweakwiseFeaturedProducts.config.groupId.label')"
-            :help-text="$tc('sw-cms.elements.tweakwiseFeaturedProducts.config.groupId.helpText')"
-            required
-            :placeholder="$tc('sw-cms.elements.tweakwiseFeaturedProducts.config.groupId.placeHolder')"
-            @input="onElementUpdate"
-            @change="onElementUpdate"
-            @update:value="onElementUpdate">
+        v-model="groupId"
+        class="swag-groupid-field"
+        :label="$tc('sw-cms.elements.tweakwiseFeaturedProducts.config.groupId.label')"
+        :help-text="$tc('sw-cms.elements.tweakwiseFeaturedProducts.config.groupId.helpText')"
+        required
+        :placeholder="$tc('sw-cms.elements.tweakwiseFeaturedProducts.config.groupId.placeHolder')"
+        @input="onElementUpdate"
+        @change="onElementUpdate"
+        @update:value="onElementUpdate"
+    >
     </sw-text-field>
 {% endblock %}

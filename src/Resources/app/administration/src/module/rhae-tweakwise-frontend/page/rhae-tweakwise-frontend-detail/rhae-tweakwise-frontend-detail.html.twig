@@ -3,109 +3,149 @@
         <sw-button :routerLink="{ name: 'rhae.tweakwise.frontend.list' }">
             {{ $t('rhae-tweakwise-frontend.detail.cancelButtonText') }}
         </sw-button>
-
         <sw-button-process
-                :isLoading="isLoading"
-                :processSuccess="processSuccess"
-                variant="primary"
-                @process-finish="saveFinish"
-                @click="onClickSave">
+            :isLoading="isLoading"
+            :processSuccess="processSuccess"
+            variant="primary"
+            @process-finish="saveFinish"
+            @click="onClickSave"
+        >
             {{ $t('rhae-tweakwise-frontend.detail.saveButtonText') }}
         </sw-button-process>
     </template>
 
     <template #content>
         <sw-card-view>
-            <sw-card v-if="item" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.main')">
-
+            <sw-card
+                v-if="item"
+                :isLoading="isLoading"
+                :title="$tc('rhae-tweakwise-frontend.detail.section.main')"
+            >
                 <sw-card-section>
                     <sw-entity-multi-select
-                            :label="$t('rhae-tweakwise-frontend.detail.label.salesChannelDomains')"
-                            labelProperty="url"
-                            value-property="id"
-                            v-model:entityCollection="item.salesChannelDomains"
+                        :label="$t('rhae-tweakwise-frontend.detail.label.salesChannelDomains')"
+                        labelProperty="url"
+                        value-property="id"
+                        v-model:entityCollection="item.salesChannelDomains"
                     />
-
-                    <sw-text-field :label="$t('rhae-tweakwise-frontend.detail.label.name')"
-                              v-model:value="item.name"
-                              required validation="required" ></sw-text-field>
-
-                    <sw-text-field :label="$t('rhae-tweakwise-frontend.detail.label.token')"
-                              v-model:value="item.token" :error="tokenError" @blur="checkPossibilities"></sw-text-field>
-
-                    <sw-select-field v-if="validToken" :label="$t('rhae-tweakwise-frontend.detail.label.integration')"
-                                     v-model:value="item.integration">
-                        <option v-for="value in ['no-integration','pluginstudio','javascript']" :value="value">
+                    <sw-text-field
+                        :label="$t('rhae-tweakwise-frontend.detail.label.name')"
+                        v-model:value="item.name"
+                        required
+                        validation="required"
+                    ></sw-text-field>
+                    <sw-text-field
+                        :label="$t('rhae-tweakwise-frontend.detail.label.token')"
+                        v-model:value="item.token"
+                        :error="tokenError"
+                        @blur="checkPossibilities"
+                    ></sw-text-field>
+                    <sw-select-field
+                        v-if="validToken"
+                        :label="$t('rhae-tweakwise-frontend.detail.label.integration')"
+                        v-model:value="item.integration"
+                    >
+                        <option
+                            v-for="value in ['no-integration','pluginstudio','javascript']"
+                            :value="value"
+                        >
                             {{ $tc('rhae-tweakwise-frontend.detail.label.integrationOptions.' + value) }}
                         </option>
                     </sw-select-field>
-
                     <sw-checkbox-field
-                            v-model:value="item.eventTagEnabled"
-                            :label="$t('rhae-tweakwise-frontend.detail.label.eventTagEnabled')"
-                            @update:value="onChangeToggle($event, 'eventTagEnabled')"
+                        v-model:value="item.eventTagEnabled"
+                        :label="$t('rhae-tweakwise-frontend.detail.label.eventTagEnabled')"
+                        @update:value="onChangeToggle($event, 'eventTagEnabled')"
                     />
                 </sw-card-section>
-
             </sw-card>
-            <sw-card v-if="validToken && (item.integration === 'javascript' || item.integration === 'pluginstudio')" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.search')">
+            <sw-card
+                v-if="validToken && (item.integration === 'javascript' || item.integration === 'pluginstudio')"
+                :isLoading="isLoading"
+                :title="$tc('rhae-tweakwise-frontend.detail.section.search')"
+            >
                 <sw-card-section>
-                    <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.wayOfSearch')"
-                                     v-model:value="item.wayOfSearch">
+                    <sw-select-field
+                        :label="$t('rhae-tweakwise-frontend.detail.label.wayOfSearch')"
+                        v-model:value="item.wayOfSearch"
+                    >
                         <option value="instant-search">
                             {{ $tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.instant-search') }}
                         </option>
-                        <option value="suggestions" v-if="suggestionsAvailable">
+                        <option
+                            value="suggestions"
+                            v-if="suggestionsAvailable"
+                        >
                             {{ $tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.suggestions') }}
                         </option>
                     </sw-select-field>
-
                     <sw-container
-                            columns="2fr 2fr 2fr"
-                            gap="0px 30px"
-                            v-if="item.integration === 'javascript'"
+                        columns="2fr 2fr 2fr"
+                        gap="0px 30px"
+                        v-if="item.integration === 'javascript'"
                     >
-                        <sw-number-field numberType="int" :label="$t('rhae-tweakwise-frontend.detail.label.productsDesktop')"
-                                         v-model:value="item.productsDesktop">
+                        <sw-number-field
+                            numberType="int"
+                            :label="$t('rhae-tweakwise-frontend.detail.label.productsDesktop')"
+                            v-model:value="item.productsDesktop"
+                        >
                         </sw-number-field>
-                        <sw-number-field numberType="int" :label="$t('rhae-tweakwise-frontend.detail.label.productsTablet')"
-                                         v-model:value="item.productsTablet">
+                        <sw-number-field
+                            numberType="int"
+                            :label="$t('rhae-tweakwise-frontend.detail.label.productsTablet')"
+                            v-model:value="item.productsTablet"
+                        >
                         </sw-number-field>
-                        <sw-number-field numberType="int" :label="$t('rhae-tweakwise-frontend.detail.label.productsMobile')"
-                                         v-model:value="item.productsMobile">
+                        <sw-number-field
+                            numberType="int"
+                            :label="$t('rhae-tweakwise-frontend.detail.label.productsMobile')"
+                            v-model:value="item.productsMobile"
+                        >
                         </sw-number-field>
                     </sw-container>
-
-                    <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.paginationType')"
-                                     v-model:value="item.paginationType"
-                                     v-if="item.integration === 'javascript'"
+                    <sw-select-field
+                        :label="$t('rhae-tweakwise-frontend.detail.label.paginationType')"
+                        v-model:value="item.paginationType"
+                        v-if="item.integration === 'javascript'"
                     >
-                        <option v-for="value in ['default','button', 'infinite']" :value="value">
+                        <option
+                            v-for="value in ['default','button', 'infinite']"
+                            :value="value"
+                        >
                             {{ $tc('rhae-tweakwise-frontend.detail.label.paginationTypeOptions.' + value) }}
                         </option>
                     </sw-select-field>
-
                 </sw-card-section>
             </sw-card>
-            <sw-card v-if="validToken && recommendationsAvailable && (item.integration === 'javascript' || item.integration === 'pluginstudio')" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.checkoutSales')">
+            <sw-card
+                v-if="validToken && recommendationsAvailable && (item.integration === 'javascript' || item.integration === 'pluginstudio')"
+                :isLoading="isLoading"
+                :title="$tc('rhae-tweakwise-frontend.detail.section.checkoutSales')"
+            >
                 <sw-card-section>
-                    <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSales')"
-                                     v-model:value="item.checkoutSales">
-                        <option v-for="value in ['no-checkout-sales','featured-products','recommendations']" :value="value">
+                    <sw-select-field
+                        :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSales')"
+                        v-model:value="item.checkoutSales"
+                    >
+                        <option
+                            v-for="value in ['no-checkout-sales','featured-products','recommendations']"
+                            :value="value"
+                        >
                             {{ $tc('rhae-tweakwise-frontend.detail.label.checkoutSalesOptions.' + value) }}
                         </option>
                     </sw-select-field>
-
-                    <sw-text-field :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSalesFeaturedProductsId')"
-                              v-if="item.checkoutSales === 'featured-products'"
-                              v-model:value="item.checkoutSalesFeaturedProductsId"></sw-text-field>
-
-                    <sw-text-field :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSalesRecommendationsGroupKey')"
-                              v-if="item.checkoutSales === 'recommendations'"
-                              v-model:value="item.checkoutSalesRecommendationsGroupKey"></sw-text-field>
+                    <sw-text-field
+                        :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSalesFeaturedProductsId')"
+                        v-if="item.checkoutSales === 'featured-products'"
+                        v-model:value="item.checkoutSalesFeaturedProductsId"
+                    ></sw-text-field>
+                    <sw-text-field
+                        :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSalesRecommendationsGroupKey')"
+                        v-if="item.checkoutSales === 'recommendations'"
+                        v-model:value="item.checkoutSalesRecommendationsGroupKey"
+                    ></sw-text-field>
                 </sw-card-section>
             </sw-card>
         </sw-card-view>
     </template>
-
 </sw-page>

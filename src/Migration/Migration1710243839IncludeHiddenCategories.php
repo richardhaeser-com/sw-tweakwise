@@ -18,7 +18,7 @@ class Migration1710243839IncludeHiddenCategories extends MigrationStep
 ALTER TABLE `s_plugin_rhae_tweakwise_feed`
                 ADD `includeHiddenCategories` TINYINT(1) NOT NULL DEFAULT '0';
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

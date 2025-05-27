@@ -13,17 +13,15 @@ use Twig\TwigFunction;
 class CategoryExtension extends AbstractExtension
 {
     private array $categories = [];
-    private EntityRepository $categoryRepository;
 
-    public function __construct(EntityRepository $categoryRepository)
+    public function __construct(private readonly EntityRepository $categoryRepository)
     {
-        $this->categoryRepository = $categoryRepository;
     }
 
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('tw_category_tree', [$this, 'getCategoryTree']),
+            new TwigFunction('tw_category_tree', $this->getCategoryTree(...)),
         ];
     }
 

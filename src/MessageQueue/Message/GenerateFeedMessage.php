@@ -6,11 +6,8 @@ use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 
 class GenerateFeedMessage
 {
-    private FeedEntity $feed;
-
-    public function __construct(FeedEntity $feed)
+    public function __construct(private readonly FeedEntity $feed)
     {
-        $this->feed = $feed;
     }
 
     /**

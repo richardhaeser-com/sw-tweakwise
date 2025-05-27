@@ -17,13 +17,8 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class TweakwiseFeedController extends StorefrontController
 {
-    private FeedService $feedService;
-    private EntityRepository $feedRepository;
-
-    public function __construct(FeedService $feedService, EntityRepository $feedRepository)
+    public function __construct(private readonly FeedService $feedService, private readonly EntityRepository $feedRepository)
     {
-        $this->feedService = $feedService;
-        $this->feedRepository = $feedRepository;
     }
 
     #[Route(path: '/tweakwise/feed-{feedId}.xml', name: 'storefront.tweakwise.feed', methods: ['GET'])]
@@ -34,7 +29,7 @@ class TweakwiseFeedController extends StorefrontController
 
         try {
             $feed = $this->feedRepository->search($criteria, $context->getContext())->first();
-        } catch (InvalidUuidException $e) {
+        } catch (InvalidUuidException) {
             return new Response('Id is not valid', 404);
         }
 

@@ -18,7 +18,7 @@ class Migration1744361209EventTagEnabled extends MigrationStep
 ALTER TABLE `s_plugin_rhae_tweakwise_frontend`
                 ADD `eventTagEnabled` TINYINT(1) NOT NULL DEFAULT '1';
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
 
     }
 

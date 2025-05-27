@@ -1,5 +1,5 @@
-import Plugin from 'src/plugin-system/plugin.class';
-import PluginManager from 'src/plugin-system/plugin.manager';
+const Plugin = window.PluginBaseClass;
+const PluginManager = window.PluginManager;
 import Iterator from 'src/helper/iterator.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 

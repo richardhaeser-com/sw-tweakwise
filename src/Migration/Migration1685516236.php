@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `s_plugin_rhae_tweakwise_frontend` (
     DEFAULT CHARSET = utf8mb4
     COLLATE = utf8mb4_unicode_ci;
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
 
         $sql = <<<SQL
 CREATE TABLE IF NOT EXISTS `s_plugin_rhae_tweakwise_frontend_sales_channel_domains` (
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `s_plugin_rhae_tweakwise_frontend_sales_channel_domai
     DEFAULT CHARSET=utf8mb4
     COLLATE=utf8mb4_unicode_ci
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

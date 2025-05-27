@@ -1,0 +1,11 @@
+{
+  "main.js": {
+    "file": "assets/rhae-tweakwise-CxFrOtYP.js",
+    "name": "rhae-tweakwise",
+    "src": "main.js",
+    "isEntry": true,
+    "css": [
+      "assets/rhae-tweakwise-DZ45JhRs.css"
+    ]
+  }
+}

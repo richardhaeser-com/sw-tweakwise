@@ -20,24 +20,11 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class StorefrontRenderSubscriber implements EventSubscriberInterface
 {
-    private EntityRepository $frontendRepository;
-    private NavigationLoader $navigationLoader;
-    private ProductDataService $productDataService;
-    private RequestStack $requestStack;
-
-    public function __construct(
-        EntityRepository $frontendRepository,
-        NavigationLoader $navigationLoader,
-        ProductDataService $productDataService,
-        RequestStack $requestStack
-    ) {
-        $this->frontendRepository = $frontendRepository;
-        $this->navigationLoader = $navigationLoader;
-        $this->productDataService = $productDataService;
-        $this->requestStack = $requestStack;
+    public function __construct(private readonly EntityRepository $frontendRepository, private readonly NavigationLoader $navigationLoader, private readonly ProductDataService $productDataService, private readonly RequestStack $requestStack)
+    {
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             StorefrontRenderEvent::class => 'getTweakwiseConfig',

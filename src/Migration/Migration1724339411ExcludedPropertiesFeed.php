@@ -27,7 +27,7 @@ ALTER TABLE `s_plugin_rhae_tweakwise_feed`
                 ADD `excludeOptions` TINYINT(1) NOT NULL DEFAULT '0',
                 ADD `excludeProperties` TINYINT(1) NOT NULL DEFAULT '0';
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
 
     }
 

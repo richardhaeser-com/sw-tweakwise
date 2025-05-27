@@ -16,13 +16,8 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class ProductDataService
 {
-    private EntityRepository $productRepository;
-    private ProductListingLoader $listingLoader;
-
-    public function __construct(EntityRepository $productRepository, ProductListingLoader $listingLoader)
+    public function __construct(private readonly EntityRepository $productRepository, private readonly ProductListingLoader $listingLoader)
     {
-        $this->productRepository = $productRepository;
-        $this->listingLoader = $listingLoader;
     }
 
     public function getProductFromProductNumber(string $productNumber, Context $context): ?ProductEntity

@@ -10,9 +10,9 @@ class ProductCrossSellingTweakwiseEntity extends Entity
 {
     use EntityIdTrait;
 
-    protected ?string $groupKey;
+    protected ?string $groupKey = null;
 
-    protected ?ProductCrossSellingEntity $productCrossSelling;
+    protected ?ProductCrossSellingEntity $productCrossSelling = null;
 
     public function getGroupKey(): ?string
     {

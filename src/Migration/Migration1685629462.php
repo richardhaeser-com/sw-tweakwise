@@ -20,7 +20,7 @@ ALTER TABLE `s_plugin_rhae_tweakwise_feed`
                 ADD last_started_at DATETIME(3),
                 ADD last_generated_at DATETIME(3);
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

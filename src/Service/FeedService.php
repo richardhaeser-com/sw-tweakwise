@@ -68,55 +68,12 @@ class FeedService
     public const PRODUCT_NOT_VISIBLE = 1;
     public const PRODUCT_VISIBILITY_SEARCH = 3;
     public const PRODUCT_VISIBILITY_CATALOG_SEARCH = 4;
-    private EntityRepository $categoryRepository;
-    private Environment $twig;
-    private TemplateFinder $templateFinder;
     private array $uniqueCategoryIds = [];
-    private AbstractSalesChannelContextFactory $salesChannelContextFactory;
-
-    private TweakwiseCategoryLoader $categoryLoader;
     private int $categoryRank = 1;
-    private EntityRepository $feedRepository;
-    private ProductListingLoader $listingLoader;
     private array $uniqueProductIds = [];
-    private EntityRepository $productRepository;
-    private string $shopwareVersion;
-    private AbstractRuleLoader $ruleLoader;
-    private string $path;
-    private EventDispatcherInterface $eventDispatcher;
-    private LocaleSwitcher $localeSwitcher;
-    private RouterInterface $router;
 
-    public function __construct(
-        EntityRepository $categoryRepository,
-        Environment $twig,
-        TemplateFinder $templateFinder,
-        AbstractSalesChannelContextFactory $salesChannelContextFactory,
-        TweakwiseCategoryLoader $categoryLoader,
-        EntityRepository $feedRepository,
-        ProductListingLoader $listingLoader,
-        EntityRepository $productRepository,
-        string $shopwareVersion,
-        AbstractRuleLoader $ruleLoader,
-        string $path,
-        EventDispatcherInterface $eventDispatcher,
-        LocaleSwitcher $localeSwitcher,
-        RouterInterface $router
-    ) {
-        $this->categoryRepository = $categoryRepository;
-        $this->twig = $twig;
-        $this->templateFinder = $templateFinder;
-        $this->salesChannelContextFactory = $salesChannelContextFactory;
-        $this->categoryLoader = $categoryLoader;
-        $this->feedRepository = $feedRepository;
-        $this->listingLoader = $listingLoader;
-        $this->productRepository = $productRepository;
-        $this->shopwareVersion = $shopwareVersion;
-        $this->ruleLoader = $ruleLoader;
-        $this->path = $path;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->localeSwitcher = $localeSwitcher;
-        $this->router = $router;
+    public function __construct(private readonly EntityRepository $categoryRepository, private readonly Environment $twig, private readonly TemplateFinder $templateFinder, private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory, private readonly TweakwiseCategoryLoader $categoryLoader, private readonly EntityRepository $feedRepository, private readonly ProductListingLoader $listingLoader, private readonly EntityRepository $productRepository, private readonly string $shopwareVersion, private readonly AbstractRuleLoader $ruleLoader, private readonly string $path, private readonly EventDispatcherInterface $eventDispatcher, private readonly LocaleSwitcher $localeSwitcher, private readonly RouterInterface $router)
+    {
     }
 
     public function fixFeedRecords(bool $forceFeedGeneration = false): void
@@ -170,7 +127,7 @@ class FeedService
                 try {
                     $cron = new CronExpression($feed->getInterval());
                     $newDate = $cron->getNextRunDate();
-                } catch (\InvalidArgumentException $e) {
+                } catch (\InvalidArgumentException) {
                     $interval = DateInterval::createFromDateString($feed->getInterval() . ' minutes');
                     /** @var DateTime $lastGenerated */
                     $lastGenerated = $feed->getLastGeneratedAt();
@@ -635,15 +592,11 @@ class FeedService
         }
 
         $visibility = $product->getVisibilities()->first();
-        switch ($visibility->getVisibility()) {
-            case 10:
-                return self::PRODUCT_NOT_VISIBLE;
-            case 20:
-                return self::PRODUCT_VISIBILITY_SEARCH;
-            case 30:
-            default:
-                return self::PRODUCT_VISIBILITY_CATALOG_SEARCH;
-        }
+        return match ($visibility->getVisibility()) {
+            10 => self::PRODUCT_NOT_VISIBLE,
+            20 => self::PRODUCT_VISIBILITY_SEARCH,
+            default => self::PRODUCT_VISIBILITY_CATALOG_SEARCH,
+        };
     }
 
     private function getLowestAndHighestPrice(ProductEntity $product, SalesChannelContext $salesChannelContext): array
@@ -756,7 +709,7 @@ class FeedService
     {
         $folder = 'tweakwise';
         if ($feed->getType() !== 'full') {
-            $folder = $folder . '/' . strtolower($feed->getType());
+            $folder = $folder . '/' . strtolower((string) $feed->getType());
         }
         return $this->templateFinder->find('@Storefront/' . $folder . '/' . $view, true, '@RhaeTweakwise/' . $folder . '/' . $view);
     }

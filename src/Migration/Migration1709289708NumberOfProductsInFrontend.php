@@ -20,7 +20,7 @@ ALTER TABLE `s_plugin_rhae_tweakwise_frontend`
                 ADD `productsTablet` TINYINT(1) NOT NULL DEFAULT 0,
                 ADD `productsMobile` TINYINT(1) NOT NULL DEFAULT 0;
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

@@ -18,7 +18,7 @@ class Migration1700483276 extends MigrationStep
 ALTER TABLE `s_plugin_rhae_tweakwise_frontend`
                 ADD `wayOfSearch` VARCHAR(255) NULL;
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

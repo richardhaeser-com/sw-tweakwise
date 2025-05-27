@@ -14,7 +14,7 @@ class FeedEntity extends Entity
 
     use EntityIdTrait;
 
-    protected ?string $name;
+    protected ?string $name = null;
 
     protected bool $includeHiddenCategories = false;
 
@@ -26,25 +26,25 @@ class FeedEntity extends Entity
     /**
      * @var null|\DateTimeInterface
      */
-    protected ?\DateTimeInterface $lastStartedAt;
+    protected ?\DateTimeInterface $lastStartedAt = null;
 
     /**
      * @var null|\DateTimeInterface
      */
-    protected ?\DateTimeInterface $lastGeneratedAt;
+    protected ?\DateTimeInterface $lastGeneratedAt = null;
 
     /**
      * @var null|\DateTimeInterface
      */
-    protected ?\DateTimeInterface $nextGenerationAt;
+    protected ?\DateTimeInterface $nextGenerationAt = null;
 
-    protected ?string $status;
+    protected ?string $status = null;
 
-    protected ?string $interval;
+    protected ?string $interval = null;
 
-    protected ?string $type;
+    protected ?string $type = null;
 
-    protected ?string $importTaskUrl;
+    protected ?string $importTaskUrl = null;
 
     protected bool $excludeChildren = false;
     protected bool $excludeReviews = false;

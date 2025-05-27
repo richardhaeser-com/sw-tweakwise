@@ -12,11 +12,8 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class TweakwiseSearchController extends StorefrontController
 {
-    private GenericPageLoader $pageLoader;
-
-    public function __construct(GenericPageLoader $pageLoader)
+    public function __construct(private readonly GenericPageLoader $pageLoader)
     {
-        $this->pageLoader = $pageLoader;
     }
 
     #[Route(path: '/search-results', name: 'storefront.tweakwise.search', methods: ['GET'])]

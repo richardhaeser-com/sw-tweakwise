@@ -9,24 +9,21 @@ use Twig\TwigFunction;
 
 class TranslatorExtension extends AbstractExtension
 {
-    private Translator $translator;
-
-    public function __construct(Translator $translator)
+    public function __construct(private readonly Translator $translator)
     {
-        $this->translator = $translator;
     }
 
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('rh_translate', [$this, 'translate']),
+            new TwigFunction('rh_translate', $this->translate(...)),
         ];
     }
 
     public function getFilters(): array
     {
         return [
-            new TwigFilter('rh_translate', [$this, 'translate']),
+            new TwigFilter('rh_translate', $this->translate(...)),
         ];
     }
 

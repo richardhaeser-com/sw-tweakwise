@@ -22,18 +22,12 @@ class TweakwiseCategoryLoader
     private $treeItem;
 
     /**
-     * @var AbstractNavigationRoute
-     */
-    private $navigationRoute;
-
-    /**
      * @internal
      */
     public function __construct(
-        AbstractNavigationRoute $navigationRoute
+        private readonly AbstractNavigationRoute $navigationRoute
     ) {
         $this->treeItem = new TreeItem(null, []);
-        $this->navigationRoute = $navigationRoute;
     }
 
     /**

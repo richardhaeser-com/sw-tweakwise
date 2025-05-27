@@ -10,13 +10,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class CustomerLoginSubscriber implements EventSubscriberInterface
 {
-    private RequestStack $requestStack;
-    private EntityRepository $customerRepository;
-
-    public function __construct(RequestStack $requestStack, EntityRepository $customerRepository)
+    public function __construct(private readonly RequestStack $requestStack, private readonly EntityRepository $customerRepository)
     {
-        $this->requestStack = $requestStack;
-        $this->customerRepository = $customerRepository;
     }
 
     public static function getSubscribedEvents(): array

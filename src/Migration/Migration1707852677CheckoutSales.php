@@ -20,7 +20,7 @@ ALTER TABLE `s_plugin_rhae_tweakwise_frontend`
                 ADD `checkoutSalesRecommendationsGroupKey` VARCHAR(50) NULL,
                 ADD `checkoutSalesFeaturedProductsId` VARCHAR(50) NULL;
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

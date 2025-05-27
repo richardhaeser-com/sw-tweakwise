@@ -19,7 +19,7 @@ ALTER TABLE `s_plugin_rhae_tweakwise_feed`
                 ADD `importTaskUrl` VARCHAR(255) NULL
                 ;
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

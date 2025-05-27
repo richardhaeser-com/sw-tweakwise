@@ -1,5 +1,5 @@
 {% block sw_prduct_cross_selling_form_product_stream_field %}
-<div v-if="!useTweakwise">
+    <div v-if="!useTweakwise">
     {% parent %}
 </div>
 
@@ -14,19 +14,16 @@
         />
     </div>
 {% endblock %}
-
 {% block sw_prduct_cross_selling_form_sort_field %}
     <div v-if="!useTweakwise">
         {% parent %}
     </div>
 {% endblock %}
-
 {% block sw_prduct_cross_selling_form_limit_field %}
     <div v-if="!useTweakwise">
         {% parent %}
     </div>
 {% endblock %}
-
 {% block sw_prduct_cross_selling_form_preview_link %}
     <div v-if="!useTweakwise">
         {% parent %}

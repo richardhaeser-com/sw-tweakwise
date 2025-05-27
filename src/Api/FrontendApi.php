@@ -7,7 +7,7 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class FrontendApi
 {
-    private Client $client;
+    private readonly Client $client;
     public $apiUrl = 'https://gateway.tweakwisenavigator.com';
     public function __construct(private readonly string $instanceKey)
     {

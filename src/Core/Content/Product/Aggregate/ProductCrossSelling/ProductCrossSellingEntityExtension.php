@@ -31,5 +31,9 @@ class ProductCrossSellingEntityExtension extends EntityExtension
     {
         return ProductCrossSellingDefinition::class;
     }
+    public function getEntityName(): string
+    {
+        return ProductCrossSellingDefinition::ENTITY_NAME;
+    }
 
 }

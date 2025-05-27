@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `s_plugin_rhae_tweakwise_sales_channel_domains` (
     DEFAULT CHARSET=utf8mb4
     COLLATE=utf8mb4_unicode_ci
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

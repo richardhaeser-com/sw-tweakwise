@@ -26,11 +26,11 @@ class Migration1702300500 extends MigrationStep
             DEFAULT CHARSET = utf8mb4
             COLLATE = utf8mb4_unicode_ci;
         SQL;
-        $connection->exec($sql);
-        $connection->exec('
+        $connection->executeStatement($sql);
+        $connection->executeStatement('
           ALTER TABLE `product_cross_selling` ADD `product_cross_selling_tweakwise_id` BINARY(16);
         ');
-        $connection->exec('
+        $connection->executeStatement('
           ALTER TABLE `product_cross_selling` ADD CONSTRAINT `fk.product_cross_selling.product_cross_selling_tweakwise_id`
           FOREIGN KEY (`product_cross_selling_tweakwise_id`) REFERENCES `product_cross_selling_tweakwise`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
         ');
