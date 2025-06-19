@@ -77,6 +77,14 @@
                             {% set propertyIds = propertyIds|merge([property.id]) %}
                         {% endif %}
                     {% endfor %}
+
+                    {% for field,value in product.customFields %}
+                        <attribute custom="true">
+                            <name>{{ field }}</name>
+                            <value>{{ value }}</value>
+                        </attribute>
+                    {% endfor %}
+
                     {% if otherVariantsXml %}
                         {{ otherVariantsXml|raw }}
                     {% endif %}

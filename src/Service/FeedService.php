@@ -296,8 +296,11 @@ class FeedService
 
             $criteria = new Criteria();
             $criteria->setOffset(0);
-            $criteria->setLimit(1);
-            $criteria->addAssociation('customFields');
+            $criteria->setLimit((int)$feed->getLimit());
+
+            if ($feed->isIncludeCustomFields()) {
+                $criteria->addAssociation('customFields');
+            }
 
             if (!$feed->isExcludeOptions()) {
                 $criteria->addAssociation('options');
@@ -505,6 +508,7 @@ class FeedService
         $content = '';
         /** @var ProductEntity $product */
         foreach ($products as $product) {
+
             echo '.';
             $productId = ProductDataService::getTweakwiseProductId($product, $domain->getId());
             if (!in_array($productId, $this->uniqueProductIds, true)) {

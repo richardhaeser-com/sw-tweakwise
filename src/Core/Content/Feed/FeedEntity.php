@@ -51,6 +51,10 @@ class FeedEntity extends Entity
     protected bool $excludeTags = false;
     protected bool $excludeOptions = false;
     protected bool $excludeProperties = false;
+    protected bool $includeCustomFields = true;
+
+    protected ?string $limit = '10';
+
 
     public function getName(): ?string
     {
@@ -215,6 +219,26 @@ class FeedEntity extends Entity
     public function setExcludeProperties(bool $excludeProperties): void
     {
         $this->excludeProperties = $excludeProperties;
+    }
+
+    public function getLimit(): ?string
+    {
+        return $this->limit;
+    }
+
+    public function setLimit(?string $limit): void
+    {
+        $this->limit = $limit;
+    }
+
+    public function isIncludeCustomFields(): bool
+    {
+        return $this->includeCustomFields;
+    }
+
+    public function setIncludeCustomFields(bool $includeCustomFields): void
+    {
+        $this->includeCustomFields = $includeCustomFields;
     }
 
 }
