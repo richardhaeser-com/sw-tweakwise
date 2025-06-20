@@ -604,8 +604,10 @@ class FeedService
                 }
                 foreach ($product->getStreams() as $pStream) {
                     foreach ($pStream->getCategories() as $sCategory) {
-                        if (!array_key_exists($sCategory->getId(), $categories)) {
-                            $categories[$sCategory->getId()] = $sCategory;
+                        if ($sCategory->getProductAssignmentType() === 'product_stream') {
+                            if (!array_key_exists($sCategory->getId(), $categories)) {
+                                $categories[$sCategory->getId()] = $sCategory;
+                            }
                         }
                     }
                 }
