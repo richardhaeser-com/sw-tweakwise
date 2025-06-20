@@ -5,11 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [4.2.0] - 20-06-2025
 
 ### Added
 - You can now define the batch-size when generating the product feed. When generating the product feed, products are handled in batches to make sure not too much memory is used. You have now the option to set this batch-size in the advanced settings of the feed. Increasing this number will make the generation process faster, but please be aware that the bigger the batch-size the more memory is used. The "sweetspot" is different in every installation and therefor you need to check what works best in your situation. By increasing the batch-size, you will speed-up the generation massively.
 - An option is added in the feed-settings to include custom fields of products. Please be aware that enabling this, will add all the available custom fields to a product in the feed and therefor the feed will be bigger. If you don't need those fields in Tweakwise, it is recommended to not enable this option.
+- It is now possible to export all variants to Tweakwise. If you enable this feature in the feed settings, it will not check your settings in Shopware whether the main product is shown or one (or more) of the variants. Tweakwise will define which variant is shown based on the search of the user.
 
 ### Changed
 - The search function will now respect the Browser history mode as set in the Plugin Studio settings
