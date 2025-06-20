@@ -56,6 +56,7 @@ class FeedDefinition extends EntityDefinition
             (new BoolField('excludeTags', 'excludeTags'))->addFlags(new ApiAware()),
             (new BoolField('excludeOptions', 'excludeOptions'))->addFlags(new ApiAware()),
             (new BoolField('excludeProperties', 'excludeProperties'))->addFlags(new ApiAware()),
+            (new BoolField('groupedProducts', 'groupedProducts'))->addFlags(new ApiAware()),
             (new BoolField('includeCustomFields', 'includeCustomFields'))->addFlags(new ApiAware()),
             (new DateTimeField('last_started_at', 'lastStartedAt'))->addFlags(new ApiAware()),
             (new DateTimeField('last_generated_at', 'lastGeneratedAt'))->addFlags(new ApiAware()),

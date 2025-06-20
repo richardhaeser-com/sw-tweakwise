@@ -51,6 +51,7 @@ class FeedEntity extends Entity
     protected bool $excludeTags = false;
     protected bool $excludeOptions = false;
     protected bool $excludeProperties = false;
+    protected bool $groupedProducts = false;
     protected bool $includeCustomFields = true;
 
     protected ?string $limit = '10';
@@ -218,6 +219,16 @@ class FeedEntity extends Entity
     public function setExcludeProperties(bool $excludeProperties): void
     {
         $this->excludeProperties = $excludeProperties;
+    }
+
+    public function isGroupedProducts(): bool
+    {
+        return $this->groupedProducts;
+    }
+
+    public function setGroupedProducts(bool $groupedProducts): void
+    {
+        $this->groupedProducts = $groupedProducts;
     }
 
     public function getLimit(): ?string

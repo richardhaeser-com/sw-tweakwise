@@ -44,6 +44,7 @@
                 "excludeTags": "Tags should not be added to the feed. Remove the relation with tags",
                 "excludeOptions": "Options defining the variant should not be added to the feed. Remove the relation with options",
                 "excludeProperties": "Options that are not defining the variant should not be added to the feed. Remote the relation with properties",
+                "groupedProducts": "Export all variants to Tweakwise, ignoring the Shopware listing settings",
                 "includeCustomFields": "Include all custom fields in the feed",
                 "limit": "Batch size",
                 "yesno": {

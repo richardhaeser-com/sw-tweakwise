@@ -76,6 +76,7 @@
             <argument type="service" id="Symfony\Component\EventDispatcher\EventDispatcherInterface"/>
             <argument type="service" id="Symfony\Component\Translation\LocaleSwitcher"/>
             <argument type="service" id="router" />
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Price\ProductPriceCalculator"/>
         </service>
 
         <service id="RH\Tweakwise\Service\ProductDataService" public="true">

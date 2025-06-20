@@ -3,6 +3,10 @@
     "crossselling": {
       "tweakwiseType": "Tweakwise recommendations",
       "tweakwiseGroupKey": "Tweakwise Group key"
+    },
+    "listing": {
+      "warningTitle": "Warning!",
+      "warning": "These settings will have no effect if you have enabled the option to export all variants to Tweakwise. In that case, Tweakwise will control which variants are displayed in the frontend."
     }
   }
 }
