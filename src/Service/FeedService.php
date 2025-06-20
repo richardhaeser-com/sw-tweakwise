@@ -303,8 +303,11 @@ class FeedService
 
             $criteria = new Criteria();
             $criteria->setOffset(0);
-            $criteria->setLimit(1);
-            $criteria->addAssociation('customFields');
+            $criteria->setLimit((int)$feed->getLimit());
+
+            if ($feed->isIncludeCustomFields()) {
+                $criteria->addAssociation('customFields');
+            }
 
             if (!$feed->isExcludeOptions()) {
                 $criteria->addAssociation('options');
@@ -535,6 +538,7 @@ class FeedService
         $content = '';
         /** @var ProductEntity $product */
         foreach ($products as $product) {
+
             echo '.';
             $parent = null;
             $productId = ProductDataService::getTweakwiseProductId($product, $domain->getId());
@@ -635,8 +639,10 @@ class FeedService
                 }
                 foreach ($product->getStreams() as $pStream) {
                     foreach ($pStream->getCategories() as $sCategory) {
-                        if (!array_key_exists($sCategory->getId(), $categories)) {
-                            $categories[$sCategory->getId()] = $sCategory;
+                        if ($sCategory->getProductAssignmentType() === 'product_stream') {
+                            if (!array_key_exists($sCategory->getId(), $categories)) {
+                                $categories[$sCategory->getId()] = $sCategory;
+                            }
                         }
                     }
                 }

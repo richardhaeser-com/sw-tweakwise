@@ -19,7 +19,11 @@
             "saveButtonText": "Save",
             "section": {
                 "main": "General",
-                "data": "Data"
+                "data": "Data",
+                "advanced": "Advanced"
+            },
+            "info": {
+                "limit": "Products will be retrieved from Shopware in batches. How many products should be handled in one batch? The higher this number, the more memory it will consume during feed generation. The lower the number, the more time it will take to generate the feed. As the optimal performance depends on the data, you can try to get the highest number without stressing your server too much."
             },
             "label": {
                 "name": "Name",
@@ -41,6 +45,8 @@
                 "excludeOptions": "Options defining the variant should not be added to the feed. Remove the relation with options",
                 "excludeProperties": "Options that are not defining the variant should not be added to the feed. Remote the relation with properties",
                 "groupedProducts": "Export all variants to Tweakwise, ignoring the Shopware listing settings",
+                "includeCustomFields": "Include all custom fields in the feed",
+                "limit": "Batch size",
                 "yesno": {
                     "0": "No",
                     "1": "Yes"

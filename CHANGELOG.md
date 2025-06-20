@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- You can now define the batch-size when generating the product feed. When generating the product feed, products are handled in batches to make sure not too much memory is used. You have now the option to set this batch-size in the advanced settings of the feed. Increasing this number will make the generation process faster, but please be aware that the bigger the batch-size the more memory is used. The "sweetspot" is different in every installation and therefor you need to check what works best in your situation. By increasing the batch-size, you will speed-up the generation massively.
+- An option is added in the feed-settings to include custom fields of products. Please be aware that enabling this, will add all the available custom fields to a product in the feed and therefor the feed will be bigger. If you don't need those fields in Tweakwise, it is recommended to not enable this option.
+
+### Changed
+- The search function will now respect the Browser history mode as set in the Plugin Studio settings
+
+### Fixed
+- For the feed generation, the settings for product selection of a category, is respected now. This should fix the problem with too many categories been added to a product in some cases. 
+
+## [4.1.1] - 02-05-2025
+
+### Changed
+- Fixed some unclear labels on collecting data
+- Removed preloads and added defer tag to plugin studio JS
+- Some small UX enhancements in the admin module to manage Tweakwise feeds
+
 ## [4.1.0] - 15-04-2025
 
 ### Added

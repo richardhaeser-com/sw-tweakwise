@@ -1,6 +1,15 @@
 @import "~scss/variables";
 
 .rhae-tweakwise-feed-detail {
+
+    .card-advanced {
+        &.sw-card {
+            .sw-card__title {
+                color: #f00;
+            }
+        }
+    }
+
     .sw-card .sw-card__content {
         padding-top: 0;
     }
