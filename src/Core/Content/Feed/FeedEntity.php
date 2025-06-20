@@ -55,7 +55,6 @@ class FeedEntity extends Entity
 
     protected ?string $limit = '10';
 
-
     public function getName(): ?string
     {
         return $this->name;
