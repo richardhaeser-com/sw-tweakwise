@@ -107,6 +107,11 @@
                     return false;
                 }
 
+                var wishlistLoaded = 'WishlistStorage' in window.PluginManager.getPluginList();
+                if (!wishlistLoaded) {
+                    return false;
+                }
+
                 var wishlistStorage = window.PluginManager.getPluginInstances('WishlistStorage');
                 if (!wishlistStorage.length) {
                     return false;

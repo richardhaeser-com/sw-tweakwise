@@ -2,18 +2,21 @@ import Plugin from 'src/plugin-system/plugin.class';
 import DomAccess from 'src/helper/dom-access.helper';
 export default class TwAddToFavoritesPlugin extends Plugin {
     init() {
-        this.classList = {
-            isLoading: 'product-wishlist-loading',
-            addedState: 'product-wishlist-added',
-            notAddedState: 'product-wishlist-not-added',
-        };
+        var wishlistLoaded = 'WishlistStorage' in window.PluginManager.getPluginList();
+        if (wishlistLoaded) {
+            this.classList = {
+                isLoading: 'product-wishlist-loading',
+                addedState: 'product-wishlist-added',
+                notAddedState: 'product-wishlist-not-added',
+            };
 
-        this._getWishlistStorage();
+            this._getWishlistStorage();
 
-        if (!this._wishlistStorage) {
-            console.warn('No wishlist storage found');
+            if (!this._wishlistStorage) {
+                console.warn('No wishlist storage found');
+            }
+            this._registerEvents();
         }
-        this._registerEvents();
     }
 
     _registerEvents() {
