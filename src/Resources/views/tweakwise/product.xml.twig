@@ -87,7 +87,7 @@
                         {% for field,value in product.customFields %}
                             <attribute custom="true">
                                 <name>{{ field }}</name>
-                                <value>{{ value }}</value>
+                                <value>{{ tw_custom_field_value(value) }}</value>
                             </attribute>
                         {% endfor %}
                     {% endblock %}
