@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.1] - 26-06-2025
+
+### Fixed
+- When you have non-string custom fields in your products (like prices), this will now not result in an error when generating the feed
+- No error will show up in the browser console when you do not have activated the wishlist in Shopware
+
 ## [4.2.0] - 20-06-2025
 
 ### Added
