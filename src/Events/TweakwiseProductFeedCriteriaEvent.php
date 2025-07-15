@@ -22,4 +22,14 @@ class TweakwiseProductFeedCriteriaEvent implements ShopwareSalesChannelEvent
     {
         return $this->context;
     }
+
+    public function getCriteria(): Criteria
+    {
+        return $this->criteria;
+    }
+
+    public function setCriteria(Criteria $criteria): void
+    {
+        $this->criteria = $criteria;
+    }
 }

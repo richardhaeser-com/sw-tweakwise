@@ -28,4 +28,9 @@ class TweakwiseProductFeedResultEvent implements ShopwareSalesChannelEvent
     {
         return $this->result;
     }
+
+    public function setResult(ProductListingResult $result): void
+    {
+        $this->result = $result;
+    }
 }
