@@ -19,25 +19,31 @@
             "saveButtonText": "Opslaan",
             "section": {
                 "main": "Algemeen",
-                "data": "Data"
+                "data": "Data",
+                "advanced": "Geavanceerd"
+            },
+            "info": {
+                "limit": "Producten worden vanuit Shopware opgehaald in batches. Met deze instelling bepaal je hoeveel producten er in 1 batch zitten. Hoe hoger het aantal, hoe meer geheugen het nodig heeft bij het genereren van de feed. Hoe lager het aantal, hoe meer tijd het zal kosten. De beste instelling is afhankelijk van de data. Probeer een zo hoog mogelijk aantal zonder dat dit problemen oplevert voor de server."
             },
             "label": {
                 "name": "Naam",
                 "salesChannelDomains": "Domeinen",
                 "feedUrl": "Feed URL",
                 "lastGeneratedAt": "Laatst gegenereerd op",
-                "includeHiddenCategories": "Exporteer ook verborgen categorieën.",
+                "includeHiddenCategories": "Exporteer ook verborgen categorieën",
                 "includeHiddenCategoriesTrue": "Ja",
                 "includeHiddenCategoriesFalse": "Nee",
                 "interval": "Herhaling (cron notatie of interval in minuten)",
                 "importTaskUrl": "API URL van Import taak in Tweakwise",
                 "intervalDescription": "Let op dat de interval moet worden ingesteld in overleg met Tweakwise. Het heeft bijvoorbeeld geen nut om de feed iedere 30 minuten te updaten terwijl Tweakwise de feed maar een keer per dag ophaalt.",
-                "nextGenerationAt": "Wordt opnieuw genegereerd op",
+                "includeCustomFields": "Exporteer alle vrije velden van een product",
+                "nextGenerationAt": "Wordt opnieuw gegenereerd op",
+                "limit": "Batch grootte",
                 "status": "Status",
                 "statusOption": {
-                    "queued": "Queued",
-                    "running": "Running",
-                    "completed": "Completed",
+                    "queued": "In de wachtrij",
+                    "running": "Bezig",
+                    "completed": "Afgerond",
                     "undefined": "-",
                     "null": "-"
                 },
@@ -48,8 +54,12 @@
                     "720": "12 uur",
                     "1440": "24 uur"
                 },
-                "generateNow": "Generate now",
-                "withinOneMinute": "Within one minute",
+                "type": "Type feed",
+                "typeOptions": {
+                    "full": "Volledige feed"
+                },
+                "generateNow": "Opnieuw genereren",
+                "withinOneMinute": "Binnen een minuut",
                 "groupedProducts": "Exporteer alle varianten naar Tweakwise, zonder rekening te houden met de Shopware-instellingen"
             }
         }
