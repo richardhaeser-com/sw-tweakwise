@@ -67,7 +67,7 @@
                                 <p class="rhae-tweakwise-feed__card-toolbar-heading">
                                     {{ $t('rhae-tweakwise-feed.detail.label.lastGeneratedAt') }}
                                 </p>
-                                <p v-if="item.lastGeneratedAt"><sw-time-ago :date="item.lastGeneratedAt" /></p>
+                                <p v-if="item.lastGeneratedAt"><sw-time-ago :date="item.lastGeneratedAt" :key="item.lastGeneratedAt" /></p>
                                 <p v-else>-</p>
                             </div>
                         {% endblock %}
