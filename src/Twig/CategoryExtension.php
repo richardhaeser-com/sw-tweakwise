@@ -24,7 +24,29 @@ class CategoryExtension extends AbstractExtension
     {
         return [
             new TwigFunction('tw_category_tree', [$this, 'getCategoryTree']),
+            new TwigFunction('tw_convert_category_path', [$this, 'convertCategoryTree']),
         ];
+    }
+
+    public function convertCategoryTree(string $path, string $rootCategoryId, string $currentCategoryId, string $domainId): string
+    {
+        $categories = array_filter(explode('|', $path), function (string $pathEntry) use ($rootCategoryId) {
+            if (!($pathEntry)) {
+                return false;
+            }
+            if ($pathEntry === $rootCategoryId) {
+                return false;
+            }
+
+            return true;
+        });
+
+        $categories[] = $currentCategoryId;
+        $categoryHashes = [];
+        foreach ($categories as $category) {
+            $categoryHashes[] = md5($category . '_' . $domainId);
+        }
+        return implode('-', $categoryHashes);
     }
 
     public function getCategoryTree(SalesChannelContext $context): ?array

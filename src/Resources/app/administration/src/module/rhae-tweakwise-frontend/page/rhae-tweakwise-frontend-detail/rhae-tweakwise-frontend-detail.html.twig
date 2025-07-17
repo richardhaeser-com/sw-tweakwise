@@ -87,6 +87,15 @@
 
                 </sw-card-section>
             </sw-card>
+            <sw-card v-if="validToken && (item.integration === 'javascript' || item.integration === 'pluginstudio')" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.merchandise')">
+                <sw-card-section>
+                    <sw-checkbox-field
+                            v-model:value="item.fullPathCid"
+                            :label="$t('rhae-tweakwise-frontend.detail.label.fullPathCid')"
+                            @update:value="onChangeToggle($event, 'fullPathCid')"
+                    />
+                </sw-card-section>
+            </sw-card>
             <sw-card v-if="validToken && recommendationsAvailable && (item.integration === 'javascript' || item.integration === 'pluginstudio')" :isLoading="isLoading" :title="$tc('rhae-tweakwise-frontend.detail.section.checkoutSales')">
                 <sw-card-section>
                     <sw-select-field :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSales')"
