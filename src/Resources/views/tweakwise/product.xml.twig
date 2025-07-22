@@ -47,17 +47,26 @@
             <attributes>
                 {% block feed_item_attributes_inner %}
                     {% if product.options %}
+                        {% block feed_item_selected_option %}
                         <attribute>
                             <name>Selected option</name>
-                            <value>
-                                <![CDATA[
-                                            {% for option in product.options %}
-                                                {{ option.group.translated.name|raw }}: {{ option.translated.name|raw }}
-                                                {% if not loop.last %}|{% endif %}
-                                            {% endfor %}
-                                                    ]]>
-                            </value>
+                            <value><![CDATA[
+                                {%- for option in product.options %}
+                                    {{- option.group.translated.name|raw }}: {{ option.translated.name|raw -}}
+                                    {%- if not loop.last %}|{% endif -%}
+                                {%- endfor -%}
+                            ]]></value>
                         </attribute>
+                        {% endblock %}
+
+                        {% for option in product.options %}
+                            {% block feed_item_selected_options %}
+                                <attribute>
+                                    <name>Selected options</name>
+                                    <value><![CDATA[{{ option.group.translated.name|raw }}: {{ option.translated.name|raw }}]]></value>
+                                </attribute>
+                            {% endblock %}
+                        {% endfor %}
                     {% endif %}
 
                     {% set optionGroups = [] %}
