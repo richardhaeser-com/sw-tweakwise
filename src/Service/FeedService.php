@@ -618,7 +618,7 @@ class FeedService
                 if ($feed->isGroupedProducts()) {
                     $groupCode = $product->getProductNumber();
 
-                    if ($parent instanceof ProductEntity) {
+                    if (isset($parent) && $parent instanceof ProductEntity) {
                         $groupCode = $parent->getProductNumber();
                     }
                 }

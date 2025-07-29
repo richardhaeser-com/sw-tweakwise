@@ -3,21 +3,22 @@
         <template #smart-bar-actions>
             {% block sw_tweakwise_feed_detail_actions %}
             {% block sw_tweakwise_feed_detail_actions_refresh %}
-            <sw-button
+            <mt-button
                 @click="getItem"
                 square
+                size="default"
             >
-                <sw-icon
+                <mt-icon
                     name="regular-undo"
-                    small
+                    size="18"
                 />
-            </sw-button>
+            </mt-button>
             {% endblock %}
 
             {% block sw_tweakwise_feed_detail_actions_cancel %}
-            <sw-button :routerLink="{ name: 'rhae.tweakwise.feed.list' }">
+            <mt-button @click="$router.push({ name: 'rhae.tweakwise.feed.list' })" size="default">
                 {{ $t('rhae-tweakwise-feed.detail.cancelButtonText') }}
-            </sw-button>
+            </mt-button>
             {% endblock %}
 
             {% block sw_tweakwise_feed_detail_actions_save %}
@@ -72,7 +73,7 @@
                                         @keydown.enter="copyLinkToClipboard"
                                     >
                                         <sw-icon
-                                            small
+                                            size="16"
                                             name="regular-copy"
                                         />
                                     </sw-button>
@@ -134,17 +135,11 @@
                     </sw-card-section>
                     <sw-card-section>
                         {% block sw_tweakwise_feed_detail_content_main_type %}
-                        <sw-select-field
-                            :label="$t('rhae-tweakwise-feed.detail.label.type')"
-                            v-model:value="item.type"
-                        >
-                            <option
-                                v-for="value in ['full']"
-                                :value="value"
-                            >
-                                {{ $tc('rhae-tweakwise-feed.detail.label.typeOptions.' + value) }}
-                            </option>
-                        </sw-select-field>
+                        <mt-select
+                                v-model="item.type"
+                                :label="$t('rhae-tweakwise-feed.detail.label.type')"
+                                :options="feedTypes"
+                        />
                         {% endblock %}
 
 
@@ -192,33 +187,27 @@
                     :title="$tc('rhae-tweakwise-feed.detail.section.data')"
                 >
                     <sw-card-section>
-                        <sw-container columns="repeat(2, 1fr)">
-                            <div>
-                                {% block sw_tweakwise_feed_detail_content_settings_full_include_hidden_categories %}
-                                <sw-checkbox-field
-                                    v-model:value="item.includeHiddenCategories"
-                                    :label="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategories')"
-                                    @update:value="onChangeToggle($event, 'includeHiddenCategories')"
-                                />
-                                {% endblock %}
-                                {% block sw_tweakwise_feed_detail_content_settings_full_grouped_products %}
-                                    <sw-checkbox-field
-                                            v-model:value="item.groupedProducts"
-                                            :label="$t('rhae-tweakwise-feed.detail.label.groupedProducts')"
-                                            @update:value="onChangeToggle($event, 'groupedProducts')"
-                                    />
-                                {% endblock %}
-                            </div>
-                            <div>
-                                {% block sw_tweakwise_feed_detail_content_settings_full_include_custom_fields %}
-                                    <sw-checkbox-field
-                                            v-model:value="item.includeCustomFields"
-                                            :label="$t('rhae-tweakwise-feed.detail.label.includeCustomFields')"
-                                            @update:value="onChangeToggle($event, 'includeCustomFields')"
-                                    />
-                                {% endblock %}
-                            </div>
-                        </sw-container>
+                        {% block sw_tweakwise_feed_detail_content_settings_full_include_hidden_categories %}
+                            <mt-switch
+                                    v-model="item.includeHiddenCategories"
+                                    bordered
+                                    :label="$tc('rhae-tweakwise-feed.detail.label.includeHiddenCategories')"
+                            />
+                        {% endblock %}
+                        {% block sw_tweakwise_feed_detail_content_settings_full_grouped_products %}
+                            <mt-switch
+                                    v-model="item.groupedProducts"
+                                    bordered
+                                    :label="$tc('rhae-tweakwise-feed.detail.label.groupedProducts')"
+                            />
+                        {% endblock %}
+                        {% block sw_tweakwise_feed_detail_content_settings_full_include_custom_fields %}
+                            <mt-switch
+                                    v-model="item.includeCustomFields"
+                                    bordered
+                                    :label="$tc('rhae-tweakwise-feed.detail.label.includeCustomFields')"
+                            />
+                        {% endblock %}
                     </sw-card-section>
                 </sw-card>
                 {% endblock %}
@@ -228,12 +217,11 @@
                         <sw-card-section>
                             {% block sw_tweakwise_feed_detail_advanced_limit %}
                                 <p style="margin-bottom: 1rem;">{{ $t('rhae-tweakwise-feed.detail.info.limit') }}</p>
-                                <sw-select-field :label="$t('rhae-tweakwise-feed.detail.label.limit')"
-                                                 v-model:value="item.limit">
-                                    <option v-for="value in ['1', '10', '25', '50', '100', '250']" :value="value">
-                                        {{ value }}
-                                    </option>
-                                </sw-select-field>
+                                <mt-select
+                                        v-model="item.limit"
+                                        :label="$t('rhae-tweakwise-feed.detail.label.limit')"
+                                        :options="batchSizes"
+                                />
                             {% endblock %}
 
                         </sw-card-section>

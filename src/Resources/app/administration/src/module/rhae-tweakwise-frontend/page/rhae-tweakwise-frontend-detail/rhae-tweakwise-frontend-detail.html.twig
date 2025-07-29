@@ -1,6 +1,6 @@
 <sw-page class="rhae-tweakwise-frontend-detail">
     <template #smart-bar-actions>
-        <sw-button :routerLink="{ name: 'rhae.tweakwise.frontend.list' }">
+        <sw-button size="default" :routerLink="{ name: 'rhae.tweakwise.frontend.list' }">
             {{ $t('rhae-tweakwise-frontend.detail.cancelButtonText') }}
         </sw-button>
         <sw-button-process
@@ -40,18 +40,14 @@
                         :error="tokenError"
                         @blur="checkPossibilities"
                     ></sw-text-field>
-                    <sw-select-field
-                        v-if="validToken"
-                        :label="$t('rhae-tweakwise-frontend.detail.label.integration')"
-                        v-model:value="item.integration"
-                    >
-                        <option
-                            v-for="value in ['no-integration','pluginstudio','javascript']"
-                            :value="value"
-                        >
-                            {{ $tc('rhae-tweakwise-frontend.detail.label.integrationOptions.' + value) }}
-                        </option>
-                    </sw-select-field>
+
+                    <mt-select
+                            v-if="validToken"
+                            v-model="item.integration"
+                            :label="$t('rhae-tweakwise-frontend.detail.label.integration')"
+                            :options="integrationTypes"
+                    />
+
                     <sw-checkbox-field
                         v-model:value="item.eventTagEnabled"
                         :label="$t('rhae-tweakwise-frontend.detail.label.eventTagEnabled')"
@@ -65,20 +61,12 @@
                 :title="$tc('rhae-tweakwise-frontend.detail.section.search')"
             >
                 <sw-card-section>
-                    <sw-select-field
-                        :label="$t('rhae-tweakwise-frontend.detail.label.wayOfSearch')"
-                        v-model:value="item.wayOfSearch"
-                    >
-                        <option value="instant-search">
-                            {{ $tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.instant-search') }}
-                        </option>
-                        <option
-                            value="suggestions"
-                            v-if="suggestionsAvailable"
-                        >
-                            {{ $tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.suggestions') }}
-                        </option>
-                    </sw-select-field>
+                    <mt-select
+                            v-model="item.wayOfSearch"
+                            :label="$t('rhae-tweakwise-frontend.detail.label.wayOfSearch')"
+                            :options="wayOfSearchTypes"
+                    />
+
                     <sw-container
                         columns="2fr 2fr 2fr"
                         gap="0px 30px"
@@ -132,17 +120,12 @@
                 :title="$tc('rhae-tweakwise-frontend.detail.section.checkoutSales')"
             >
                 <sw-card-section>
-                    <sw-select-field
-                        :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSales')"
-                        v-model:value="item.checkoutSales"
-                    >
-                        <option
-                            v-for="value in ['no-checkout-sales','featured-products','recommendations']"
-                            :value="value"
-                        >
-                            {{ $tc('rhae-tweakwise-frontend.detail.label.checkoutSalesOptions.' + value) }}
-                        </option>
-                    </sw-select-field>
+                    <mt-select
+                            v-model="item.checkoutSales"
+                            :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSales')"
+                            :options="checkoutSalesTypes"
+                    />
+
                     <sw-text-field
                         :label="$t('rhae-tweakwise-frontend.detail.label.checkoutSalesFeaturedProductsId')"
                         v-if="item.checkoutSales === 'featured-products'"

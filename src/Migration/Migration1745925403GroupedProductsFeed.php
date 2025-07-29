@@ -18,7 +18,7 @@ class Migration1745925403GroupedProductsFeed extends MigrationStep
 ALTER TABLE `s_plugin_rhae_tweakwise_feed`
                 ADD `groupedProducts` TINYINT(1) NOT NULL DEFAULT '0';
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
 
     }
 

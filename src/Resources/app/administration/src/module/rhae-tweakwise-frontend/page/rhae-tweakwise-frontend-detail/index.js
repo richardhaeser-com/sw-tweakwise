@@ -38,6 +38,68 @@ Component.register('rhae-tweakwise-frontend-detail', {
     },
 
     computed: {
+        integrationTypes() {
+            return [
+                {
+                    id: 1,
+                    value: 'no-integration',
+                    label: this.$tc('rhae-tweakwise-frontend.detail.label.integrationOptions.no-integration'),
+                },
+                {
+                    id: 2,
+                    value: 'pluginstudio',
+                    label: this.$tc('rhae-tweakwise-frontend.detail.label.integrationOptions.pluginstudio'),
+                },
+                {
+                    id: 3,
+                    value: 'javascript',
+                    label: this.$tc('rhae-tweakwise-frontend.detail.label.integrationOptions.javascript'),
+                },
+            ];
+        },
+        wayOfSearchTypes() {
+            if (this.suggestionsAvailable) {
+                return [
+                    {
+                        id: 1,
+                        value: 'instant-search',
+                        label: this.$tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.instant-search'),
+                    },
+                    {
+                        id: 2,
+                        value: 'suggestions',
+                        label: this.$tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.suggestions'),
+                    },
+                ];
+            } else {
+                return [
+                    {
+                        id: 1,
+                        value: 'instant-search',
+                        label: this.$tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.instant-search'),
+                    },
+                ];
+            }
+        },
+        checkoutSalesTypes() {
+            return [
+                {
+                    id: 1,
+                    value: 'no-checkout-sales',
+                    label: this.$tc('rhae-tweakwise-frontend.detail.label.checkoutSalesOptions.no-checkout-sales'),
+                },
+                {
+                    id: 2,
+                    value: 'featured-products',
+                    label: this.$tc('rhae-tweakwise-frontend.detail.label.checkoutSalesOptions.featured-products'),
+                },
+                {
+                    id: 3,
+                    value: 'recommendations',
+                    label: this.$tc('rhae-tweakwise-frontend.detail.label.checkoutSalesOptions.recommendations'),
+                },
+            ];
+        },
         repository() {
             return this.repositoryFactory.create('s_plugin_rhae_tweakwise_frontend');
         },

@@ -10,7 +10,7 @@ Shopware.Module.register('rhae-tweakwise-frontend', {
     name: 'Tweakwise frontend',
     title: 'rhae-tweakwise-frontend.main.menuLabel',
     description: 'rhae-tweakwise-frontend.main.menuDescription',
-    color: '#01b7cd',
+    color: '#028eca',
 
     snippets: {
         'nl-NL': nlNL,

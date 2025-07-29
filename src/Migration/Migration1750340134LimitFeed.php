@@ -19,7 +19,7 @@ ALTER TABLE `s_plugin_rhae_tweakwise_feed`
                 ADD `includeCustomFields` TINYINT(1) NOT NULL DEFAULT '1',
                 ADD `limit` VARCHAR(50) NOT NULL DEFAULT '1';
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
 
     }
 

@@ -18,7 +18,7 @@ class Migration1752756196FullPathCid extends MigrationStep
 ALTER TABLE `s_plugin_rhae_tweakwise_frontend`
                 ADD `fullPathCid` TINYINT(1) NOT NULL DEFAULT '0';
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
 
     }
 
