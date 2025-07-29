@@ -21,7 +21,8 @@
         "main": "Algemeen",
         "data": "Data",
         "checkoutSales": "Kassakoopjes",
-        "search": "Zoeken"
+        "search": "Zoeken",
+        "merchandise": "Listerpagina's"
       },
       "label": {
         "name": "Naam",
@@ -44,6 +45,7 @@
           "featured-products": "Toon uitgelichte producten",
           "recommendations": "Toon aanbevelingen gebaseerd op het laatst toegevoegde product"
         },
+        "fullPathCid": "Laat categorieën met dezelfde bovenliggende categorie zien bij categorie filters",
         "checkoutSalesFeaturedProductsId": "Uitgelichte producten ID",
         "checkoutSalesRecommendationsGroupKey": "Groep sleutel gebruikt voor cross-sell",
         "salesChannelDomains": "Domeinen",

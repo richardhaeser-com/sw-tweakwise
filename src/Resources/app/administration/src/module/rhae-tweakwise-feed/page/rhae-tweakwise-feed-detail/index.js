@@ -125,6 +125,15 @@ Component.register('rhae-tweakwise-feed-detail', {
             this.onChangeValue(value, fieldName, false);
         },
 
+        convert(value, fieldName) {
+            console.log(value);
+        },
+
+        onChangeToggleRevert(value, fieldName) {
+            console.log(value);
+            this.onChangeValue(value, fieldName, false);
+        },
+
         onClickSave() {
             this.isLoading = true;
             this.repository

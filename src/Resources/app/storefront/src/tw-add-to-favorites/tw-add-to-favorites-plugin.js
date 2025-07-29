@@ -2,18 +2,21 @@ const Plugin = window.PluginBaseClass;
 
 export default class TwAddToFavoritesPlugin extends Plugin {
     init() {
-        this.classList = {
-            isLoading: 'product-wishlist-loading',
-            addedState: 'product-wishlist-added',
-            notAddedState: 'product-wishlist-not-added',
-        };
+        var wishlistLoaded = 'WishlistStorage' in window.PluginManager.getPluginList();
+        if (wishlistLoaded) {
+            this.classList = {
+                isLoading: 'product-wishlist-loading',
+                addedState: 'product-wishlist-added',
+                notAddedState: 'product-wishlist-not-added',
+            };
 
-        this._getWishlistStorage();
+            this._getWishlistStorage();
 
-        if (!this._wishlistStorage) {
-            console.warn('No wishlist storage found');
+            if (!this._wishlistStorage) {
+                console.warn('No wishlist storage found');
+            }
+            this._registerEvents();
         }
-        this._registerEvents();
     }
 
     _registerEvents() {
@@ -29,23 +32,35 @@ export default class TwAddToFavoritesPlugin extends Plugin {
 
 
     _navigationSuccess(e) {
-        var products = e.detail.data.items;
+        if (e.detail.data.hasOwnProperty('items')) {
+            var products = e.detail.data.items;
 
-        for (var product of products) {
-            const productId = this._extractShopwareUUID(product.itemno);
-            if (!productId) {
-                console.log('Not a valid product id given', e.event.detail.itemno);
-                return;
+            for (var product of products) {
+                this._checkProductFavorite(product);
             }
-            if (!this._wishlistStorage.has(productId)) continue;
-
-            var elements = document.querySelectorAll(`[data-item-id="${product.itemno}"]`);
-            elements.forEach(element => {
-                element.classList.add('in-wishlist');
-            });
+        }
+        if (e.detail.data.hasOwnProperty('groups')) {
+            for (var group of e.detail.data.groups) {
+                for (var product of group.items) {
+                    this._checkProductFavorite(product);
+                }
+            }
         }
     }
 
+    _checkProductFavorite(product) {
+        const productId = this._extractShopwareUUID(product.itemno);
+        if (!productId) {
+            console.log('Not a valid product id given', product.itemno);
+            return;
+        }
+        if (!this._wishlistStorage.has(productId)) return;
+
+        var elements = document.querySelectorAll(`[data-item-id="${product.itemno}"]`);
+        elements.forEach(element => {
+            element.classList.add('in-wishlist');
+        });
+    }
     _extractShopwareUUID(input) {
         const match = input.match(/-([a-f0-9]{32})$/i);
         return match ? match[1] : null;

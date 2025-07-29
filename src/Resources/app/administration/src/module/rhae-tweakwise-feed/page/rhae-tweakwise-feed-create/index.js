@@ -10,6 +10,8 @@ Component.extend('rhae-tweakwise-feed-create', 'rhae-tweakwise-feed-detail', {
             this.item = this.repository.create(Shopware.Context.api);
             this.item.includeHiddenCategories = false;
 
+            this.item.limit = 10;
+
             this.isLoading = false;
         },
 

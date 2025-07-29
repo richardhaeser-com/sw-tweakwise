@@ -32,6 +32,8 @@ class FrontendEntity extends Entity
 
     protected ?string $paginationType = null;
 
+    protected bool $fullPathCid = false;
+
     /**
      * @var SalesChannelDomainCollection|null
      */
@@ -165,5 +167,15 @@ class FrontendEntity extends Entity
     public function setEventTagEnabled(bool $eventTagEnabled): void
     {
         $this->eventTagEnabled = $eventTagEnabled;
+    }
+
+    public function isFullPathCid(): bool
+    {
+        return $this->fullPathCid;
+    }
+
+    public function setFullPathCid(bool $fullPathCid): void
+    {
+        $this->fullPathCid = $fullPathCid;
     }
 }

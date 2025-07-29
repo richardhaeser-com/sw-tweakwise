@@ -25,6 +25,7 @@ use RH\Tweakwise\Events\TweakwiseProductFeedResultEvent;
 use function rtrim;
 use Shopware\Core\Checkout\Cart\AbstractRuleLoader;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceEntity;
@@ -32,6 +33,7 @@ use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityD
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
+use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Adapter\Twig\TemplateFinder;
@@ -42,6 +44,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -72,8 +76,23 @@ class FeedService
     private int $categoryRank = 1;
     private array $uniqueProductIds = [];
 
-    public function __construct(private readonly EntityRepository $categoryRepository, private readonly Environment $twig, private readonly TemplateFinder $templateFinder, private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory, private readonly TweakwiseCategoryLoader $categoryLoader, private readonly EntityRepository $feedRepository, private readonly ProductListingLoader $listingLoader, private readonly EntityRepository $productRepository, private readonly string $shopwareVersion, private readonly AbstractRuleLoader $ruleLoader, private readonly string $path, private readonly EventDispatcherInterface $eventDispatcher, private readonly LocaleSwitcher $localeSwitcher, private readonly RouterInterface $router)
-    {
+    public function __construct(
+        private readonly EntityRepository $categoryRepository,
+        private readonly Environment $twig,
+        private readonly TemplateFinder $templateFinder,
+        private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
+        private readonly TweakwiseCategoryLoader $categoryLoader,
+        private readonly EntityRepository $feedRepository,
+        private readonly ProductListingLoader $listingLoader,
+        private readonly EntityRepository $productRepository,
+        private readonly string $shopwareVersion,
+        private readonly AbstractRuleLoader $ruleLoader,
+        private readonly string $path,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly LocaleSwitcher $localeSwitcher,
+        private readonly RouterInterface $router,
+        private readonly AbstractProductPriceCalculator $calculator
+    ) {
     }
 
     public function fixFeedRecords(bool $forceFeedGeneration = false): void
@@ -253,8 +272,11 @@ class FeedService
 
             $criteria = new Criteria();
             $criteria->setOffset(0);
-            $criteria->setLimit(1);
-            $criteria->addAssociation('customFields');
+            $criteria->setLimit((int)$feed->getLimit());
+
+            if ($feed->isIncludeCustomFields()) {
+                $criteria->addAssociation('customFields');
+            }
 
             if (!$feed->isExcludeOptions()) {
                 $criteria->addAssociation('options');
@@ -299,7 +321,7 @@ class FeedService
             );
 
             /** @var ProductListingResult $result */
-            while (($result = $this->loadProducts($criteria, $salesChannelContext)) !== null) {
+            while (($result = $this->loadProducts($criteria, $salesChannelContext, $feed->isGroupedProducts())) !== null) {
                 $this->eventDispatcher->dispatch(
                     new TweakwiseProductFeedResultEvent($result, $salesChannelContext)
                 );
@@ -310,9 +332,32 @@ class FeedService
         }
     }
 
-    private function loadProducts(Criteria $criteria, SalesChannelContext $salesChannelContext)
+    private function loadProducts(Criteria $criteria, SalesChannelContext $salesChannelContext, bool $grouped = false)
     {
-        $entities = $this->listingLoader->load($criteria, $salesChannelContext);
+        if ($grouped) {
+            $criteria->addFilter(
+                new MultiFilter(MultiFilter::CONNECTION_OR, [
+                    new NotFilter(NotFilter::CONNECTION_AND, [
+                        new EqualsFilter('parentId', null),
+                    ]),
+                    new EqualsFilter('childCount', 0),
+                ])
+            );
+            $criteria->addAssociation('prices');
+            $entities = $this->productRepository->search($criteria, $salesChannelContext->getContext());
+            foreach ($entities as $entity) {
+                $entity->assign([
+                    'calculatedPrices' => new PriceCollection(),
+                    'calculatedListingPrice' => null,
+                    'calculatedPrice' => null,
+                    'cheapestPrice' => null,
+                ]);
+            }
+            $this->calculator->calculate($entities, $salesChannelContext);
+        } else {
+            $entities = $this->listingLoader->load($criteria, $salesChannelContext);
+        }
+
         $result = ProductListingResult::createFrom($entities);
         if ($result->getTotal() > 0) {
             $result->addState(...$entities->getStates());
@@ -504,6 +549,10 @@ class FeedService
                     $childFilter = new EqualsFilter('parentId', $product->getId());
                 }
 
+                if ($feed->isGroupedProducts()) {
+                    $getVariants = false;
+                }
+
                 $otherVariantsXml = '';
 
                 if ($getVariants && $childFilter) {
@@ -557,9 +606,20 @@ class FeedService
                 }
                 foreach ($product->getStreams() as $pStream) {
                     foreach ($pStream->getCategories() as $sCategory) {
-                        if (!array_key_exists($sCategory->getId(), $categories)) {
-                            $categories[$sCategory->getId()] = $sCategory;
+                        if ($sCategory->getProductAssignmentType() === 'product_stream') {
+                            if (!array_key_exists($sCategory->getId(), $categories)) {
+                                $categories[$sCategory->getId()] = $sCategory;
+                            }
                         }
+                    }
+                }
+
+                $groupCode = '';
+                if ($feed->isGroupedProducts()) {
+                    $groupCode = $product->getProductNumber();
+
+                    if ($parent instanceof ProductEntity) {
+                        $groupCode = $parent->getProductNumber();
                     }
                 }
 
@@ -571,6 +631,7 @@ class FeedService
                     'product' => $product,
                     'visibility' => $this->getVisibility($product),
                     'productId' => $productId,
+                    'groupCode' => $groupCode,
                     'prices' => $this->getLowestAndHighestPrice($product, $salesChannelContext),
                     'otherVariantsXml' => $otherVariantsXml,
                     'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),

@@ -69,6 +69,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
             'integration' => $result->getIntegration(),
             'wayOfSearch' => $result->getWayOfSearch(),
             'eventTagEnabled' => $result->isEventTagEnabled(),
+            'fullPathCid' => $result->isFullPathCid(),
             'products' => [
                 'desktop' => $result->getProductsDesktop(),
                 'tablet' => $result->getProductsTablet(),

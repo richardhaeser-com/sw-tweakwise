@@ -107,6 +107,11 @@
                     return false;
                 }
 
+                var wishlistLoaded = 'WishlistStorage' in window.PluginManager.getPluginList();
+                if (!wishlistLoaded) {
+                    return false;
+                }
+
                 var wishlistStorage = window.PluginManager.getPluginInstances('WishlistStorage');
                 if (!wishlistStorage.length) {
                     return false;
@@ -149,18 +154,30 @@
                         searchPhrases: {
                             {% block tweakwise_suggestions_searchphrase_handler %}
                                 handle: function (event) {
-                                    var suggestion = event.data;
+                                    const history = window["twn-starter-config"].history;
+                                    const data = event.data;
 
-                                    window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=" + encodeURIComponent(suggestion.match);
+                                    if(history === 'query')
+                                    {
+                                        location.href = "{{ seoUrl('storefront.tweakwise.search') }}?tn_q=" + encodeURIComponent(data.match);
+                                        return;
+                                    }
+                                    location.href = "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=" + encodeURIComponent(data.match);
                                 }
                             {% endblock %}
                         },
                         facetFilters: {
                             {% block tweakwise_suggestions_facet_filter_handler %}
                                 handle: function (event) {
-                                    var suggestion = event.data;
+                                    const history = window["twn-starter-config"].history;
+                                    const data = event.data;
 
-                                    window.location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=&tn_fk_" + suggestion.navigationLink.context.facetFilters[0].key + "=" + encodeURIComponent(suggestion.navigationLink.context.facetFilters[0].values[0]);
+                                    if(history === 'query')
+                                    {
+                                        location.href =  "{{ seoUrl('storefront.tweakwise.search') }}?tn_q=&tn_fk_" + data.navigationLink.context.facetFilters[0].key + "=" + encodeURIComponent(data.navigationLink.context.facetFilters[0].values[0]);
+                                        return;
+                                    }
+                                    location.href =  "{{ seoUrl('storefront.tweakwise.search') }}#twn|?tn_q=&tn_fk_" + data.navigationLink.context.facetFilters[0].key + "=" + encodeURIComponent(data.navigationLink.context.facetFilters[0].values[0]);
                                 }
                             {% endblock %}
                         },

@@ -15,6 +15,11 @@
         {% endif %}
         <url>{% block feed_item_url %}{{ domainUrl ~ url }}{% endblock %}</url>
 
+        {% block feed_item_groupcode %}
+            {% if groupCode %}
+                <groupcode>{{ groupCode }}</groupcode>
+            {% endif %}
+        {% endblock %}
         {% block feed_item_image %}
             {% if product.cover.media is defined and product.cover.media.url %}
                 {% set width = 0 %}
@@ -42,17 +47,26 @@
             <attributes>
                 {% block feed_item_attributes_inner %}
                     {% if product.options %}
+                        {% block feed_item_selected_option %}
                         <attribute>
                             <name>Selected option</name>
-                            <value>
-                                <![CDATA[
-                                            {% for option in product.options %}
-                                                {{ option.group.translated.name|raw }}: {{ option.translated.name|raw }}
-                                                {% if not loop.last %}|{% endif %}
-                                            {% endfor %}
-                                                    ]]>
-                            </value>
+                            <value><![CDATA[
+                                {%- for option in product.options %}
+                                    {{- option.group.translated.name|raw }}: {{ option.translated.name|raw -}}
+                                    {%- if not loop.last %}|{% endif -%}
+                                {%- endfor -%}
+                            ]]></value>
                         </attribute>
+                        {% endblock %}
+
+                        {% for option in product.options %}
+                            {% block feed_item_selected_options %}
+                                <attribute>
+                                    <name>Selected options</name>
+                                    <value><![CDATA[{{ option.group.translated.name|raw }}: {{ option.translated.name|raw }}]]></value>
+                                </attribute>
+                            {% endblock %}
+                        {% endfor %}
                     {% endif %}
 
                     {% set optionGroups = [] %}
@@ -77,6 +91,16 @@
                             {% set propertyIds = propertyIds|merge([property.id]) %}
                         {% endif %}
                     {% endfor %}
+
+                    {% block feed_item_custom_fields %}
+                        {% for field,value in product.customFields %}
+                            <attribute custom="true">
+                                <name>{{ field }}</name>
+                                <value>{{ tw_custom_field_value(value) }}</value>
+                            </attribute>
+                        {% endfor %}
+                    {% endblock %}
+
                     {% if otherVariantsXml %}
                         {{ otherVariantsXml|raw }}
                     {% endif %}

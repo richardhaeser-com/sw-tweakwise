@@ -5,10 +5,16 @@
     {% if element.translated.config.boxLayout.value == 'tweakwise' %}
 
         {% if (page.extensions.twConfiguration.integration == 'javascript' || page.extensions.twConfiguration.integration == 'pluginstudio' ) and page.extensions.twConfiguration.instanceKey|escape('js')%}
+            {% if page.extensions.twConfiguration.fullPathCid and page.category %}
+                {% set cid = tw_convert_category_path(page.category.path, page.extensions.twConfiguration.rootCategoryId, page.navigationId, context.domainId) %}
+            {% else %}
+                {% set cid = md5(page.navigationId ~ '_' ~ context.domainId) %}
+            {% endif %}
+
             <script>
                 window["twn-starter-config"].navigation = window["twn-starter-config"].navigation || {};
                 window["twn-starter-config"].navigation.output = window["twn-starter-config"].navigation.output || 'tweakwise-output-listing';
-                window["twn-starter-config"].navigation.cid = '{{ md5(page.navigationId ~ '_' ~ context.domainId) }}';
+                window["twn-starter-config"].navigation.cid = '{{ cid }}';
                 window["twn-starter-config"].parameters = "visibility=2%7C4";
             </script>
 

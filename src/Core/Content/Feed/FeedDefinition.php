@@ -38,6 +38,7 @@ class FeedDefinition extends EntityDefinition
     {
         return [
             'name' => 'Main feed',
+            'limit' => 10,
         ];
     }
     protected function defineFields(): FieldCollection
@@ -55,9 +56,12 @@ class FeedDefinition extends EntityDefinition
             (new BoolField('excludeTags', 'excludeTags'))->addFlags(new ApiAware()),
             (new BoolField('excludeOptions', 'excludeOptions'))->addFlags(new ApiAware()),
             (new BoolField('excludeProperties', 'excludeProperties'))->addFlags(new ApiAware()),
+            (new BoolField('groupedProducts', 'groupedProducts'))->addFlags(new ApiAware()),
+            (new BoolField('includeCustomFields', 'includeCustomFields'))->addFlags(new ApiAware()),
             (new DateTimeField('last_started_at', 'lastStartedAt'))->addFlags(new ApiAware()),
             (new DateTimeField('last_generated_at', 'lastGeneratedAt'))->addFlags(new ApiAware()),
             (new DateTimeField('next_generation_at', 'nextGenerationAt'))->addFlags(new ApiAware()),
+            (new StringField('limit', 'limit'))->addFlags(new Required(), new ApiAware()),
             (new ManyToManyAssociationField('salesChannelDomains', SalesChannelDomainDefinition::class, FeedSalesChannelDomainDefinition::class, 'feed_id', 'sales_channel_domain_id'))->addFlags(new ApiAware()),
         ]);
     }

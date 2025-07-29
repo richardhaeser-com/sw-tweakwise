@@ -56,6 +56,7 @@ class FrontendDefinition extends EntityDefinition
             (new StringField('paginationType', 'paginationType'))->addFlags(new ApiAware()),
             (new StringField('checkoutSalesFeaturedProductsId', 'checkoutSalesFeaturedProductsId'))->addFlags(new ApiAware()),
             (new StringField('checkoutSalesRecommendationsGroupKey', 'checkoutSalesRecommendationsGroupKey'))->addFlags(new ApiAware()),
+            (new BoolField('fullPathCid', 'fullPathCid'))->addFlags(new ApiAware()),
             (new ManyToManyAssociationField('salesChannelDomains', SalesChannelDomainDefinition::class, FrontendSalesChannelDomainDefinition::class, 'frontend_id', 'sales_channel_domain_id'))->addFlags(new ApiAware()),
         ]);
     }
