@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Service\ScheduledTask;
 
+use Psr\Log\LoggerInterface;
 use RH\Tweakwise\Service\FeedService;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
@@ -12,9 +13,10 @@ class GenerateFeedTaskHandler extends ScheduledTaskHandler
 {
     public function __construct(
         protected EntityRepository $scheduledTaskRepository,
-        protected FeedService $feedService
+        protected FeedService $feedService,
+        LoggerInterface $exceptionLogger,
     ) {
-        parent::__construct($scheduledTaskRepository);
+        parent::__construct($scheduledTaskRepository, $exceptionLogger);
     }
     public function run(): void
     {

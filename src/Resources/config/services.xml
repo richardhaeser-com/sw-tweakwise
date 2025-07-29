@@ -116,6 +116,7 @@
         <service id="RH\Tweakwise\Service\ScheduledTask\GenerateFeedTaskHandler" public="true">
             <argument type="service" id="scheduled_task.repository" />
             <argument type="service" id="RH\Tweakwise\Service\FeedService"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
             <tag name="messenger.message_handler" />
         </service>
     </services>
