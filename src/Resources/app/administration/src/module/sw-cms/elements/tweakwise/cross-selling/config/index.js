@@ -29,8 +29,6 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-cross-selling', {
         },
 
         onElementUpdate(value) {
-            this.element.config.groupKey.value = value;
-
             this.$emit('element-update', this.element);
         }
     }

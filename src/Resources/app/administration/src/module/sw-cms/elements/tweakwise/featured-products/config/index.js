@@ -29,8 +29,6 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-featured-products', {
         },
 
         onElementUpdate(value) {
-            this.element.config.groupId.value = value;
-
             this.$emit('element-update', this.element);
         }
     }
