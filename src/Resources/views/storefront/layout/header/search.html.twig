@@ -1,9 +1,9 @@
 {% sw_extends '@Storefront/storefront/layout/header/search.html.twig' %}
 
 {% block layout_header_search %}
-    {% if page.extensions.twConfiguration.integration == 'javascript' || page.extensions.twConfiguration.integration == 'pluginstudio' %}
+    {% if headerParameters.tweakwiseIntegration == 'javascript' || headerParameters.tweakwiseIntegration == 'pluginstudio' %}
         <form>
-        {% if page.extensions.twConfiguration.wayOfSearch == 'suggestions' %}
+        {% if headerParameters.tweakwiseWayOfSearch == 'suggestions' %}
             <div class="collapse" id="searchCollapse">
                 <div class="header-search">
                     <div class="header-search-form header-search-form-suggestions">

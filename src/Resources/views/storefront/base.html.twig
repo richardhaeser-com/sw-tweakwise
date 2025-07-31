@@ -7,3 +7,9 @@
         {{ parent() }}
     </div>
 {% endblock %}
+
+{% block base_esi_header %}
+    {% set headerParameters = headerParameters|merge({'tweakwiseIntegration': page.extensions.twConfiguration.integration, 'tweakwiseWayOfSearch': page.extensions.twConfiguration.wayOfSearch})  %}
+
+    {{ parent() }}
+{% endblock %}
