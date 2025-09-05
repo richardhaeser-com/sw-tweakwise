@@ -2,8 +2,10 @@ import TwAddToCartPlugin from "./tw-add-to-cart/tw-add-to-cart-plugin";
 import TwAddToFavoritesPlugin from "./tw-add-to-favorites/tw-add-to-favorites-plugin";
 
 const PluginManager = window.PluginManager;
+const PluginList = PluginManager.getPluginList();
+
 try {
-    if (!PluginManager.getPlugin('TwAddToCartPlugin')) {
+    if (!"TwAddToCartPlugin" in PluginList || !PluginManager.getPlugin('TwAddToCartPlugin')) {
         PluginManager.register('TwAddToCartPlugin', TwAddToCartPlugin)
     }
 } catch (error) {
@@ -11,7 +13,7 @@ try {
 }
 
 try {
-    if (!PluginManager.getPlugin('TwAddToFavoritesPlugin')) {
+    if (!"TwAddToFavoritesPlugin" in PluginList || !PluginManager.getPlugin('TwAddToFavoritesPlugin')) {
         PluginManager.register('TwAddToFavoritesPlugin', TwAddToFavoritesPlugin)
     }
 } catch (error) {
