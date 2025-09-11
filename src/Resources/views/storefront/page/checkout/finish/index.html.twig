@@ -6,7 +6,9 @@
     {% if page.extensions.twConfiguration.eventTagEnabled %}
         {% set tweakwiseBoughtItems = [] %}
         {% for item in page.order.nestedLineItems %}
-            {% set tweakwiseBoughtItems = tweakwiseBoughtItems|merge([tweakwise_product_id_by_product_number(item.payload.productNumber, context.domainId)]) %}
+            {% if item.payload.productNumber %}
+                {% set tweakwiseBoughtItems = tweakwiseBoughtItems|merge([tweakwise_product_id_by_product_number(item.payload.productNumber, context.domainId)]) %}
+            {% endif %}
         {% endfor %}
 
         {% set revenue = 0 %}
