@@ -190,22 +190,25 @@
                         {% block sw_tweakwise_feed_detail_content_settings_full_include_hidden_categories %}
                             <mt-switch
                                     v-model="item.includeHiddenCategories"
-                                    bordered
                                     :label="$tc('rhae-tweakwise-feed.detail.label.includeHiddenCategories')"
                             />
                         {% endblock %}
                         {% block sw_tweakwise_feed_detail_content_settings_full_grouped_products %}
                             <mt-switch
                                     v-model="item.groupedProducts"
-                                    bordered
                                     :label="$tc('rhae-tweakwise-feed.detail.label.groupedProducts')"
                             />
                         {% endblock %}
                         {% block sw_tweakwise_feed_detail_content_settings_full_include_custom_fields %}
                             <mt-switch
                                     v-model="item.includeCustomFields"
-                                    bordered
                                     :label="$tc('rhae-tweakwise-feed.detail.label.includeCustomFields')"
+                            />
+                        {% endblock %}
+                        {% block sw_tweakwise_feed_detail_content_settings_full_respect_hide_closeoutproducts_out_of_stock %}
+                            <mt-switch
+                                    v-model="item.respectHideCloseoutProductsWhenOutOfStock"
+                                    :label="$tc('rhae-tweakwise-feed.detail.label.respectHideCloseoutProductsWhenOutOfStock')"
                             />
                         {% endblock %}
                     </sw-card-section>

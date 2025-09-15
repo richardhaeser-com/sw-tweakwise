@@ -54,6 +54,8 @@ class FeedEntity extends Entity
     protected bool $groupedProducts = false;
     protected bool $includeCustomFields = true;
 
+    protected bool $respectHideCloseoutProductsWhenOutOfStock = false;
+
     protected ?string $limit = '10';
 
     public function getName(): ?string
@@ -249,6 +251,16 @@ class FeedEntity extends Entity
     public function setIncludeCustomFields(bool $includeCustomFields): void
     {
         $this->includeCustomFields = $includeCustomFields;
+    }
+
+    public function isRespectHideCloseoutProductsWhenOutOfStock(): bool
+    {
+        return $this->respectHideCloseoutProductsWhenOutOfStock;
+    }
+
+    public function setRespectHideCloseoutProductsWhenOutOfStock(bool $respectHideCloseoutProductsWhenOutOfStock): void
+    {
+        $this->respectHideCloseoutProductsWhenOutOfStock = $respectHideCloseoutProductsWhenOutOfStock;
     }
 
 }

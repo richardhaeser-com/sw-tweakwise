@@ -2,6 +2,8 @@
 
 namespace RH\Tweakwise\Service;
 
+use Shopware\Core\Content\Product\SalesChannel\AbstractProductCloseoutFilterFactory;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use function array_key_exists;
 use function array_unique;
 use Cron\CronExpression;
@@ -91,7 +93,9 @@ class FeedService
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly LocaleSwitcher $localeSwitcher,
         private readonly RouterInterface $router,
-        private readonly AbstractProductPriceCalculator $calculator
+        private readonly AbstractProductPriceCalculator $calculator,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory
     ) {
     }
 
@@ -321,7 +325,7 @@ class FeedService
             );
 
             /** @var ProductListingResult $result */
-            while (($result = $this->loadProducts($criteria, $salesChannelContext, $feed->isGroupedProducts())) !== null) {
+            while (($result = $this->loadProducts($criteria, $salesChannelContext, $feed->isGroupedProducts(), $feed->isRespectHideCloseoutProductsWhenOutOfStock())) !== null) {
                 $this->eventDispatcher->dispatch(
                     new TweakwiseProductFeedResultEvent($result, $salesChannelContext)
                 );
@@ -332,8 +336,17 @@ class FeedService
         }
     }
 
-    private function loadProducts(Criteria $criteria, SalesChannelContext $salesChannelContext, bool $grouped = false)
+    private function loadProducts(Criteria $criteria, SalesChannelContext $salesChannelContext, bool $grouped = false, bool $respectHideCloseoutProductsOutOfStock = false)
     {
+        if ($respectHideCloseoutProductsOutOfStock && $this->systemConfigService->getBool(
+            'core.listing.hideCloseoutProductsWhenOutOfStock',
+            $salesChannelContext->getSalesChannelId()
+        )) {
+            $criteria->addFilter(
+                $this->productCloseoutFilterFactory->create($salesChannelContext)
+            );
+        }
+
         if ($grouped) {
             $criteria->addFilter(
                 new MultiFilter(MultiFilter::CONNECTION_OR, [
