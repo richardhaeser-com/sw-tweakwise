@@ -144,11 +144,11 @@
                     >
                         <div>
                             {% block sw_tweakwise_feed_detail_content_settings_full_include_hidden_categories %}
-                            <sw-checkbox-field
-                                    v-model:value="item.includeHiddenCategories"
-                                    :label="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategories')"
-                                    @update:value="onChangeToggle($event, 'includeHiddenCategories')"
-                            />
+                                <sw-checkbox-field
+                                        v-model:value="item.includeHiddenCategories"
+                                        :label="$t('rhae-tweakwise-feed.detail.label.includeHiddenCategories')"
+                                        @update:value="onChangeToggle($event, 'includeHiddenCategories')"
+                                />
                             {% endblock %}
 
                             {% block sw_tweakwise_feed_detail_content_settings_full_grouped_products %}
@@ -162,11 +162,18 @@
 
                         <div>
                             {% block sw_tweakwise_feed_detail_content_settings_full_include_custom_fields %}
-                            <sw-checkbox-field
-                                    v-model:value="item.includeCustomFields"
-                                    :label="$t('rhae-tweakwise-feed.detail.label.includeCustomFields')"
-                                    @update:value="onChangeToggle($event, 'includeCustomFields')"
-                            />
+                                <sw-checkbox-field
+                                        v-model:value="item.includeCustomFields"
+                                        :label="$t('rhae-tweakwise-feed.detail.label.includeCustomFields')"
+                                        @update:value="onChangeToggle($event, 'includeCustomFields')"
+                                />
+                            {% endblock %}
+                            {% block sw_tweakwise_feed_detail_content_settings_full_respect_hide_closeoutproducts_out_of_stock %}
+                                <sw-checkbox-field
+                                        v-model:value="item.respectHideCloseoutProductsWhenOutOfStock"
+                                        :label="$t('rhae-tweakwise-feed.detail.label.respectHideCloseoutProductsWhenOutOfStock')"
+                                        @update:value="onChangeToggle($event, 'respectHideCloseoutProductsWhenOutOfStock')"
+                                />
                             {% endblock %}
                         </div>
                     </sw-container>

@@ -37,6 +37,7 @@
                 "importTaskUrl": "API URL van Import taak in Tweakwise",
                 "intervalDescription": "Let op dat de interval moet worden ingesteld in overleg met Tweakwise. Het heeft bijvoorbeeld geen nut om de feed iedere 30 minuten te updaten terwijl Tweakwise de feed maar een keer per dag ophaalt.",
                 "includeCustomFields": "Exporteer alle vrije velden van een product",
+                "respectHideCloseoutProductsWhenOutOfStock": "Respecteer Shopware instelling om uitverkoopproducten te verbergen als deze zijn uitverkocht",
                 "nextGenerationAt": "Wordt opnieuw gegenereerd op",
                 "limit": "Batch grootte",
                 "status": "Status",

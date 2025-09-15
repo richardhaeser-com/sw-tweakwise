@@ -31,6 +31,7 @@ use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\AbstractProductCloseoutFilterFactory;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
@@ -54,6 +55,7 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use function sprintf;
 use function str_replace;
 use Symfony\Component\Routing\RouterInterface;
@@ -91,6 +93,8 @@ class FeedService
     private LocaleSwitcher $localeSwitcher;
     private RouterInterface $router;
     private AbstractProductPriceCalculator $calculator;
+    private SystemConfigService $systemConfigService;
+    private AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -107,7 +111,9 @@ class FeedService
         EventDispatcherInterface $eventDispatcher,
         LocaleSwitcher $localeSwitcher,
         RouterInterface $router,
-        AbstractProductPriceCalculator $calculator
+        AbstractProductPriceCalculator $calculator,
+        SystemConfigService $systemConfigService,
+        AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -124,6 +130,8 @@ class FeedService
         $this->localeSwitcher = $localeSwitcher;
         $this->router = $router;
         $this->calculator = $calculator;
+        $this->systemConfigService = $systemConfigService;
+        $this->productCloseoutFilterFactory = $productCloseoutFilterFactory;
     }
 
     public function fixFeedRecords(bool $forceFeedGeneration = false): void
@@ -352,7 +360,7 @@ class FeedService
             );
 
             /** @var ProductListingResult $result */
-            while (($result = $this->loadProducts($criteria, $salesChannelContext, $feed->isGroupedProducts())) !== null) {
+            while (($result = $this->loadProducts($criteria, $salesChannelContext, $feed->isGroupedProducts(), $feed->isRespectHideCloseoutProductsWhenOutOfStock())) !== null) {
                 $this->eventDispatcher->dispatch(
                     new TweakwiseProductFeedResultEvent($result, $salesChannelContext)
                 );
@@ -363,8 +371,17 @@ class FeedService
         }
     }
 
-    private function loadProducts(Criteria $criteria, SalesChannelContext $salesChannelContext, bool $grouped = false)
+    private function loadProducts(Criteria $criteria, SalesChannelContext $salesChannelContext, bool $grouped = false, bool $respectHideCloseoutProductsOutOfStock = false)
     {
+        if ($respectHideCloseoutProductsOutOfStock && $this->systemConfigService->getBool(
+            'core.listing.hideCloseoutProductsWhenOutOfStock',
+            $salesChannelContext->getSalesChannelId()
+        )) {
+            $criteria->addFilter(
+                $this->productCloseoutFilterFactory->create($salesChannelContext)
+            );
+        }
+
         if ($grouped) {
             $criteria->addFilter(
                 new MultiFilter(MultiFilter::CONNECTION_OR, [

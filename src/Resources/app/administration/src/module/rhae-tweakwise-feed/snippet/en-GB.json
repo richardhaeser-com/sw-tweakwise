@@ -46,6 +46,7 @@
                 "excludeProperties": "Options that are not defining the variant should not be added to the feed. Remote the relation with properties",
                 "groupedProducts": "Export all variants to Tweakwise, ignoring the Shopware listing settings",
                 "includeCustomFields": "Include all custom fields in the feed",
+                "respectHideCloseoutProductsWhenOutOfStock": "Respect Shopware setting to hide products after clearance",
                 "limit": "Batch size",
                 "yesno": {
                     "0": "No",
