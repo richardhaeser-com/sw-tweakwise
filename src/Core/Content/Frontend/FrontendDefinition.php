@@ -46,6 +46,7 @@ class FrontendDefinition extends EntityDefinition
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey(), new ApiAware()),
             (new StringField('name', 'name'))->addFlags(new Required(), new ApiAware()),
             (new StringField('token', 'token'))->addFlags(new ApiAware()),
+            (new StringField('accessToken', 'accessToken'))->addFlags(new ApiAware()),
             (new StringField('integration', 'integration'))->addFlags(new ApiAware()),
             (new StringField('wayOfSearch', 'wayOfSearch'))->addFlags(new ApiAware()),
             (new StringField('checkoutSales', 'checkoutSales'))->addFlags(new ApiAware()),

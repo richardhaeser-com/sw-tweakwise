@@ -4,6 +4,20 @@
       "tweakwiseType": "Tweakwise recommendations",
       "tweakwiseGroupKey": "Tweakwise Group key"
     },
+    "detail": {
+      "tab": {
+        "title": "Tweakwise",
+        "header": "Tweakwise",
+        "available": "Product available in Tweakwise",
+        "availableYes": "Yes",
+        "availableNo": "No",
+        "productId": "Tweakwise article number",
+        "lastModified": "Last modified",
+        "sync": "Sync product",
+        "variants": "This product has variants. Please check the variant to get Tweakwise data from that specific variant.",
+        "noAccessToken": "To get the data from Tweakwise, we need an access token. For this instance, no access token is configured. Please create an access token in Tweakwise and configure it in the Tweakwise Frontent module"
+      }
+    },
     "listing": {
       "warningTitle": "Warning!",
       "warning": "These settings will have no effect if you have enabled the option to export all variants to Tweakwise. In that case, Tweakwise will control which variants are displayed in the frontend."

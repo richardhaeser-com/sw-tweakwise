@@ -13,6 +13,7 @@ class FrontendEntity extends Entity
     protected ?string $name = null;
 
     protected ?string $token = null;
+    protected ?string $accessToken = null;
 
     protected ?string $integration = 'pluginstudio';
 
@@ -177,5 +178,15 @@ class FrontendEntity extends Entity
     public function setFullPathCid(bool $fullPathCid): void
     {
         $this->fullPathCid = $fullPathCid;
+    }
+
+    public function getAccessToken(): ?string
+    {
+        return $this->accessToken;
+    }
+
+    public function setAccessToken(?string $accessToken): void
+    {
+        $this->accessToken = $accessToken;
     }
 }

@@ -55,6 +55,9 @@
             <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
         </service>
         <service id="RH\Tweakwise\Controller\AdminController" public="true">
+            <argument type="service" id="s_plugin_rhae_tweakwise_frontend.repository"/>
+            <argument type="service" id="product.repository"/>
+
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>

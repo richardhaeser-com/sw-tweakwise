@@ -40,6 +40,10 @@
                         :error="tokenError"
                         @blur="checkPossibilities"
                     ></sw-text-field>
+                    <sw-text-field
+                        :label="$t('rhae-tweakwise-frontend.detail.label.accessToken')"
+                        v-model:value="item.accessToken"
+                    ></sw-text-field>
 
                     <mt-select
                             v-if="validToken"

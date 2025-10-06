@@ -27,6 +27,7 @@
       "label": {
         "name": "Naam",
         "token": "Instance key",
+        "accessToken": "Access token",
         "integration": "Manier van integreren",
         "integrationOptions": {
           "no-integration": "Geen integratie",
