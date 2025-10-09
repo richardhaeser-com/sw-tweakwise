@@ -577,6 +577,14 @@ class FeedService
                     $criteria->addAssociation('properties');
                     $criteria->addAssociation('properties.group');
 
+                    if ($feed->isRespectHideCloseoutProductsWhenOutOfStock() && $this->systemConfigService->getBool(
+                            'core.listing.hideCloseoutProductsWhenOutOfStock',
+                            $salesChannelContext->getSalesChannelId()
+                        )) {
+                        $criteria->addFilter(
+                            $this->productCloseoutFilterFactory->create($salesChannelContext)
+                        );
+                    }
                     $criteria->setLimit(1);
                     $criteria->setOffset(0);
                     while ($childProducts = $this->productRepository->search($criteria, $salesChannelContext->getContext())->getElements()) {
