@@ -5,10 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## 5.1.0
 
 ### Added
 - An option is introduced in the feed settings to respect the Shopware setting to hide products after clearance. When enabled, products and variants will be excluded from the feed after clearance.
+
+### Fixed
+- Remove products that are sold out from feed in non-grouped mode if sold out products should be excluded.
 
 ## [5.0.4] - 11-09-2025
 
