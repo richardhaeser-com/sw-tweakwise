@@ -615,9 +615,9 @@ class FeedService
                     $criteria->addAssociation('properties.group');
 
                     if ($feed->isRespectHideCloseoutProductsWhenOutOfStock() && $this->systemConfigService->getBool(
-                            'core.listing.hideCloseoutProductsWhenOutOfStock',
-                            $salesChannelContext->getSalesChannelId()
-                        )) {
+                        'core.listing.hideCloseoutProductsWhenOutOfStock',
+                        $salesChannelContext->getSalesChannelId()
+                    )) {
                         $criteria->addFilter(
                             $this->productCloseoutFilterFactory->create($salesChannelContext)
                         );
