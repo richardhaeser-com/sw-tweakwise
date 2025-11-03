@@ -49,9 +49,6 @@
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
-            <call method="setTwig">
-                <argument type="service" id="twig"/>
-            </call>
             <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
         </service>
         <service id="RH\Tweakwise\Controller\AdminController" public="true">
