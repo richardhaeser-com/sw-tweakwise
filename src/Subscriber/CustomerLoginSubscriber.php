@@ -23,7 +23,17 @@ class CustomerLoginSubscriber implements EventSubscriberInterface
 
     public function onCustomerLogin(CustomerLoginEvent $event): void
     {
-        $session = $this->requestStack->getCurrentRequest()->getSession();
+        $request = $this->requestStack->getCurrentRequest();
+
+        if (!$request) {
+            return;
+        }
+
+        $route = $request->attributes->get('_route');
+        if ($route === 'finalize-transaction') {
+            return;
+        }
+        $session = $request->getSession();
         $profileKey = $session->get('tweakwise_profile_key');
 
         if (!$profileKey) {

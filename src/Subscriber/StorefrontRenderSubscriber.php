@@ -53,10 +53,16 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
             $this->parseCategoryData($categoryData, $domainId, $treeItem);
         }
 
-        $session = $this->requestStack->getCurrentRequest()->getSession();
+        $request = $this->requestStack->getCurrentRequest();
+        if (!$request) {
+            return;
+        }
+
+        $session = $request->getSession();
+        $route = $request->attributes->get('_route');
         $profileKey = $session->get('tweakwise_profile_key');
 
-        if (!$profileKey) {
+        if (!$profileKey && $route !== 'finalize-transaction') {
             $profileKey = Uuid::randomHex();
             $session->set('tweakwise_profile_key', $profileKey);
         }
