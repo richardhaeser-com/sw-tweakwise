@@ -30,7 +30,7 @@ class CustomerLoginSubscriber implements EventSubscriberInterface
         }
 
         $route = $request->attributes->get('_route');
-        if ($route === 'finalize-transaction') {
+        if ($route === 'payment.finalize.transaction') {
             return;
         }
         $session = $request->getSession();
