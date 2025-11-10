@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - The profile key will not be stored in the session anymore when visiting the finalize-transaction route. This is done to prevent issues when returning from some payment providers like Buckaroo.
+- Removed call to removed setTwig method in TweakwiseSearchController (thanks to @quisse)
 
 ## [5.1.0] - 09-10-2025
 
