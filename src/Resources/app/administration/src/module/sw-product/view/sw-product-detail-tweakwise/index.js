@@ -7,6 +7,9 @@ Component.register('sw-product-detail-tweakwise', {
    template,
    namespaced: true,
    inject: ['repositoryFactory', 'feature', 'acl'],
+   mixins: [
+      Mixin.getByName('notification')
+   ],
 
    data() {
       return {
@@ -14,7 +17,8 @@ Component.register('sw-product-detail-tweakwise', {
          availability: [],
          tweakwiseData: [],
          productId: [],
-         product: null
+         product: null,
+         backendSyncOptions: []
       };
    },
 
@@ -65,8 +69,25 @@ Component.register('sw-product-detail-tweakwise', {
 
       },
 
-      onSync(frontendId, productId) {
-         alert(frontendId + ': ' + productId);
+      async onSync(frontendId, productId) {
+         const token = Shopware.Service('loginService').getToken();
+         const headers = { headers: { Authorization: `Bearer ${token}` } };
+         const httpClient = Shopware.Application.getContainer('init').httpClient;
+         const url = `/_action/rhae-tweakwise/sync-data/${frontendId}/${this.$route.params.id}`;
+         const response = await httpClient.get(url, headers);
+         if (response.status === 200 && response.data.updated) {
+            this.createNotificationSuccess({
+               title: this.$tc('sw-product.detail.tab.syncSuccessTitle'),
+               message: this.$tc('sw-product.detail.tab.syncSuccessMessage')
+            });
+            await this.getData();
+         } else {
+            this.createNotificationWarning({
+               title: this.$tc('sw-product.detail.tab.syncFailedTitle'),
+               message: this.$tc('sw-product.detail.tab.syncFailedMessage')
+            });
+            console.warn(response);
+         }
       }
    }
 });

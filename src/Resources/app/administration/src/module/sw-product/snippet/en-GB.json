@@ -15,7 +15,11 @@
         "lastModified": "Last modified",
         "sync": "Sync product",
         "variants": "This product has variants. Please check the variant to get Tweakwise data from that specific variant.",
-        "noAccessToken": "To get the data from Tweakwise, we need an access token. For this instance, no access token is configured. Please create an access token in Tweakwise and configure it in the Tweakwise Frontent module"
+        "noAccessToken": "To get the data from Tweakwise, we need an access token. For this instance, no access token is configured. Please create an access token in Tweakwise and configure it in the Tweakwise Frontent module",
+        "syncSuccessTitle": "Sync successful",
+        "syncSuccessMessage": "The product is synced successfully to Tweakwise. Please make sure to publish changes in Tweakwise to make them available in the frontend.",
+        "syncFailedTitle": "Sync failed",
+        "syncFailedMessage": "The product could not be synced to Tweakwise. Please contact support if this error keeps occurring."
       }
     },
     "listing": {

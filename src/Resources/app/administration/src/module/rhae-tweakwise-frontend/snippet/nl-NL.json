@@ -22,7 +22,14 @@
         "data": "Data",
         "checkoutSales": "Kassakoopjes",
         "search": "Zoeken",
-        "merchandise": "Listerpagina's"
+        "merchandise": "Listerpagina's",
+        "backendSync": "Backend synchronisatie",
+        "backendSyncMain": "Algemene eigenschappen",
+        "backendSyncProperties": "Overige eigenschappen",
+        "backendSyncCustomFields": "Vrije tekstvelden"
+      },
+      "info": {
+        "backendSync": "Wanneer deze optie is geactiveerd, krijg je de mogelijkheid om een product direct te synchroniseren met Tweakwise op de product pagina in de Shopware admin"
       },
       "label": {
         "name": "Naam",
@@ -46,10 +53,19 @@
           "featured-products": "Toon uitgelichte producten",
           "recommendations": "Toon aanbevelingen gebaseerd op het laatst toegevoegde product"
         },
+        "backendSyncOptions": {
+          "main": {
+            "name": "Naam",
+            "unitPrice": "Prijs per stuk",
+            "availableStock": "Beschikbare voorraad",
+            "manufacturer": "Fabrikant"
+          }
+        },
         "fullPathCid": "Laat categorieën met dezelfde bovenliggende categorie zien bij categorie filters",
         "checkoutSalesFeaturedProductsId": "Uitgelichte producten ID",
         "checkoutSalesRecommendationsGroupKey": "Groep sleutel gebruikt voor cross-sell",
         "salesChannelDomains": "Domeinen",
+        "backendSyncEnabled": "Activeer backend synchronisatie",
         "productsDesktop": "Aantal producten per rij op desktop",
         "productsTablet": "Aantal producten per rij op tablet",
         "productsMobile": "Aantal producten per rij op mobiel",

@@ -23,6 +23,8 @@ class FrontendEntity extends Entity
 
     protected bool $eventTagEnabled = true;
 
+    protected bool $backendSyncEnabled = true;
+
     protected ?string $checkoutSalesFeaturedProductsId = null;
 
     protected ?string $checkoutSalesRecommendationsGroupKey = null;
@@ -39,6 +41,28 @@ class FrontendEntity extends Entity
      * @var SalesChannelDomainCollection|null
      */
     protected $salesChannelDomains;
+
+    protected $backendSyncProperties = [];
+
+    public function isBackendSyncEnabled(): bool
+    {
+        return $this->backendSyncEnabled;
+    }
+
+    public function setBackendSyncEnabled(bool $backendSyncEnabled): void
+    {
+        $this->backendSyncEnabled = $backendSyncEnabled;
+    }
+
+    public function getBackendSyncProperties(): array
+    {
+        return $this->backendSyncProperties;
+    }
+
+    public function setBackendSyncProperties(array $backendSyncProperties): void
+    {
+        $this->backendSyncProperties = $backendSyncProperties;
+    }
 
     public function getName(): ?string
     {

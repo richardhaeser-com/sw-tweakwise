@@ -11,7 +11,7 @@
 
 
     <template v-for="frontend in frontends">
-        <sw-card :title="frontend.name" v-if="frontend.accessToken">
+        <sw-card :title="frontend.name" v-if="frontend.accessToken && frontend.backendSyncEnabled">
             <sw-container
                     columns="1fr 1fr"
                     gap="10px 30px"
