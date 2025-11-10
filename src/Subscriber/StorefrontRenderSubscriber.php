@@ -75,7 +75,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         $route = $request->attributes->get('_route');
         $profileKey = $session->get('tweakwise_profile_key');
 
-        if (!$profileKey && $route !== 'finalize-transaction') {
+        if (!$profileKey && $route !== 'payment.finalize.transaction') {
             $profileKey = Uuid::randomHex();
             $session->set('tweakwise_profile_key', $profileKey);
         }
