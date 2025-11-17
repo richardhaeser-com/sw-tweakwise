@@ -12,6 +12,16 @@
             padding: 0;
         }
     }
+
+    .backendSyncOptions {
+        h4 {
+            margin: var(--scale-size-20) 0 var(--scale-size-10) 0;
+        }
+
+        .mt-field--checkbox__container {
+            margin-bottom: var(--scale-size-8);
+        }
+    }
 }
 
 rhae-tweakwise-frontend__card-toolbar {

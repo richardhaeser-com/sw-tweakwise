@@ -10,6 +10,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\JsonField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
@@ -46,13 +47,16 @@ class FrontendDefinition extends EntityDefinition
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey(), new ApiAware()),
             (new StringField('name', 'name'))->addFlags(new Required(), new ApiAware()),
             (new StringField('token', 'token'))->addFlags(new ApiAware()),
+            (new StringField('accessToken', 'accessToken'))->addFlags(new ApiAware()),
             (new StringField('integration', 'integration'))->addFlags(new ApiAware()),
             (new StringField('wayOfSearch', 'wayOfSearch'))->addFlags(new ApiAware()),
             (new StringField('checkoutSales', 'checkoutSales'))->addFlags(new ApiAware()),
             (new BoolField('eventTagEnabled', 'eventTagEnabled'))->addFlags(new ApiAware()),
+            (new BoolField('backendSyncEnabled', 'backendSyncEnabled'))->addFlags(new ApiAware()),
             (new IntField('productsDesktop', 'productsDesktop'))->addFlags(new ApiAware()),
             (new IntField('productsTablet', 'productsTablet'))->addFlags(new ApiAware()),
             (new IntField('productsMobile', 'productsMobile'))->addFlags(new ApiAware()),
+            (new JsonField('backendSyncProperties', 'backendSyncProperties'))->addFlags(new ApiAware()),
             (new StringField('paginationType', 'paginationType'))->addFlags(new ApiAware()),
             (new StringField('checkoutSalesFeaturedProductsId', 'checkoutSalesFeaturedProductsId'))->addFlags(new ApiAware()),
             (new StringField('checkoutSalesRecommendationsGroupKey', 'checkoutSalesRecommendationsGroupKey'))->addFlags(new ApiAware()),

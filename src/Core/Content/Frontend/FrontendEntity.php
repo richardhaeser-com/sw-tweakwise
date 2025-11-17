@@ -22,9 +22,11 @@ class FrontendEntity extends Entity
 
     protected bool $eventTagEnabled = true;
 
-    protected ?string $checkoutSalesFeaturedProductsId;
+    protected bool $backendSyncEnabled = true;
 
-    protected ?string $checkoutSalesRecommendationsGroupKey;
+    protected ?string $checkoutSalesFeaturedProductsId = null;
+
+    protected ?string $checkoutSalesRecommendationsGroupKey = null;
 
     protected int $productsDesktop = 3;
     protected int $productsTablet = 2;
@@ -38,6 +40,28 @@ class FrontendEntity extends Entity
      * @var SalesChannelDomainCollection|null
      */
     protected $salesChannelDomains;
+
+    protected $backendSyncProperties = [];
+
+    public function isBackendSyncEnabled(): bool
+    {
+        return $this->backendSyncEnabled;
+    }
+
+    public function setBackendSyncEnabled(bool $backendSyncEnabled): void
+    {
+        $this->backendSyncEnabled = $backendSyncEnabled;
+    }
+
+    public function getBackendSyncProperties(): array
+    {
+        return $this->backendSyncProperties;
+    }
+
+    public function setBackendSyncProperties(array $backendSyncProperties): void
+    {
+        $this->backendSyncProperties = $backendSyncProperties;
+    }
 
     public function getName(): ?string
     {
@@ -177,5 +201,15 @@ class FrontendEntity extends Entity
     public function setFullPathCid(bool $fullPathCid): void
     {
         $this->fullPathCid = $fullPathCid;
+    }
+
+    public function getAccessToken(): ?string
+    {
+        return $this->accessToken;
+    }
+
+    public function setAccessToken(?string $accessToken): void
+    {
+        $this->accessToken = $accessToken;
     }
 }
