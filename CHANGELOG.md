@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed wrong name of finalize-transaction route
+- Fixed issue with empty path in product listing causing an exception in the frontend
 
 ## [5.2.0] - 10-11-2025
 
