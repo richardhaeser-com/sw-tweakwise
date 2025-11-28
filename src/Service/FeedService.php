@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Service;
 
+use Shopware\Core\System\Locale\LanguageLocaleCodeProvider;
 use function array_key_exists;
 use function array_unique;
 use Cron\CronExpression;
@@ -95,6 +96,7 @@ class FeedService
     private AbstractProductPriceCalculator $calculator;
     private SystemConfigService $systemConfigService;
     private AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory;
+    private LanguageLocaleCodeProvider $languageLocaleProvider;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -113,7 +115,8 @@ class FeedService
         RouterInterface $router,
         AbstractProductPriceCalculator $calculator,
         SystemConfigService $systemConfigService,
-        AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory
+        AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory,
+        LanguageLocaleCodeProvider $languageLocaleProvider
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -132,6 +135,7 @@ class FeedService
         $this->calculator = $calculator;
         $this->systemConfigService = $systemConfigService;
         $this->productCloseoutFilterFactory = $productCloseoutFilterFactory;
+        $this->languageLocaleProvider = $languageLocaleProvider;
     }
 
     public function fixFeedRecords(bool $forceFeedGeneration = false): void
@@ -301,7 +305,7 @@ class FeedService
         /** @var SalesChannelDomainEntity $salesChannelDomain */
         foreach ($feed->getSalesChannelDomains() as $salesChannelDomain) {
 
-            $this->localeSwitcher->setLocale($salesChannelDomain->getLanguage()->getTranslationCode()->getCode());
+            $this->localeSwitcher->setLocale($this->languageLocaleProvider->getLocaleForLanguageId($salesChannelDomain->getLanguage()->getId()));
             /** @var SalesChannelEntity $salesChannel */
             $salesChannel = $salesChannelDomain->getSalesChannel();
             $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $salesChannelDomain->getLanguageId()]);
