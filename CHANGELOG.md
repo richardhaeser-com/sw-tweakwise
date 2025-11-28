@@ -6,7 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [4.6.2] - 28-11-2025
+
+### Changed
+- Use the LanguageLocaleCodeProvider to determine the language code for the feed. This also might fix issues with inherited languages
 
 ### Fixed
 - Fixed issue with empty path in product listing causing an exception in the frontend
