@@ -477,9 +477,10 @@ class FeedService
         }
 
         foreach ($feed->getSalesChannelDomains() as $salesChannelDomain) {
+            $localeCode = $this->languageLocaleProvider->getLocaleForLanguageId($salesChannelDomain->getLanguageId());
             $salesChannelDomainCategory = new CategoryEntity();
-            $salesChannelDomainCategory->setName($salesChannelDomain->getLanguage()->getTranslationCode()->getCode());
-            $salesChannelDomainCategory->setTranslated(['name' => $salesChannelDomain->getLanguage()->getTranslationCode()->getCode()]);
+            $salesChannelDomainCategory->setName($localeCode);
+            $salesChannelDomainCategory->setTranslated(['name' => $localeCode]);
 
             $content .= $this->twig->render($this->resolveView('category.xml.twig', $feed), [
                 'elementId' => md5($salesChannelDomain->getSalesChannel()->getNavigationCategoryId() . '_' . $salesChannelDomain->getId()),
@@ -696,7 +697,7 @@ class FeedService
                     'groupCode' => $groupCode,
                     'prices' => $this->getLowestAndHighestPrice($product, $salesChannelContext),
                     'otherVariantsXml' => $otherVariantsXml,
-                    'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
+                    'lang' => $this->languageLocaleProvider->getLocaleForLanguageId($domain->getLanguage()->getId()),
                     'salesChannel' => $domain->getSalesChannel(),
                     'feed' => $feed,
                     'url' => ltrim($this->getUrlOfEntity($product), '/')
