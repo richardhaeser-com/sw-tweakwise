@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.6.3] - 01-12-2025
+
+### Changed
+- Use the LanguageLocaleCodeProvider to determine the language code for the feed on other places as well.
+
 ## [4.6.2] - 28-11-2025
 
 ### Changed
