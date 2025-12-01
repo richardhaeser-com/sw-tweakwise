@@ -29,7 +29,8 @@
         "backendSyncCustomFields": "Custom fields"
       },
       "info": {
-        "backendSync": "If enabled, you get the possibility to sync a product with Tweakwise from the product page in the admin of Shopware. This way you can sync a specific product right away."
+        "backendSync": "If enabled, you get the possibility to sync a product with Tweakwise from the product page in the admin of Shopware. This way you can sync a specific product right away.",
+        "backendSyncBeta": "<strong>Experimental feature:</strong> Please reach out to us in case you encounter unexpected behaviour."
       },
       "label": {
         "name": "Name",
@@ -58,7 +59,9 @@
             "name": "Name",
             "unitPrice": "Unit price",
             "availableStock": "Available stock",
-            "manufacturer": "Manufacturer"
+            "manufacturer": "Manufacturer",
+            "url": "Url",
+            "images": "Images"
           }
         },
         "fullPathCid": "Show sibling categories in category filtering",

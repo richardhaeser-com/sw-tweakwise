@@ -126,6 +126,14 @@
                         :isLoading="isLoading"
                         :title="$tc('rhae-tweakwise-frontend.detail.section.backendSync')"
                 >
+                    <sw-alert
+                            class="sw-error-summary"
+                            variant="warning"
+                            :show-icon="true"
+                    >
+                        <div v-html="$t('rhae-tweakwise-frontend.detail.info.backendSyncBeta')"></div>
+                    </sw-alert>
+
                     <p>{{ $t('rhae-tweakwise-frontend.detail.info.backendSync') }}</p>
                     <sw-card-section>
                         {% block sw_tweakwise_feed_detail_backendsync_enable_switch %}

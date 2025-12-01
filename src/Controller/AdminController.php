@@ -22,6 +22,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
 
 #[Route(defaults: ['_routeScope' => ['administration']])]
 class AdminController extends AbstractController
@@ -33,7 +34,8 @@ class AdminController extends AbstractController
         private EntityRepository $customFieldSetRepository,
         private EntityRepository $customFieldRepository,
         private readonly AbstractProductPriceCalculator $calculator,
-        private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory
+        private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
+        private RouterInterface $router
     ) {
     }
     #[Route('/api/_action/rhae-tweakwise/check-possibilities/{token}', name: 'rhae.tweakwise.check_possibilities', methods: ['GET'])]
@@ -58,7 +60,7 @@ class AdminController extends AbstractController
     #[Route('/api/_action/rhae-tweakwise/sync-options', name: 'rhae.tweakwise.sync_options', methods: ['GET'])]
     public function syncOptions(Context $context): JsonResponse
     {
-        $main = ['name' => 'name', 'unitPrice' => 'unitPrice', 'availableStock' => 'availableStock'];
+        $main = ['name' => 'name', 'unitPrice' => 'unitPrice', 'availableStock' => 'availableStock', 'manufacturer' => 'manufacturer', 'url' => 'url', 'images' => 'images'];
         $properties = [];
         $propertyGroups = $this->propertyGroupRepository->search(new Criteria(), $context);
         foreach ($propertyGroups as $propertyGroup) {
@@ -107,7 +109,7 @@ class AdminController extends AbstractController
         }
 
 
-        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken());
+        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
         $productData = $backendApi->getProductData($product, $frontend->getSalesChannelDomains()->first()->getId());
 
         if (array_key_exists('error', $productData) && $productData['error']) {
@@ -123,6 +125,9 @@ class AdminController extends AbstractController
         $criteria->addAssociation('options');
         $criteria->addAssociation('properties');
         $criteria->addAssociation('properties.group');
+        $criteria->addAssociation('seoUrls');
+        $criteria->addAssociation('cover');
+        $criteria->addAssociation('cover.media');
         $product = $this->productRepository->search($criteria, $context)->first();
         if (!$product instanceof ProductEntity) {
             return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productId, 'error' => true, 'message' => 'Product not found.']);
@@ -149,7 +154,7 @@ class AdminController extends AbstractController
             $criteria->addAssociation('manufacturer');
             $parent = $this->productRepository->search($criteria, $context)->first();
         }
-        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken());
+        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
 
         $salesChannelDomain = $frontend->getSalesChannelDomains()->first();
         $salesChannel = $salesChannelDomain->getSalesChannel();

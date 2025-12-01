@@ -9,12 +9,13 @@ use RH\Tweakwise\Service\ProductDataService;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetEntity;
+use Symfony\Component\Routing\RouterInterface;
 
 class BackendApi
 {
     private readonly Client $client;
     public $apiUrl = 'https://navigator-api.tweakwise.com';
-    public function __construct(private readonly string $instanceKey, private readonly string $accessToken)
+    public function __construct(private readonly string $instanceKey, private readonly string $accessToken, private RouterInterface $router)
     {
         $this->client = new Client();
     }
@@ -44,9 +45,14 @@ class BackendApi
 
     public function syncProductData(ProductEntity $product, FrontendEntity $frontend, ?ProductEntity $parent, array $customFieldNames): array
     {
-        $domainId = $frontend->getSalesChannelDomains()->first()->getId();
+        $domain = $frontend->getSalesChannelDomains()->first();
+        $domainId = $domain->getId();
 
         $productId = ProductDataService::getTweakwiseProductId($product, $domainId);
+        try {
+            $productData = $this->getProductData($product, $domainId);
+        } catch (\Exception $e) {}
+
         try {
             $data = [];
             $backendSyncProperties = $frontend->getBackendSyncProperties();
@@ -87,6 +93,16 @@ class BackendApi
                         $property = 'Brand';
                         $value = $product?->getManufacturer()?->getTranslation('name') ?: $parent?->getManufacturer()?->getTranslation('name') ?: '';
                         break;
+                    case 'url':
+                        $property = 'Url';
+                        $value = rtrim($domain->getUrl(), '/') . '/' . $this->getProductUrl($product);
+                        break;
+                    case 'images':
+                        if ($product->getCover()?->getMedia()?->getUrl()) {
+                            $property = 'Image';
+                            $value = $product->getCover()->getMedia()->getUrl();
+                            break;
+                        }
                     default:
                         $property = '';
                         $value = '';
@@ -116,7 +132,7 @@ class BackendApi
                     continue;
                 }
                 if (array_key_exists($customFieldToSync, $customFieldNames)) {
-                    if (array_key_exists($customFieldToSync, $customFields)) {
+                    if (is_array($customFields) && array_key_exists($customFieldToSync, $customFields)) {
                         $tmpAttributes[$customFieldNames[$customFieldToSync]][] = $customFields[$customFieldToSync];
                     }
 
@@ -124,6 +140,10 @@ class BackendApi
             }
 
             $attributes = [];
+            $attributes[] = [
+                'Key' => 'item_type',
+                'Values' => ['product']
+            ];
             foreach ($tmpAttributes as $groupName => $values) {
                 $attributes[] = [
                     'Key' => $groupName,
@@ -131,25 +151,62 @@ class BackendApi
                 ];
             }
             $data['Attributes'] = $attributes;
+            $data['Type'] = 'product';
+            $response = null;
+            if (array_key_exists('error', $productData) && $productData['error'] && array_key_exists('code', $productData) && $productData['code'] === 404) {
+                $data['articleNumber'] = $productId;
 
-            $response = $this->client->request(
-                'PATCH',
-                $this->apiUrl . '/item/' . $productId,
-                [
-                    'body' => json_encode($data),
-                    'headers' => [
-                        'TWN-InstanceKey' => $this->instanceKey,
-                        'TWN-Authentication' => $this->accessToken,
-                        'accept' => 'application/json',
-                        'content-type' => 'text/json',
-                    ],
-                ]
-            );
-            $data = json_decode($response->getBody()->getContents(), true);
+                // new product for tweakwise
+                $response = $this->client->request(
+                    'POST',
+                    $this->apiUrl . '/item',
+                    [
+                        'body' => json_encode($data),
+                        'headers' => [
+                            'TWN-InstanceKey' => $this->instanceKey,
+                            'TWN-Authentication' => $this->accessToken,
+                            'accept' => 'application/json',
+                            'content-type' => 'text/json',
+                        ],
+                    ]
+                );
+            } else{
+                // update product in tweakwise
+                $response = $this->client->request(
+                    'PATCH',
+                    $this->apiUrl . '/item/' . $productId,
+                    [
+                        'body' => json_encode($data),
+                        'headers' => [
+                            'TWN-InstanceKey' => $this->instanceKey,
+                            'TWN-Authentication' => $this->accessToken,
+                            'accept' => 'application/json',
+                            'content-type' => 'text/json',
+                        ],
+                    ]
+                );
+            }
+
+            if ($response !== null) {
+                $data = json_decode($response->getBody()->getContents(), true);
+            }
         } catch (GuzzleException $exception) {
             return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
         }
 
         return ['error' => false, 'data' => $data];
+    }
+
+    private function getProductUrl(ProductEntity $product): string
+    {
+        foreach ($product->getSeoUrls() as $seoUrl) {
+            if ($seoUrl->getIsCanonical()) {
+                return $seoUrl->getSeoPathInfo();
+            }
+        }
+
+        return $this->router->generate('frontend.detail.page', [
+            'productId' => $product->getId(),
+        ]);
     }
 }
