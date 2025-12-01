@@ -150,6 +150,15 @@
                         :isLoading="isLoading"
                         :title="$tc('rhae-tweakwise-frontend.detail.section.backendSync')"
                 >
+                    {% block sw_tweakwise_feed_detail_backendsync_beta %}
+                        <mt-banner
+                                variant="attention"
+                                showIcon
+                        >
+                            <div v-html="$t('rhae-tweakwise-frontend.detail.info.backendSyncBeta')"></div>
+                        </mt-banner>
+                    {% endblock %}
+
                     <p>{{ $t('rhae-tweakwise-frontend.detail.info.backendSync') }}</p>
                     <sw-card-section>
                         {% block sw_tweakwise_feed_detail_backendsync_enable_switch %}
