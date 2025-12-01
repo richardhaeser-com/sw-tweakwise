@@ -50,6 +50,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\Locale\LanguageLocaleCodeProvider;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
@@ -95,6 +96,7 @@ class FeedService
     private AbstractProductPriceCalculator $calculator;
     private SystemConfigService $systemConfigService;
     private AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory;
+    private LanguageLocaleCodeProvider $languageLocaleProvider;
 
     public function __construct(
         EntityRepository $categoryRepository,
@@ -113,7 +115,8 @@ class FeedService
         RouterInterface $router,
         AbstractProductPriceCalculator $calculator,
         SystemConfigService $systemConfigService,
-        AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory
+        AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory,
+        LanguageLocaleCodeProvider $languageLocaleProvider
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->twig = $twig;
@@ -132,6 +135,7 @@ class FeedService
         $this->calculator = $calculator;
         $this->systemConfigService = $systemConfigService;
         $this->productCloseoutFilterFactory = $productCloseoutFilterFactory;
+        $this->languageLocaleProvider = $languageLocaleProvider;
     }
 
     public function fixFeedRecords(bool $forceFeedGeneration = false): void
@@ -301,7 +305,7 @@ class FeedService
         /** @var SalesChannelDomainEntity $salesChannelDomain */
         foreach ($feed->getSalesChannelDomains() as $salesChannelDomain) {
 
-            $this->localeSwitcher->setLocale($salesChannelDomain->getLanguage()->getTranslationCode()->getCode());
+            $this->localeSwitcher->setLocale($this->languageLocaleProvider->getLocaleForLanguageId($salesChannelDomain->getLanguage()->getId()));
             /** @var SalesChannelEntity $salesChannel */
             $salesChannel = $salesChannelDomain->getSalesChannel();
             $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $salesChannelDomain->getLanguageId()]);
@@ -473,9 +477,10 @@ class FeedService
         }
 
         foreach ($feed->getSalesChannelDomains() as $salesChannelDomain) {
+            $localeCode = $this->languageLocaleProvider->getLocaleForLanguageId($salesChannelDomain->getLanguageId());
             $salesChannelDomainCategory = new CategoryEntity();
-            $salesChannelDomainCategory->setName($salesChannelDomain->getLanguage()->getTranslationCode()->getCode());
-            $salesChannelDomainCategory->setTranslated(['name' => $salesChannelDomain->getLanguage()->getTranslationCode()->getCode()]);
+            $salesChannelDomainCategory->setName($localeCode);
+            $salesChannelDomainCategory->setTranslated(['name' => $localeCode]);
 
             $content .= $this->twig->render($this->resolveView('category.xml.twig', $feed), [
                 'elementId' => md5($salesChannelDomain->getSalesChannel()->getNavigationCategoryId() . '_' . $salesChannelDomain->getId()),
@@ -692,7 +697,7 @@ class FeedService
                     'groupCode' => $groupCode,
                     'prices' => $this->getLowestAndHighestPrice($product, $salesChannelContext),
                     'otherVariantsXml' => $otherVariantsXml,
-                    'lang' => $domain->getLanguage()->getTranslationCode()->getCode(),
+                    'lang' => $this->languageLocaleProvider->getLocaleForLanguageId($domain->getLanguage()->getId()),
                     'salesChannel' => $domain->getSalesChannel(),
                     'feed' => $feed,
                     'url' => ltrim($this->getUrlOfEntity($product), '/')
