@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Api;
 
+use function array_key_exists;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
@@ -9,9 +10,7 @@ use RH\Tweakwise\Service\ProductDataService;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetEntity;
 use Symfony\Component\Routing\RouterInterface;
-use function array_key_exists;
 
 class BackendApi
 {
@@ -95,7 +94,8 @@ class BackendApi
                     }
                 }
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         try {
             $data = [];
@@ -156,6 +156,7 @@ class BackendApi
                             $value = $categories;
                             break;
                         }
+                        // no break
                     default:
                         $property = '';
                         $value = '';
@@ -224,7 +225,7 @@ class BackendApi
                         ],
                     ]
                 );
-            } else{
+            } else {
                 // update product in tweakwise
                 $response = $this->client->request(
                     'PATCH',

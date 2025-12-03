@@ -109,7 +109,6 @@ class AdminController extends AbstractController
             return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productIdHash, 'product' => $product, 'error' => true, 'message' => 'No access token.']);
         }
 
-
         $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
         $productData = $backendApi->getProductData($product, $frontend->getSalesChannelDomains()->first()->getId());
 
@@ -195,7 +194,7 @@ class AdminController extends AbstractController
             foreach ($customFieldsetObject->getCustomFields() as $customField) {
                 $customFieldNames[$customField->getName()] = reset($customField->getConfig()['label']);
             }
-        };
+        }
         $response = $backendApi->syncProductData($product, $frontend, $parent, $customFieldNames);
 
         if (array_key_exists('error', $response) && $response['error']) {
