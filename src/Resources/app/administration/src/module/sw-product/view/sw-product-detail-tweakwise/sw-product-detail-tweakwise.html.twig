@@ -1,4 +1,4 @@
-<div :isLoading="isLoading">
+<div :isLoading="isLoading" class="tweakwise-sync">
     <sw-container v-if="product && product.childCount">
         <mt-banner
                 variant="attention"
@@ -40,6 +40,7 @@
                 </div>
                 <div>
                     <mt-button
+                            :isLoading="isLoading"
                             size="small"
                             variant="primary"
                             @click="onSync(frontend.id, productId[frontend.id])"

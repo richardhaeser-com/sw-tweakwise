@@ -10,6 +10,7 @@ use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
+use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -22,6 +23,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
 
 #[Route(defaults: ['_routeScope' => ['administration']])]
 class AdminController extends AbstractController
@@ -31,9 +33,9 @@ class AdminController extends AbstractController
         private EntityRepository $productRepository,
         private EntityRepository $propertyGroupRepository,
         private EntityRepository $customFieldSetRepository,
-        private EntityRepository $customFieldRepository,
         private readonly AbstractProductPriceCalculator $calculator,
-        private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory
+        private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
+        private RouterInterface $router
     ) {
     }
     #[Route('/api/_action/rhae-tweakwise/check-possibilities/{token}', name: 'rhae.tweakwise.check_possibilities', methods: ['GET'])]
@@ -58,9 +60,10 @@ class AdminController extends AbstractController
     #[Route('/api/_action/rhae-tweakwise/sync-options', name: 'rhae.tweakwise.sync_options', methods: ['GET'])]
     public function syncOptions(Context $context): JsonResponse
     {
-        $main = ['name' => 'name', 'unitPrice' => 'unitPrice', 'availableStock' => 'availableStock'];
+        $main = ['name' => 'name', 'unitPrice' => 'unitPrice', 'availableStock' => 'availableStock', 'manufacturer' => 'manufacturer', 'url' => 'url', 'images' => 'images', 'categories' => 'categories'];
         $properties = [];
         $propertyGroups = $this->propertyGroupRepository->search(new Criteria(), $context);
+        /** @var PropertyGroupEntity $propertyGroup */
         foreach ($propertyGroups as $propertyGroup) {
             $properties[$propertyGroup->getId()] = $propertyGroup->getName();
         }
@@ -74,7 +77,7 @@ class AdminController extends AbstractController
         /** @var CustomFieldSetEntity $customFieldset */
         foreach ($customFieldsetObjects as $customFieldset) {
             foreach ($customFieldset->getCustomFields() as $customField) {
-                $customFields[$customField->getName()] = (reset($customField->getConfig()['label']) . ' (' . reset($customFieldset->getConfig()['label']) . ')') ?: $customField->getName();
+                $customFields[$customField->getName()] = (reset($customField->getConfig()['label']) . ' (' . reset($customFieldset->getConfig()['label']) . ')');
             }
         }
         return new JsonResponse([
@@ -106,8 +109,7 @@ class AdminController extends AbstractController
             return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productIdHash, 'product' => $product, 'error' => true, 'message' => 'No access token.']);
         }
 
-
-        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken());
+        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
         $productData = $backendApi->getProductData($product, $frontend->getSalesChannelDomains()->first()->getId());
 
         if (array_key_exists('error', $productData) && $productData['error']) {
@@ -123,6 +125,12 @@ class AdminController extends AbstractController
         $criteria->addAssociation('options');
         $criteria->addAssociation('properties');
         $criteria->addAssociation('properties.group');
+        $criteria->addAssociation('seoUrls');
+        $criteria->addAssociation('cover');
+        $criteria->addAssociation('cover.media');
+        $criteria->addAssociation('categories');
+        $criteria->addAssociation('streams');
+        $criteria->addAssociation('streams.categories');
         $product = $this->productRepository->search($criteria, $context)->first();
         if (!$product instanceof ProductEntity) {
             return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productId, 'error' => true, 'message' => 'Product not found.']);
@@ -149,7 +157,7 @@ class AdminController extends AbstractController
             $criteria->addAssociation('manufacturer');
             $parent = $this->productRepository->search($criteria, $context)->first();
         }
-        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken());
+        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
 
         $salesChannelDomain = $frontend->getSalesChannelDomains()->first();
         $salesChannel = $salesChannelDomain->getSalesChannel();
@@ -180,12 +188,13 @@ class AdminController extends AbstractController
         $customFieldsetObjects = $this->customFieldSetRepository->search($criteria, $context);
 
         $customFieldNames = [];
+        /** @var CustomFieldSetEntity $customFieldsetObject */
         foreach ($customFieldsetObjects as $customFieldsetObject) {
             /** @var CustomFieldEntity $customField */
             foreach ($customFieldsetObject->getCustomFields() as $customField) {
                 $customFieldNames[$customField->getName()] = reset($customField->getConfig()['label']);
             }
-        };
+        }
         $response = $backendApi->syncProductData($product, $frontend, $parent, $customFieldNames);
 
         if (array_key_exists('error', $response) && $response['error']) {

@@ -1,4 +1,5 @@
 import template from './sw-product-detail-tweakwise.html.twig';
+import './sw-product-detail-tweakwise.scss';
 
 const { Component, Mixin, Context } = Shopware;
 const { EntityCollection, Criteria } = Shopware.Data;
@@ -18,7 +19,8 @@ Component.register('sw-product-detail-tweakwise', {
          tweakwiseData: [],
          productId: [],
          product: null,
-         backendSyncOptions: []
+         backendSyncOptions: [],
+         isLoading: false
       };
    },
 
@@ -36,6 +38,7 @@ Component.register('sw-product-detail-tweakwise', {
       createdComponent() {
          this.isLoading = true;
          this.getData();
+         this.isLoading = false;
       },
 
       async getData() {
@@ -70,6 +73,7 @@ Component.register('sw-product-detail-tweakwise', {
       },
 
       async onSync(frontendId, productId) {
+         this.isLoading = true;
          const token = Shopware.Service('loginService').getToken();
          const headers = { headers: { Authorization: `Bearer ${token}` } };
          const httpClient = Shopware.Application.getContainer('init').httpClient;
@@ -88,6 +92,7 @@ Component.register('sw-product-detail-tweakwise', {
             });
             console.warn(response);
          }
+         this.isLoading = false;
       }
    }
 });

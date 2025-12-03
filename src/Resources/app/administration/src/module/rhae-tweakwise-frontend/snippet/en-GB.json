@@ -59,7 +59,10 @@
             "name": "Name",
             "unitPrice": "Unit price",
             "availableStock": "Available stock",
-            "manufacturer": "Manufacturer"
+            "manufacturer": "Manufacturer",
+            "url": "Url",
+            "images": "Images",
+            "categories": "Categories"
           }
         },
         "fullPathCid": "Show sibling categories in category filtering",

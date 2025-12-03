@@ -2,19 +2,21 @@
 
 namespace RH\Tweakwise\Api;
 
+use function array_key_exists;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
 use RH\Tweakwise\Service\ProductDataService;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetEntity;
+use Symfony\Component\Routing\RouterInterface;
 
 class BackendApi
 {
     private readonly Client $client;
     public $apiUrl = 'https://navigator-api.tweakwise.com';
-    public function __construct(private readonly string $instanceKey, private readonly string $accessToken)
+    public function __construct(private readonly string $instanceKey, private readonly string $accessToken, private RouterInterface $router)
     {
         $this->client = new Client();
     }
@@ -42,11 +44,59 @@ class BackendApi
         return $data;
     }
 
+    public function getCategoryData(CategoryEntity $category, string $domainId): array
+    {
+        $key = md5($category->getId() . '_' . $domainId);
+
+        try {
+            $response = $this->client->request(
+                'GET',
+                $this->apiUrl . '/category/getbykey/' . $key,
+                [
+                    'headers' => [
+                        'TWN-InstanceKey' => $this->instanceKey,
+                        'TWN-Authentication' => $this->accessToken,
+                        'accept' => 'application/json',
+                    ],
+                ]
+            );
+        } catch (GuzzleException $exception) {
+            return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
+        }
+
+        $data = json_decode($response->getBody()->getContents(), true);
+        return $data;
+    }
+
     public function syncProductData(ProductEntity $product, FrontendEntity $frontend, ?ProductEntity $parent, array $customFieldNames): array
     {
-        $domainId = $frontend->getSalesChannelDomains()->first()->getId();
+        $productData = null;
+        $domain = $frontend->getSalesChannelDomains()->first();
+        $domainId = $domain->getId();
 
+        $categories = [];
         $productId = ProductDataService::getTweakwiseProductId($product, $domainId);
+        try {
+            $productData = $this->getProductData($product, $domainId);
+            foreach ($product->getCategories() as $category) {
+                $catData = $this->getCategoryData($category, $domainId);
+                if (array_key_exists('CategoryId', $catData) && (int)$catData['CategoryId']) {
+                    $categories[] = $catData['CategoryId'];
+                }
+            }
+            foreach ($product->getStreams() as $pStream) {
+                foreach ($pStream->getCategories() as $sCategory) {
+                    if ($sCategory->getProductAssignmentType() === 'product_stream') {
+                        $catData = $this->getCategoryData($sCategory, $domainId);
+                        if (array_key_exists('CategoryId', $catData) && (int)$catData['CategoryId']) {
+                            $categories[] = $catData['CategoryId'];
+                        }
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+        }
+
         try {
             $data = [];
             $backendSyncProperties = $frontend->getBackendSyncProperties();
@@ -59,7 +109,7 @@ class BackendApi
                 switch ($propertyToSync) {
                     case 'name':
                         $property = 'Name';
-                        $value = $product?->getTranslation('name') ?: $parent?->getTranslation('name') ?: '';
+                        $value = $product->getTranslation('name') ?: $parent?->getTranslation('name') ?: '';
                         break;
                     case 'unitPrice':
                         /** @var CalculatedPrice $price */
@@ -81,12 +131,32 @@ class BackendApi
                         break;
                     case 'availableStock':
                         $property = 'Stock';
-                        $value = $product?->getAvailableStock() ?: $parent?->getAvailableStock() ?: 0;
+                        $value = $product->getAvailableStock() ?: $parent->getAvailableStock() ?: 0;
                         break;
                     case 'manufacturer':
                         $property = 'Brand';
-                        $value = $product?->getManufacturer()?->getTranslation('name') ?: $parent?->getManufacturer()?->getTranslation('name') ?: '';
+                        $value = $product->getManufacturer()?->getTranslation('name') ?: $parent->getManufacturer()?->getTranslation('name') ?: '';
                         break;
+                    case 'url':
+                        $property = 'Url';
+                        $value = rtrim($domain->getUrl(), '/') . '/' . $this->getProductUrl($product);
+                        break;
+                    case 'images':
+                        if ($product->getCover()?->getMedia()?->getUrl()) {
+                            $property = 'Image';
+                            $value = $product->getCover()->getMedia()->getUrl();
+                            break;
+                        }
+                        $property = '';
+                        $value = '';
+                        break;
+                    case 'categories':
+                        if ($categories) {
+                            $property = 'Categories';
+                            $value = $categories;
+                            break;
+                        }
+                        // no break
                     default:
                         $property = '';
                         $value = '';
@@ -116,7 +186,7 @@ class BackendApi
                     continue;
                 }
                 if (array_key_exists($customFieldToSync, $customFieldNames)) {
-                    if (array_key_exists($customFieldToSync, $customFields)) {
+                    if (is_array($customFields) && array_key_exists($customFieldToSync, $customFields)) {
                         $tmpAttributes[$customFieldNames[$customFieldToSync]][] = $customFields[$customFieldToSync];
                     }
 
@@ -124,6 +194,10 @@ class BackendApi
             }
 
             $attributes = [];
+            $attributes[] = [
+                'Key' => 'item_type',
+                'Values' => ['product']
+            ];
             foreach ($tmpAttributes as $groupName => $values) {
                 $attributes[] = [
                     'Key' => $groupName,
@@ -131,25 +205,63 @@ class BackendApi
                 ];
             }
             $data['Attributes'] = $attributes;
+            $data['Type'] = 'product';
 
-            $response = $this->client->request(
-                'PATCH',
-                $this->apiUrl . '/item/' . $productId,
-                [
-                    'body' => json_encode($data),
-                    'headers' => [
-                        'TWN-InstanceKey' => $this->instanceKey,
-                        'TWN-Authentication' => $this->accessToken,
-                        'accept' => 'application/json',
-                        'content-type' => 'text/json',
-                    ],
-                ]
-            );
-            $data = json_decode($response->getBody()->getContents(), true);
+            $response = null;
+            if (array_key_exists('error', $productData) && $productData['error'] && array_key_exists('code', $productData) && $productData['code'] === 404) {
+                $data['articleNumber'] = $productId;
+
+                // new product for tweakwise
+                $response = $this->client->request(
+                    'POST',
+                    $this->apiUrl . '/item',
+                    [
+                        'body' => json_encode($data),
+                        'headers' => [
+                            'TWN-InstanceKey' => $this->instanceKey,
+                            'TWN-Authentication' => $this->accessToken,
+                            'accept' => 'application/json',
+                            'content-type' => 'text/json',
+                        ],
+                    ]
+                );
+            } else {
+                // update product in tweakwise
+                $response = $this->client->request(
+                    'PATCH',
+                    $this->apiUrl . '/item/' . $productId,
+                    [
+                        'body' => json_encode($data),
+                        'headers' => [
+                            'TWN-InstanceKey' => $this->instanceKey,
+                            'TWN-Authentication' => $this->accessToken,
+                            'accept' => 'application/json',
+                            'content-type' => 'text/json',
+                        ],
+                    ]
+                );
+            }
+
+            if ($response !== null) {
+                $data = json_decode($response->getBody()->getContents(), true);
+            }
         } catch (GuzzleException $exception) {
             return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
         }
 
         return ['error' => false, 'data' => $data];
+    }
+
+    private function getProductUrl(ProductEntity $product): string
+    {
+        foreach ($product->getSeoUrls() as $seoUrl) {
+            if ($seoUrl->getIsCanonical()) {
+                return $seoUrl->getSeoPathInfo();
+            }
+        }
+
+        return $this->router->generate('frontend.detail.page', [
+            'productId' => $product->getId(),
+        ]);
     }
 }
