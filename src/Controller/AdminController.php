@@ -60,7 +60,7 @@ class AdminController extends AbstractController
     #[Route('/api/_action/rhae-tweakwise/sync-options', name: 'rhae.tweakwise.sync_options', methods: ['GET'])]
     public function syncOptions(Context $context): JsonResponse
     {
-        $main = ['name' => 'name', 'unitPrice' => 'unitPrice', 'availableStock' => 'availableStock', 'manufacturer' => 'manufacturer', 'url' => 'url', 'images' => 'images'];
+        $main = ['name' => 'name', 'unitPrice' => 'unitPrice', 'availableStock' => 'availableStock', 'manufacturer' => 'manufacturer', 'url' => 'url', 'images' => 'images', 'categories' => 'categories'];
         $properties = [];
         $propertyGroups = $this->propertyGroupRepository->search(new Criteria(), $context);
         foreach ($propertyGroups as $propertyGroup) {
@@ -128,6 +128,7 @@ class AdminController extends AbstractController
         $criteria->addAssociation('seoUrls');
         $criteria->addAssociation('cover');
         $criteria->addAssociation('cover.media');
+        $criteria->addAssociation('categories');
         $product = $this->productRepository->search($criteria, $context)->first();
         if (!$product instanceof ProductEntity) {
             return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productId, 'error' => true, 'message' => 'Product not found.']);

@@ -61,7 +61,8 @@
             "availableStock": "Available stock",
             "manufacturer": "Manufacturer",
             "url": "Url",
-            "images": "Images"
+            "images": "Images",
+            "categories": "Categories"
           }
         },
         "fullPathCid": "Show sibling categories in category filtering",

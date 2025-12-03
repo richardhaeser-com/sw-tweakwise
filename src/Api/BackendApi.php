@@ -7,9 +7,11 @@ use GuzzleHttp\Exception\GuzzleException;
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
 use RH\Tweakwise\Service\ProductDataService;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetEntity;
 use Symfony\Component\Routing\RouterInterface;
+use function array_key_exists;
 
 class BackendApi
 {
@@ -43,14 +45,45 @@ class BackendApi
         return $data;
     }
 
+    public function getCategoryData(CategoryEntity $category, string $domainId): array
+    {
+        $key = md5($category->getId() . '_' . $domainId);
+
+        try {
+            $response = $this->client->request(
+                'GET',
+                $this->apiUrl . '/category/getbykey/' . $key,
+                [
+                    'headers' => [
+                        'TWN-InstanceKey' => $this->instanceKey,
+                        'TWN-Authentication' => $this->accessToken,
+                        'accept' => 'application/json',
+                    ],
+                ]
+            );
+        } catch (GuzzleException $exception) {
+            return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
+        }
+
+        $data = json_decode($response->getBody()->getContents(), true);
+        return $data;
+    }
+
     public function syncProductData(ProductEntity $product, FrontendEntity $frontend, ?ProductEntity $parent, array $customFieldNames): array
     {
         $domain = $frontend->getSalesChannelDomains()->first();
         $domainId = $domain->getId();
 
+        $categories = [];
         $productId = ProductDataService::getTweakwiseProductId($product, $domainId);
         try {
             $productData = $this->getProductData($product, $domainId);
+            foreach ($product->getCategories() as $category) {
+                $catData = $this->getCategoryData($category, $domainId);
+                if (array_key_exists('CategoryId', $catData) && (int)$catData['CategoryId']) {
+                    $categories[] = $catData['CategoryId'];
+                }
+            }
         } catch (\Exception $e) {}
 
         try {
@@ -103,6 +136,15 @@ class BackendApi
                             $value = $product->getCover()->getMedia()->getUrl();
                             break;
                         }
+                        $property = '';
+                        $value = '';
+                        break;
+                    case 'categories':
+                        if ($categories) {
+                            $property = 'Categories';
+                            $value = $categories;
+                            break;
+                        }
                     default:
                         $property = '';
                         $value = '';
@@ -152,6 +194,7 @@ class BackendApi
             }
             $data['Attributes'] = $attributes;
             $data['Type'] = 'product';
+
             $response = null;
             if (array_key_exists('error', $productData) && $productData['error'] && array_key_exists('code', $productData) && $productData['code'] === 404) {
                 $data['articleNumber'] = $productId;
