@@ -1,15 +1,21 @@
 @import "~scss/variables";
 
 .rhae-tweakwise-frontend-detail {
-    .sw-card .sw-card__content {
-        padding-top: 0;
-    }
-
     .sw-card-section {
-        padding: 30px 0;
+        padding: 0;
 
         &--secondary {
             padding: 0;
+        }
+    }
+
+    .backendSyncOptions {
+        h4 {
+            margin: 1.25rem 0 .625rem 0;
+        }
+
+        .sw-field--checkbox, .mt-field--checkbox__container {
+            margin-bottom: .5rem;
         }
     }
 }
