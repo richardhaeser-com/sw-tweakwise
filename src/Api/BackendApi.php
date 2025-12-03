@@ -71,6 +71,7 @@ class BackendApi
 
     public function syncProductData(ProductEntity $product, FrontendEntity $frontend, ?ProductEntity $parent, array $customFieldNames): array
     {
+        $productData = null;
         $domain = $frontend->getSalesChannelDomains()->first();
         $domainId = $domain->getId();
 
@@ -82,6 +83,16 @@ class BackendApi
                 $catData = $this->getCategoryData($category, $domainId);
                 if (array_key_exists('CategoryId', $catData) && (int)$catData['CategoryId']) {
                     $categories[] = $catData['CategoryId'];
+                }
+            }
+            foreach ($product->getStreams() as $pStream) {
+                foreach ($pStream->getCategories() as $sCategory) {
+                    if ($sCategory->getProductAssignmentType() === 'product_stream') {
+                        $catData = $this->getCategoryData($sCategory, $domainId);
+                        if (array_key_exists('CategoryId', $catData) && (int)$catData['CategoryId']) {
+                            $categories[] = $catData['CategoryId'];
+                        }
+                    }
                 }
             }
         } catch (\Exception $e) {}
@@ -98,7 +109,7 @@ class BackendApi
                 switch ($propertyToSync) {
                     case 'name':
                         $property = 'Name';
-                        $value = $product?->getTranslation('name') ?: $parent?->getTranslation('name') ?: '';
+                        $value = $product->getTranslation('name') ?: $parent?->getTranslation('name') ?: '';
                         break;
                     case 'unitPrice':
                         /** @var CalculatedPrice $price */
@@ -120,11 +131,11 @@ class BackendApi
                         break;
                     case 'availableStock':
                         $property = 'Stock';
-                        $value = $product?->getAvailableStock() ?: $parent?->getAvailableStock() ?: 0;
+                        $value = $product->getAvailableStock() ?: $parent->getAvailableStock() ?: 0;
                         break;
                     case 'manufacturer':
                         $property = 'Brand';
-                        $value = $product?->getManufacturer()?->getTranslation('name') ?: $parent?->getManufacturer()?->getTranslation('name') ?: '';
+                        $value = $product->getManufacturer()?->getTranslation('name') ?: $parent->getManufacturer()?->getTranslation('name') ?: '';
                         break;
                     case 'url':
                         $property = 'Url';

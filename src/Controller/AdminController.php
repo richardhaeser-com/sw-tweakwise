@@ -10,6 +10,7 @@ use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
+use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -32,7 +33,6 @@ class AdminController extends AbstractController
         private EntityRepository $productRepository,
         private EntityRepository $propertyGroupRepository,
         private EntityRepository $customFieldSetRepository,
-        private EntityRepository $customFieldRepository,
         private readonly AbstractProductPriceCalculator $calculator,
         private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
         private RouterInterface $router
@@ -63,6 +63,7 @@ class AdminController extends AbstractController
         $main = ['name' => 'name', 'unitPrice' => 'unitPrice', 'availableStock' => 'availableStock', 'manufacturer' => 'manufacturer', 'url' => 'url', 'images' => 'images', 'categories' => 'categories'];
         $properties = [];
         $propertyGroups = $this->propertyGroupRepository->search(new Criteria(), $context);
+        /** @var PropertyGroupEntity $propertyGroup */
         foreach ($propertyGroups as $propertyGroup) {
             $properties[$propertyGroup->getId()] = $propertyGroup->getName();
         }
@@ -76,7 +77,7 @@ class AdminController extends AbstractController
         /** @var CustomFieldSetEntity $customFieldset */
         foreach ($customFieldsetObjects as $customFieldset) {
             foreach ($customFieldset->getCustomFields() as $customField) {
-                $customFields[$customField->getName()] = (reset($customField->getConfig()['label']) . ' (' . reset($customFieldset->getConfig()['label']) . ')') ?: $customField->getName();
+                $customFields[$customField->getName()] = (reset($customField->getConfig()['label']) . ' (' . reset($customFieldset->getConfig()['label']) . ')');
             }
         }
         return new JsonResponse([
@@ -129,6 +130,8 @@ class AdminController extends AbstractController
         $criteria->addAssociation('cover');
         $criteria->addAssociation('cover.media');
         $criteria->addAssociation('categories');
+        $criteria->addAssociation('streams');
+        $criteria->addAssociation('streams.categories');
         $product = $this->productRepository->search($criteria, $context)->first();
         if (!$product instanceof ProductEntity) {
             return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productId, 'error' => true, 'message' => 'Product not found.']);
@@ -186,6 +189,7 @@ class AdminController extends AbstractController
         $customFieldsetObjects = $this->customFieldSetRepository->search($criteria, $context);
 
         $customFieldNames = [];
+        /** @var CustomFieldSetEntity $customFieldsetObject */
         foreach ($customFieldsetObjects as $customFieldsetObject) {
             /** @var CustomFieldEntity $customField */
             foreach ($customFieldsetObject->getCustomFields() as $customField) {

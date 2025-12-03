@@ -42,6 +42,7 @@ class FrontendEntity extends Entity
     protected $salesChannelDomains;
 
     protected $backendSyncProperties = [];
+    protected ?string $accessToken;
 
     public function isBackendSyncEnabled(): bool
     {

@@ -59,7 +59,6 @@
             <argument type="service" id="product.repository"/>
             <argument type="service" id="property_group.repository"/>
             <argument type="service" id="custom_field_set.repository"/>
-            <argument type="service" id="custom_field.repository"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Price\ProductPriceCalculator"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
             <argument type="service" id="router" />
