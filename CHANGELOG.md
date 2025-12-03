@@ -5,7 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [5.3.0]
+
+### Added
+- You can now sync the data of a specific product to Tweakwise from the product editing screen in de admin of Shopware. To be able to use this feature, you need to enable it in the Tweakwise settings in Shopware.
 
 ### Fixed
 - Fixed wrong name of finalize-transaction route
@@ -24,7 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - An option is introduced in the feed settings to respect the Shopware setting to hide products after clearance. When enabled, products and variants will be excluded from the feed after clearance.
-- You can now sync the data of a specific product to Tweakwise from the product editing screen in de admin of Shopware. To be able to use this feature, you need to enable it in the Tweakwise settings in Shopware.
 
 ### Fixed
 - Remove products that are sold out from feed in non-grouped mode if sold out products should be excluded.
