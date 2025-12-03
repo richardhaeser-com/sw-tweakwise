@@ -577,6 +577,14 @@ class FeedService
                     $criteria->addAssociation('properties');
                     $criteria->addAssociation('properties.group');
 
+                    if ($feed->isRespectHideCloseoutProductsWhenOutOfStock() && $this->systemConfigService->getBool(
+                        'core.listing.hideCloseoutProductsWhenOutOfStock',
+                        $salesChannelContext->getSalesChannelId()
+                    )) {
+                        $criteria->addFilter(
+                            $this->productCloseoutFilterFactory->create($salesChannelContext)
+                        );
+                    }
                     $criteria->setLimit(1);
                     $criteria->setOffset(0);
                     while ($childProducts = $this->productRepository->search($criteria, $salesChannelContext->getContext())->getElements()) {
@@ -794,6 +802,9 @@ class FeedService
 
             $salesChannel = $salesChannelDomain->getSalesChannel();
             $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $salesChannelDomain->getLanguageId()]);
+            $cart = new Cart(Uuid::randomHex());
+            $rules = $this->ruleLoader->load($salesChannelContext->getContext())->filterMatchingRules($cart, $salesChannelContext);
+            $salesChannelContext->setRuleIds($rules->getIds());
 
             $context = new Context(new SystemSource(), [], $salesChannelDomain->getCurrencyId(), [$salesChannelDomain->getLanguageId(), $salesChannel->getLanguageId()]);
             $criteria = new Criteria([$salesChannel->getNavigationCategoryId()]);

@@ -7,9 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fixed wrong name of finalize-transaction route
+- Fixed issue with empty path in product listing causing an exception in the frontend
+
+## [5.2.0] - 10-11-2025
+
+### Added
+- Rules will be checked while defining the categories for the feed. This is uses by for example the swagdynamicaccess plugin (thanks to @quisse)
+
+### Changed
+- The profile key will not be stored in the session anymore when visiting the finalize-transaction route. This is done to prevent issues when returning from some payment providers like Buckaroo.
+- Removed call to removed setTwig method in TweakwiseSearchController (thanks to @quisse)
+
+## [5.1.0] - 09-10-2025
+
 ### Added
 - An option is introduced in the feed settings to respect the Shopware setting to hide products after clearance. When enabled, products and variants will be excluded from the feed after clearance.
 - You can now sync the data of a specific product to Tweakwise from the product editing screen in de admin of Shopware. To be able to use this feature, you need to enable it in the Tweakwise settings in Shopware.
+
+### Fixed
+- Remove products that are sold out from feed in non-grouped mode if sold out products should be excluded.
 
 ## [5.0.4] - 11-09-2025
 
