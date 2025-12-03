@@ -1,14 +1,14 @@
 {
   "rhae-tweakwise-frontend": {
     "main": {
-      "menuLabel": "Tweakwise frontend",
-      "menuDescription": "Configure your Tweakwise frontend"
+      "menuLabel": "Tweakwise",
+      "menuDescription": "Configure your Tweakwise instances"
     },
     "list": {
-      "addButtonText": "Create new frontend",
+      "addButtonText": "Add new instance",
       "refreshButtonText": "Refresh",
       "columns": {
-        "name": "Frontend name"
+        "name": "Instance"
       }
     },
     "notification": {
@@ -22,11 +22,20 @@
         "data": "Data",
         "checkoutSales": "Checkout sales",
         "search": "Search",
-        "merchandise": "Merchandising"
+        "merchandise": "Merchandising",
+        "backendSync": "Backend Sync",
+        "backendSyncMain": "Main properties",
+        "backendSyncProperties": "Additional properties",
+        "backendSyncCustomFields": "Custom fields"
+      },
+      "info": {
+        "backendSync": "If enabled, you get the possibility to sync a product with Tweakwise from the product page in the admin of Shopware. This way you can sync a specific product right away.",
+        "backendSyncBeta": "<strong>Experimental feature:</strong> Please reach out to us in case you encounter unexpected behaviour."
       },
       "label": {
         "name": "Name",
         "token": "Instance key",
+        "accessToken": "Access token",
         "integration": "Way of integration",
         "integrationOptions": {
           "no-integration": "No integration",
@@ -45,10 +54,22 @@
           "featured-products": "Show featured products",
           "recommendations": "Show recommendations based on last item in cart"
         },
+        "backendSyncOptions": {
+          "main": {
+            "name": "Name",
+            "unitPrice": "Unit price",
+            "availableStock": "Available stock",
+            "manufacturer": "Manufacturer",
+            "url": "Url",
+            "images": "Images",
+            "categories": "Categories"
+          }
+        },
         "fullPathCid": "Show sibling categories in category filtering",
         "checkoutSalesFeaturedProductsId": "Featured recommendation ID",
         "checkoutSalesRecommendationsGroupKey": "Group key used for cross-sell",
         "salesChannelDomains": "Domains",
+        "backendSyncEnabled": "Enable backend synchronisation",
         "productsDesktop": "Products per row on desktop",
         "productsTablet": "Products per row on tablet",
         "productsMobile": "Products per row on mobile",

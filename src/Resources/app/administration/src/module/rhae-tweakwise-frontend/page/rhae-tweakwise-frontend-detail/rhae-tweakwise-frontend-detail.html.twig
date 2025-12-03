@@ -33,6 +33,11 @@
                     <sw-text-field :label="$t('rhae-tweakwise-frontend.detail.label.token')"
                               v-model:value="item.token" :error="tokenError" @blur="checkPossibilities"></sw-text-field>
 
+                    <sw-text-field
+                            :label="$t('rhae-tweakwise-frontend.detail.label.accessToken')"
+                            v-model:value="item.accessToken"
+                    ></sw-text-field>
+
                     <sw-select-field v-if="validToken" :label="$t('rhae-tweakwise-frontend.detail.label.integration')"
                                      v-model:value="item.integration">
                         <option v-for="value in ['no-integration','pluginstudio','javascript']" :value="value">
@@ -114,6 +119,84 @@
                               v-model:value="item.checkoutSalesRecommendationsGroupKey"></sw-text-field>
                 </sw-card-section>
             </sw-card>
+
+            {% block sw_tweakwise_feed_detail_backendsync %}
+                <sw-card
+                        v-if="validToken && item.accessToken"
+                        :isLoading="isLoading"
+                        :title="$tc('rhae-tweakwise-frontend.detail.section.backendSync')"
+                >
+                    <sw-alert
+                            class="sw-error-summary"
+                            variant="warning"
+                            :show-icon="true"
+                    >
+                        <div v-html="$t('rhae-tweakwise-frontend.detail.info.backendSyncBeta')"></div>
+                    </sw-alert>
+
+                    <p>{{ $t('rhae-tweakwise-frontend.detail.info.backendSync') }}</p>
+                    <sw-card-section>
+                        {% block sw_tweakwise_feed_detail_backendsync_enable_switch %}
+                            <sw-switch-field
+                                    v-model:value="item.backendSyncEnabled"
+                                    :label="$tc('rhae-tweakwise-frontend.detail.label.backendSyncEnabled')"
+                            />
+                        {% endblock %}
+                        {% block sw_tweakwise_feed_detail_backendsync_options %}
+                            <div v-if="item.backendSyncEnabled && backendSyncOptions" class="backendSyncOptions">
+                                <h4>{{ $t('rhae-tweakwise-frontend.detail.section.backendSyncMain') }}</h4>
+                                <sw-container
+                                        columns="2fr 2fr 2fr"
+                                        gap="0px 30px"
+                                >
+                                    <div v-if="!backendSyncOptions['main'] || backendSyncOptions['main'].length === 0">
+                                        Geen opties
+                                    </div>
+                                    <sw-checkbox-field
+                                            v-for="(label, option) in backendSyncOptions['main']"
+                                            :name="option"
+                                            :value="isChecked('main', option)"
+                                            @update:value="setSelectedProperty($event, option, 'main')"
+                                            :label="$tc('rhae-tweakwise-frontend.detail.label.backendSyncOptions.main.' + label)"
+                                    />
+                                </sw-container>
+                                <h4>{{ $t('rhae-tweakwise-frontend.detail.section.backendSyncProperties') }}</h4>
+                                <sw-container
+                                        columns="2fr 2fr 2fr"
+                                        gap="0px 30px"
+                                >
+                                    <div v-if="!backendSyncOptions['properties'] || backendSyncOptions['properties'].length === 0">
+                                        Geen opties
+                                    </div>
+                                    <sw-checkbox-field
+                                            v-for="(label, option) in backendSyncOptions['properties']"
+                                            :name="option"
+                                            :value="isChecked('properties', option)"
+                                            @update:value="setSelectedProperty($event, option, 'properties')"
+                                            :label="label"
+                                    />
+                                </sw-container>
+                                <h4>{{ $t('rhae-tweakwise-frontend.detail.section.backendSyncCustomFields') }}</h4>
+                                <sw-container
+                                        columns="2fr 2fr 2fr"
+                                        gap="0px 30px"
+                                >
+                                    <div v-if="!backendSyncOptions['customFields'] || backendSyncOptions['customFields'].length === 0">
+                                        Geen opties
+                                    </div>
+                                    <sw-checkbox-field
+                                            v-for="(label, option) in backendSyncOptions['customFields']"
+                                            :name="option"
+                                            :value="isChecked('customFields', option)"
+                                            @update:value="setSelectedProperty($event, option, 'customFields')"
+                                            :label="label"
+                                    />
+                                </sw-container>
+                            </div>
+                        {% endblock %}
+                    </sw-card-section>
+                </sw-card>
+            {% endblock %}
         </sw-card-view>
     </template>
 

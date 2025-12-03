@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+### Added
+- You can now sync the data of a specific product to Tweakwise from the product editing screen in de admin of Shopware. To be able to use this feature, you need to enable it in the Tweakwise settings in Shopware.
+
 ## [4.6.3] - 01-12-2025
 
 ### Changed

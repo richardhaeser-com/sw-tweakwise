@@ -1,0 +1,63 @@
+<div :isLoading="isLoading" class="tweakwise-sync">
+    <sw-container v-if="product && product.childCount">
+        <mt-banner
+                variant="attention"
+                class="sw-bulk-edit-save-modal__warning"
+        >
+            {{ $tc('sw-product.detail.tab.variants') }}
+        </mt-banner>
+
+    </sw-container>
+
+
+    <template v-for="frontend in frontends">
+        <sw-card :title="frontend.name" v-if="frontend.accessToken && frontend.backendSyncEnabled">
+            <sw-container
+                    columns="1fr 1fr"
+                    gap="10px 30px"
+            >
+                <div>
+                    {{ $tc('sw-product.detail.tab.productId') }}
+                </div>
+                <div>
+                    {{ productId[frontend.id] }}
+                </div>
+                <div>
+                    {{ $tc('sw-product.detail.tab.available') }}
+                </div>
+                <div>
+                    <span v-if="availability[frontend.id]">{{ $tc('sw-product.detail.tab.availableYes') }}</span>
+                    <span v-else>{{ $tc('sw-product.detail.tab.availableNo') }}</span>
+                </div>
+                <div v-if="availability[frontend.id]">
+                    {{ $tc('sw-product.detail.tab.lastModified') }}
+                </div>
+                <div v-if="availability[frontend.id]">
+                    <sw-time-ago
+                            :date="new Date(tweakwiseData[frontend.id].LastModified)"
+                            :date-time-format="{ month: '2-digit', day: '2-digit' }"
+                    />
+                </div>
+                <div>
+                    <mt-button
+                            :isLoading="isLoading"
+                            size="small"
+                            variant="primary"
+                            @click="onSync(frontend.id, productId[frontend.id])"
+                    >
+                        {{ $tc('sw-product.detail.tab.sync') }}
+                    </mt-button>
+                </div>
+            </sw-container>
+
+        </sw-card>
+        <sw-card :title="frontend.name" v-if="!frontend.accessToken">
+            <mt-banner
+                    variant="attention"
+                    class="sw-bulk-edit-save-modal__warning"
+            >
+                {{ $tc('sw-product.detail.tab.noAccessToken') }}
+            </mt-banner>
+        </sw-card>
+    </template>
+</div>

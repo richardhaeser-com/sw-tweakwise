@@ -34,10 +34,74 @@ Component.register('rhae-tweakwise-frontend-detail', {
             recommendationsAvailable: false,
             processSuccess: false,
             salesChannelDomainIds: [],
+            backendSyncOptions: []
         };
     },
 
     computed: {
+
+        integrationTypes() {
+            return [
+                {
+                    id: 1,
+                    value: 'no-integration',
+                    label: this.$tc('rhae-tweakwise-frontend.detail.label.integrationOptions.no-integration'),
+                },
+                {
+                    id: 2,
+                    value: 'pluginstudio',
+                    label: this.$tc('rhae-tweakwise-frontend.detail.label.integrationOptions.pluginstudio'),
+                },
+                {
+                    id: 3,
+                    value: 'javascript',
+                    label: this.$tc('rhae-tweakwise-frontend.detail.label.integrationOptions.javascript'),
+                },
+            ];
+        },
+        wayOfSearchTypes() {
+            if (this.suggestionsAvailable) {
+                return [
+                    {
+                        id: 1,
+                        value: 'instant-search',
+                        label: this.$tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.instant-search'),
+                    },
+                    {
+                        id: 2,
+                        value: 'suggestions',
+                        label: this.$tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.suggestions'),
+                    },
+                ];
+            } else {
+                return [
+                    {
+                        id: 1,
+                        value: 'instant-search',
+                        label: this.$tc('rhae-tweakwise-frontend.detail.label.wayOfSearchOptions.instant-search'),
+                    },
+                ];
+            }
+        },
+        checkoutSalesTypes() {
+            return [
+                {
+                    id: 1,
+                    value: 'no-checkout-sales',
+                    label: this.$tc('rhae-tweakwise-frontend.detail.label.checkoutSalesOptions.no-checkout-sales'),
+                },
+                {
+                    id: 2,
+                    value: 'featured-products',
+                    label: this.$tc('rhae-tweakwise-frontend.detail.label.checkoutSalesOptions.featured-products'),
+                },
+                {
+                    id: 3,
+                    value: 'recommendations',
+                    label: this.$tc('rhae-tweakwise-frontend.detail.label.checkoutSalesOptions.recommendations'),
+                },
+            ];
+        },
         repository() {
             return this.repositoryFactory.create('s_plugin_rhae_tweakwise_frontend');
         },
@@ -63,9 +127,36 @@ Component.register('rhae-tweakwise-frontend-detail', {
     created() {
         this.getItem();
         this.getSalesChannelDomains();
+        this.getBackendSyncOptions();
     },
 
     methods: {
+        async getBackendSyncOptions() {
+            this.isLoading = true;
+            const token = Shopware.Service('loginService').getToken();
+            const headers = { headers: { Authorization: `Bearer ${token}` } };
+            const httpClient = Shopware.Application.getContainer('init').httpClient;
+            const url = `/_action/rhae-tweakwise/sync-options`;
+            const response = await httpClient.get(url, headers);
+
+            let options;
+            if (response.status !== 200) {
+                options = {
+                    'main': [],
+                    'options': [],
+                    'customFields': []
+                }
+            } else {
+                this.backendSyncOptions = response.data;
+            }
+
+            this.isLoading = false;
+        },
+        isChecked(group, option) {
+            return !!(this.item?.backendSyncProperties
+                && this.item.backendSyncProperties[group]
+                && this.item.backendSyncProperties[group][option]);
+        },
         async checkPossibilities() {
             this.validToken = false;
             this.suggestionsAvailable = false
@@ -117,6 +208,18 @@ Component.register('rhae-tweakwise-frontend-detail', {
                 .then((entity) => {
                     this.item = entity;
                     this.checkPossibilities();
+                    // Zorg dat het hoofd-object altijd een object is
+                    if (!this.item.backendSyncProperties || Array.isArray(this.item.backendSyncProperties)) {
+                        this.item.backendSyncProperties = {};
+                    }
+
+                    // Zorg dat de groepen objecten zijn
+                    const groups = ['main', 'properties', 'customFields'];
+                    groups.forEach((g) => {
+                        if (!this.item.backendSyncProperties[g] || Array.isArray(this.item.backendSyncProperties[g])) {
+                            this.item.backendSyncProperties[g] = {};
+                        }
+                    });
                 });
         },
         onChangeValue(value, fieldName, valueChange = true) {
@@ -124,25 +227,48 @@ Component.register('rhae-tweakwise-frontend-detail', {
 
             this.$emit('change-value', fieldName, value);
         },
+        setSelectedProperty(value, fieldName, group, valueChange = true) {
+            if (!this.item.backendSyncProperties || Array.isArray(this.item.backendSyncProperties)) {
+                this.item.backendSyncProperties = {};
+            }
+            if (!this.item.backendSyncProperties[group] || Array.isArray(this.item.backendSyncProperties[group])) {
+                this.item.backendSyncProperties[group] = {};
+            }
+
+            this.item.backendSyncProperties[group][String(fieldName)] = !!value;
+            this.$emit('change-value', fieldName, value);
+        },
+        ensureOptionKeysExist() {
+            const groups = ['main', 'properties', 'customFields'];
+            groups.forEach(g => {
+                if (!this.item.backendSyncProperties[g]) this.$set(this.item.backendSyncProperties, g, {});
+                const list = this.backendSyncOptions?.[g] || [];
+                list.forEach(opt => {
+                    if (typeof this.item.backendSyncProperties[g][opt] === 'undefined') {
+                        this.$set(this.item.backendSyncProperties[g], opt, false);
+                    }
+                });
+            });
+        },
         onChangeToggle(value, fieldName) {
             this.onChangeValue(value, fieldName, false);
         },
-        onClickSave() {
+        async onClickSave() {
             this.isLoading = true;
-            this.repository
-                .save(this.item, Context.api)
-                .then(() => {
-                    this.getItem();
-                    this.isLoading = false;
-                    this.processSuccess = true;
-                })
-                .catch((exception) => {
-                    this.isLoading = false;
-                    this.createNotificationError({
-                        title: this.$tc('rhae-tweakwise-frontend.notification.errorTitle'),
-                        message: exception
-                    });
+            // this.item.backendSyncProperties = JSON.stringify(this.item.backendSyncProperties);
+
+            try {
+                await this.repository.save(this.item, Context.api);
+                await this.getItem();
+                this.processSuccess = true;
+            } catch (exception) {
+                this.createNotificationError({
+                    title: this.$tc('rhae-tweakwise-frontend.notification.errorTitle'),
+                    message: exception
                 });
+            } finally {
+                this.isLoading = false;
+            }
         },
         setSalesChannelDomains(salesChannelDomains) {
             this.salesChannelDomains = salesChannelDomains;

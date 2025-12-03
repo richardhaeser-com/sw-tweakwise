@@ -21,6 +21,7 @@ parameters:
         - '#imagettftext#'
         - '#class Redis#'
         - '#Constant STARTTIME#'
+        - '#Access to an undefined property Shopware\\Core\\Content\\Product\\ProductEntity\:\:\$calculatedPrice#'
 
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false
