@@ -157,6 +157,7 @@
                                             :name="option"
                                             :value="isChecked('main', option)"
                                             @update:value="setSelectedProperty($event, option, 'main')"
+                                            @change="setSelectedProperty($event, option, 'main')"
                                             :label="$tc('rhae-tweakwise-frontend.detail.label.backendSyncOptions.main.' + label)"
                                     />
                                 </sw-container>
@@ -172,7 +173,11 @@
                                             v-for="(label, option) in backendSyncOptions['properties']"
                                             :name="option"
                                             :value="isChecked('properties', option)"
-                                            @update:value="setSelectedProperty($event, option, 'properties')"
+                                            {% if VUE3 %}
+                                                @update:value="setSelectedProperty($event, option, 'properties')"
+                                            {% else %}
+                                                @change="setSelectedProperty($event, option, 'properties')"
+                                            {% endif %}
                                             :label="label"
                                     />
                                 </sw-container>
@@ -188,7 +193,11 @@
                                             v-for="(label, option) in backendSyncOptions['customFields']"
                                             :name="option"
                                             :value="isChecked('customFields', option)"
-                                            @update:value="setSelectedProperty($event, option, 'customFields')"
+                                            {% if VUE3 %}
+                                                @update:value="setSelectedProperty($event, option, 'customFields')"
+                                            {% else %}
+                                                @change="setSelectedProperty($event, option, 'customFields')"
+                                            {% endif %}
                                             :label="label"
                                     />
                                 </sw-container>
