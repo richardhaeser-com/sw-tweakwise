@@ -148,6 +148,7 @@
                 window.addEventListener("twn.suggestions.ready", function () {
                     window.tweakwiseSuggestions({
                         input: "#tweakwise-suggestions",
+                        lang: "{{ languageKey }}",
                         instancekey: "{{ instanceKey }}",
                         parameters: "visibility=3%7C4",
                         cid: "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}",

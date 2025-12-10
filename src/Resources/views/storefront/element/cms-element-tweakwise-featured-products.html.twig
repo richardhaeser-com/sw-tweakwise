@@ -1,5 +1,7 @@
 {% block tweakwise_featured_products %}
     {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
+    {% set languageKey = (page.header.activeLanguage.translationCode.code ?? context.languageInfo.localeCode)|split('-')[0]|escape %}
+
     {% if element.config.groupId.value and instanceKey %}
         {% set event = 'twn.recommendations.ready' %}
         {% if page.extensions.twConfiguration.integration == 'javascript' %}
@@ -15,6 +17,7 @@
             window.addEventListener("{{ event }}", function () {
                 tweakwiseRecommendations({
                     instancekey: "{{ instanceKey }}",
+                    lang: "{{ languageKey }}",
                     output: "#tweakwise-featured-recommendations-{{ element.id }}",
                     featured: {
                         id: "{{ element.config.groupId.value }}"
