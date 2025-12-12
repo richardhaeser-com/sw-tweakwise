@@ -30,10 +30,10 @@ class CustomFieldValueExtension extends AbstractExtension
                 }
             } elseif (is_iterable($fieldValue)) {
                 $flat = [];
-                array_walk_recursive($fieldValue, function($v) use (&$flat) {
+                array_walk_recursive($fieldValue, function ($v) use (&$flat) {
                     $flat[] = $v;
                 });
-                
+
                 return implode(', ', $flat);
             } else {
                 return (string)$fieldValue;
