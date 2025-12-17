@@ -72,6 +72,11 @@
                     "0": "Nee",
                     "1": "Ja"
                 }
+            },
+            "generate": {
+                "heading": "Genereer feed",
+                "text": "The Tweakwise feed is automatically generated periodically. If you want to generate the feed now, you can do this by using the button on the right.",
+                "button": "Genereer feed"
             }
         }
     }
