@@ -15,6 +15,7 @@ use Shopware\Storefront\Event\StorefrontRenderEvent;
 use Shopware\Storefront\Framework\Twig\ErrorTemplateStruct;
 use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Page\Product\ProductPage;
+use Shopware\Storefront\Pagelet\Header\HeaderPagelet;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
