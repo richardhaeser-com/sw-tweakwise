@@ -29,7 +29,8 @@
         "backendSyncCustomFields": "Vrije tekstvelden"
       },
       "info": {
-        "backendSync": "Wanneer deze optie is geactiveerd, krijg je de mogelijkheid om een product direct te synchroniseren met Tweakwise op de product pagina in de Shopware admin"
+        "backendSync": "Wanneer deze optie is geactiveerd, krijg je de mogelijkheid om een product direct te synchroniseren met Tweakwise op de product pagina in de Shopware admin",
+        "backendSyncBeta": "<strong>Experimentele functie:</strong> Neem contact met ons op als je onverwachte fouten ervaart"
       },
       "label": {
         "name": "Naam",
@@ -58,7 +59,10 @@
             "name": "Naam",
             "unitPrice": "Prijs per stuk",
             "availableStock": "Beschikbare voorraad",
-            "manufacturer": "Fabrikant"
+            "manufacturer": "Fabrikant",
+            "url": "Url",
+            "images": "Afbeeldingen",
+            "categories": "Categorieën"
           }
         },
         "fullPathCid": "Laat categorieën met dezelfde bovenliggende categorie zien bij categorie filters",

@@ -21,9 +21,9 @@
     "plugin-icon": "src/Resources/config/plugin.png",
     "copyright": "richardhaeser.com",
     "description": {
-      "de-DE": "Integrate Tweakwise in your Shopware 6 installation. Use the outstanding search and merchandise features of Tweakwise to enhance your webshop. This will integrate the JavaScript version of Tweakwise.",
-      "en-GB": "Integrate Tweakwise in your Shopware 6 installation. Use the outstanding search and merchandise features of Tweakwise to enhance your webshop. This will integrate the JavaScript version of Tweakwise.",
-      "nl-NL": "Integreer Tweakwise in jouw Shopware 6 installatie. Gebruik de uitstekende zoek en merchandise functies van Tweakwise om je webshop te verbeteren. Dit zal de JavaScript versie van Tweakwise in je shop integreren."
+      "de-DE": "Integrate Tweakwise in Shopware 6. Use the search and merchandise features of Tweakwise to enhance your webshop. This will integrate the JavaScript version of Tweakwise.",
+      "en-GB": "Integrate Tweakwise in Shopware 6. Use the search and merchandise features of Tweakwise to enhance your webshop. This will integrate the JavaScript version of Tweakwise.",
+      "nl-NL": "Integreer Tweakwise in Shopware 6. Gebruik de zoek en merchandise functies van Tweakwise om je webshop te verbeteren. Dit zal de JavaScript versie van Tweakwise in je shop integreren."
     },
     "label": {
       "de-DE": "Tweakwise für Shopware 6",
