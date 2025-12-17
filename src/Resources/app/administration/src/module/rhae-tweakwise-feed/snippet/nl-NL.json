@@ -61,7 +61,17 @@
                 },
                 "generateNow": "Opnieuw genereren",
                 "withinOneMinute": "Binnen een minuut",
-                "groupedProducts": "Exporteer alle varianten naar Tweakwise, zonder rekening te houden met de Shopware-instellingen"
+                "groupedProducts": "Exporteer alle varianten naar Tweakwise, zonder rekening te houden met de Shopware-instellingen",
+                "exclude": "Met de opties hier beneden, kan je bepalen welke data beschikbaar wordt in de feed. Door relaties te verwijderen, zal er minder geheugen gebruikt worden. Gebruik alleen deze opties als je bekend bent met de data-structuur van Shopware producten",
+                "excludeChildren": "Ik heb geen varianten. Verwijder de relatie met onderliggende producten",
+                "excludeReviews": "Don't add data of product reviews to the feed. The relation with reviews will not be made",
+                "excludeTags": "Tags should not be added to the feed. Remove the relation with tags",
+                "excludeOptions": "Options defining the variant should not be added to the feed. Remove the relation with options",
+                "excludeProperties": "Options that are not defining the variant should not be added to the feed. Remote the relation with properties",
+                "yesno": {
+                    "0": "Nee",
+                    "1": "Ja"
+                }
             }
         }
     }
