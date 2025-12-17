@@ -97,7 +97,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
                 'twConfiguration' => new ArrayStruct($twConfiguration),
             ]);
         }
-        
+
         $header = $parameters['header'] ?? null;
         if ($header instanceof HeaderPagelet) {
             $header->addExtensions([
