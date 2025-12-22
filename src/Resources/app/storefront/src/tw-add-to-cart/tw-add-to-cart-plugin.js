@@ -12,6 +12,27 @@ export default class TwAddToCartPlugin extends Plugin {
         const twAddToCart = this._addToCart.bind(this);
 
         window.addEventListener('twAddToCart', twAddToCart);
+
+        document.addEventListener(
+            'submit',
+            (event) => {
+                if (typeof tweakwiseProductId === 'undefined' || !tweakwiseProductId) {
+                    return;
+                }
+
+                const form = event.target.closest(
+                    '.is-ctl-product form[data-add-to-cart="true"]'
+                );
+
+                if (!form) {
+                    return;
+                }
+
+                const data = this._extractAddToCartData(form);
+                this._fireEventTag(data);
+            },
+            true
+        );
     }
 
     _extractShopwareUUID(input) {
@@ -105,5 +126,70 @@ export default class TwAddToCartPlugin extends Plugin {
         instance.openOffCanvas(requestUrl, formData, () => {
             this.$emitter.publish('openOffCanvasCart');
         });
+    }
+
+    _fireEventTag({ quantity, unitPrice, total }) {
+        tweakwiseLayer.push({
+            event: 'addtocart',
+            data: {
+                productKey: tweakwiseProductId,
+                quantity: quantity,
+                totalAmount: total
+            }
+        });
+    }
+
+    _extractAddToCartData(form) {
+        const qtyInput = form.querySelector('input[name^="lineItems["][name$="[quantity]"]');
+
+        let quantity = 1;
+
+        if (qtyInput) {
+            quantity = parseInt(qtyInput.value || '1', 10);
+            if (Number.isNaN(quantity) || quantity < 1) quantity = 1;
+        }
+
+        const unitPrice = this._getUnitPriceFromDom();
+        const total = unitPrice !== null ? this._roundMoney(unitPrice * quantity) : null;
+
+        return {
+            quantity,
+            unitPrice,
+            total,
+        };
+    }
+
+    _getUnitPriceFromDom() {
+        const priceEl =
+            document.querySelector('.product-detail-price') ||
+            document.querySelector('[data-product-price]') ||
+            document.querySelector('meta[property="product:price:amount"]');
+
+        if (!priceEl) return null;
+
+        const dataValue = priceEl.getAttribute('data-product-price');
+        if (dataValue && !Number.isNaN(parseFloat(dataValue))) {
+            return parseFloat(dataValue);
+        }
+
+        const metaPropertyValue = priceEl.getAttribute('content');
+        if (metaPropertyValue  && !Number.isNaN(parseFloat(metaPropertyValue))) {
+            return parseFloat(metaPropertyValue);
+        }
+
+        // Fallback: parse uit tekst (bv "€ 19,95")
+        const text = (priceEl.textContent || '').trim();
+        const normalized = text
+            .replace(/\s/g, '')
+            .replace(/[^\d,.-]/g, '')
+            .replace(/\.(?=\d{3}(\D|$))/g, '')
+            .replace(',', '.');
+
+        const value = parseFloat(normalized);
+        return Number.isFinite(value) ? value : null;
+    }
+
+    _roundMoney(value) {
+        return Math.round((value + Number.EPSILON) * 100) / 100;
     }
 }
