@@ -29,7 +29,12 @@ class CustomFieldValueExtension extends AbstractExtension
                     return '';
                 }
             } elseif (is_iterable($fieldValue)) {
-                return implode(', ', $fieldValue);
+                $flat = [];
+                array_walk_recursive($fieldValue, function ($v) use (&$flat) {
+                    $flat[] = $v;
+                });
+
+                return implode(', ', $flat);
             } else {
                 return (string)$fieldValue;
             }
