@@ -22,12 +22,15 @@ export default class TwAddToFavoritesPlugin extends Plugin {
     _registerEvents() {
         const twNavigationSuccess = this._navigationSuccess.bind(this);
         const twAddToFavorites = this._addToFavorites.bind(this);
+        const fireEventTag = this._fireEventTag.bind(this);
 
         document.$emitter.subscribe('Wishlist/onProductsLoaded', () => {
             wishlistProductsLoaded = true;
         })
         window.addEventListener('twAddToFavorites', twAddToFavorites);
         window.addEventListener('twInitFavorites', twNavigationSuccess);
+
+        document.querySelector('button[data-add-to-wishlist]').addEventListener('click', fireEventTag)
     }
 
 
@@ -100,5 +103,18 @@ export default class TwAddToFavoritesPlugin extends Plugin {
 
         this._wishlistStorage = window.PluginManager.getPluginInstanceFromElement(wishlistBasketElement, 'WishlistStorage');
         this._wishlistStorage.load();
+    }
+
+    _fireEventTag() {
+        if (typeof tweakwiseProductId === 'undefined' || !tweakwiseProductId) {
+            return;
+        }
+
+        tweakwiseLayer.push({
+            event: 'addtowishlist',
+            data: {
+                productKey: tweakwiseProductId,
+            }
+        });
     }
 }
