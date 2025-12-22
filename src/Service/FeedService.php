@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Service;
 
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use function array_key_exists;
 use function array_unique;
 use Cron\CronExpression;
@@ -95,7 +96,8 @@ class FeedService
         private readonly RouterInterface $router,
         private readonly AbstractProductPriceCalculator $calculator,
         private readonly SystemConfigService $systemConfigService,
-        private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory
+        private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory,
+        private readonly SalesChannelRepository $salesChannelRepository
     ) {
     }
 
@@ -357,15 +359,7 @@ class FeedService
                 ])
             );
             $criteria->addAssociation('prices');
-            $entities = $this->productRepository->search($criteria, $salesChannelContext->getContext());
-            foreach ($entities as $entity) {
-                $entity->assign([
-                    'calculatedPrices' => new PriceCollection(),
-                    'calculatedListingPrice' => null,
-                    'calculatedPrice' => null,
-                    'cheapestPrice' => null,
-                ]);
-            }
+            $entities = $this->salesChannelRepository->search($criteria, $salesChannelContext);
             $this->calculator->calculate($entities, $salesChannelContext);
         } else {
             $entities = $this->listingLoader->load($criteria, $salesChannelContext);
