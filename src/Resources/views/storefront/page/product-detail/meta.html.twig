@@ -5,11 +5,12 @@
 
     {% if page.extensions.twConfiguration.eventTagEnabled and page.extensions.twConfiguration.crossSellProductId  %}
 <script>
+    tweakwiseProductId = '{{ page.extensions.twConfiguration.crossSellProductId }}';
+
     (async () => {
         window.tweakwiseLayer = window.tweakwiseLayer || [];
 
         const profileKey = await window.tweakwise.getProfileKey();
-        const tweakwiseProductId = '{{ page.extensions.twConfiguration.crossSellProductId }}'
 
         window.tweakwiseLayer.push({
             event: 'productView',

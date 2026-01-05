@@ -1,0 +1,17 @@
+{% sw_extends '@Storefront/storefront/component/product/card/action.html.twig' %}
+
+{% block component_product_box_action_form %}
+    {% set real = product.calculatedPrice %}
+    {% if product.calculatedPrices.count > 0 %}
+        {% set real = product.calculatedPrices.last %}
+    {% endif %}
+
+    <input type="hidden"
+           name="tweakwiseProductId"
+           value="{{ tweakwise_cross_sell_product_id(product, context.domainId) }}">
+    <input type="hidden"
+           name="tweakwiseProductPrice"
+           value="{{ real.unitPrice }}">
+
+    {{ parent() }}
+{% endblock %}

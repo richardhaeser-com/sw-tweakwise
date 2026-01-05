@@ -1,8 +1,6 @@
 {% sw_extends '@Storefront/storefront/page/checkout/finish/index.html.twig' %}
 
-{% block base_header %}
-    {{ parent() }}
-
+{% block page_checkout_main_content %}
     {% if page.extensions.twConfiguration.eventTagEnabled %}
         {% set tweakwiseBoughtItems = [] %}
         {% for item in page.order.nestedLineItems %}
@@ -33,4 +31,6 @@
             })();
         </script>
     {% endif %}
+
+    {{ parent() }}
 {% endblock %}

@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
-- We added the add-to-cart and add-to-wishlist event tags on the product detail page as well. This way we also track these actions on the product detail and not only on the listing pages. 
+- We added the add-to-cart and add-to-wishlist event tags on the product detail page as well. This way we also track these actions on the product detail and not only on the listing pages.
+- Events will now be collected even if you have not enabled the frontend implementation. This will give you the option to collect data before implementing the search and merchandise options.  
 
 ### Changed
 - We changed the way the profile key is defined for the event tag. Now the profile key is not cached anymore when using full page caching.
