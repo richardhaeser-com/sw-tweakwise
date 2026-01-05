@@ -5,15 +5,20 @@
 
     {% if page.extensions.twConfiguration.eventTagEnabled and page.extensions.twConfiguration.crossSellProductId  %}
 <script>
-    const tweakwiseProductId = '{{ page.extensions.twConfiguration.crossSellProductId }}'
+    (async () => {
+        window.tweakwiseLayer = window.tweakwiseLayer || [];
 
-    tweakwiseLayer.push({
-        event: 'productView',
-        data: {
-            profileKey: '{{ page.extensions.twConfiguration.profileKey }}',
-            productKey: tweakwiseProductId
-        }
-    });
+        const profileKey = await window.tweakwise.getProfileKey();
+        const tweakwiseProductId = '{{ page.extensions.twConfiguration.crossSellProductId }}'
+
+        window.tweakwiseLayer.push({
+            event: 'productView',
+            data: {
+                profileKey: profileKey,
+                productKey: tweakwiseProductId
+            }
+        });
+    })();
 </script>
     {% endif %}
 {% endblock %}

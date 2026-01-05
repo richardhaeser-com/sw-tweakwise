@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+- We added the add-to-cart and add-to-wishlist event tags on the product detail page as well. This way we also track these actions on the product detail and not only on the listing pages. 
+
+### Changed
+- We changed the way the profile key is defined for the event tag. Now the profile key is not cached anymore when using full page caching.
+- Only show Tweakwise tab on product editing screen in admin when backend sync is enabled for at least one instance
+- Added the language parameter in several places to make sure you get the best values for the language of the current domain
+- Refactored the feed generation a bit to get rid of deprecation notices when using grouped products
+- Flatten iterable values in CustomFieldValueExtension to make these values are also added to the feed (thanks to @quisse)
+
+### Fixed
+- The languageKey assignment is updated to handle null case (thanks to @damian-pastorini)
+
 ## [5.3.0] - 03-12-2025
 
 ### Added

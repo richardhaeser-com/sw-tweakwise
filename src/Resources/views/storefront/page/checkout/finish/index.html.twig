@@ -17,14 +17,20 @@
         {% endif %}
 
         <script>
-            tweakwiseLayer.push({
-                event: 'purchase',
-                data: {
-                    profileKey: '{{ page.extensions.twConfiguration.profileKey }}',
-                    productKeys: [{{ tweakwiseBoughtItems|map(i => '"' ~ i ~ '"')|join(',')|raw }}],
-                    revenue: {{ revenue|floatval }}
-                }
-            });
+            (async () => {
+                window.tweakwiseLayer = window.tweakwiseLayer || [];
+
+                const profileKey = await window.tweakwise.getProfileKey();
+
+                window.tweakwiseLayer.push({
+                    event: 'purchase',
+                    data: {
+                        profileKey: profileKey,
+                        productKeys: [{{ tweakwiseBoughtItems|map(i => '"' ~ i ~ '"')|join(',')|raw }}],
+                        revenue: {{ revenue|floatval }}
+                    }
+                });
+            })();
         </script>
     {% endif %}
 {% endblock %}

@@ -30,7 +30,7 @@ export default class TwAddToFavoritesPlugin extends Plugin {
         window.addEventListener('twAddToFavorites', twAddToFavorites);
         window.addEventListener('twInitFavorites', twNavigationSuccess);
 
-        document.querySelector('button[data-add-to-wishlist]').addEventListener('click', fireEventTag)
+        document.querySelector('button[data-add-to-wishlist]')?.addEventListener('click', fireEventTag)
     }
 
 

@@ -24,39 +24,43 @@ class CustomerLoginSubscriber implements EventSubscriberInterface
     public function onCustomerLogin(CustomerLoginEvent $event): void
     {
         $request = $this->requestStack->getCurrentRequest();
-
-        if (!$request) {
+        if (!$request || !$request->hasSession()) {
             return;
         }
 
-        $route = $request->attributes->get('_route');
+        $route = (string) $request->attributes->get('_route', '');
         if ($route === 'payment.finalize.transaction') {
             return;
         }
-        $session = $request->getSession();
-        $profileKey = $session->get('tweakwise_profile_key');
 
-        if (!$profileKey) {
-            $profileKey = Uuid::randomHex();
-            $session->set('tweakwise_profile_key', $profileKey);
+        $session = $request->getSession();
+        if (!$session->isStarted()) {
+            $session->start();
         }
 
         $customer = $event->getCustomer();
         $customFields = $customer->getCustomFields() ?? [];
 
-        // Als het custom field nog niet gevuld is, vul het met de sessiewaarde
-        if (empty($customFields['tweakwise_profile_key'])) {
-            $customFields['tweakwise_profile_key'] = $profileKey;
+        $customerProfileKey = $customFields['tweakwise_profile_key'] ?? null;
+        $sessionProfileKey = $session->get('tweakwise_profile_key');
 
-            $this->customerRepository->update([
-                [
-                    'id' => $customer->getId(),
-                    'customFields' => $customFields,
-                ]
-            ], $event->getContext());
-        } else {
-            // Als het custom field al gevuld is, pas dan de sessie aan zodat deze de bestaande waarde bevat
-            $session->set('tweakwise_profile_key', $customFields['tweakwise_profile_key']);
+        // Bron van waarheid:
+        // 1) bestaande customer key
+        // 2) bestaande session key
+        // 3) nieuwe key
+        $finalProfileKey = $customerProfileKey ?: ($sessionProfileKey ?: Uuid::randomHex());
+
+        // Sessie altijd gelijk trekken (overschrijft dus indien nodig)
+        $session->set('tweakwise_profile_key', $finalProfileKey);
+
+        // Customer custom field vullen als die nog leeg is
+        if (!$customerProfileKey) {
+            $customFields['tweakwise_profile_key'] = $finalProfileKey;
+
+            $this->customerRepository->update([[
+                'id' => $customer->getId(),
+                'customFields' => $customFields,
+            ]], $event->getContext());
         }
     }
 }
