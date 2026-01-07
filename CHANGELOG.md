@@ -6,12 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [4.8.0] - 07-01-2026
 
 ### Added
 - We added the add-to-cart and add-to-wishlist event tags on the product detail page as well. This way we also track these actions on the product detail and not only on the listing pages.
+- Events will now be collected even if you have not enabled the frontend implementation. This will give you the option to collect data before implementing the search and merchandise options.
 
 ### Changed
+- We changed the way the profile key is defined for the event tag. Now the profile key is not cached anymore when using full page caching.
 - Added the language parameter in several places to make sure you get the best values for the language of the current domain
 - Flatten iterable values in CustomFieldValueExtension to make these values are also added to the feed (thanks to @quisse)
 
