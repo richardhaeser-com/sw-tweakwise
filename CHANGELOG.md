@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - The languageKey assignment is updated to handle null case (thanks to @damian-pastorini)
+- Added missing argument in services definition preventing messages about too few arguments
 
 ## [5.3.0] - 03-12-2025
 
