@@ -1,0 +1,21 @@
+{% block sw_cms_element_tweakwise_attribute_landing_page_config %}
+    <sw-text-field
+        v-model="groupId"
+        class="swag-groupid-field"
+        :label="$tc('sw-cms.elements.tweakwiseFeaturedProducts.config.groupId.label')"
+        :help-text="$tc('sw-cms.elements.tweakwiseFeaturedProducts.config.groupId.helpText')"
+        required
+        :placeholder="$tc('sw-cms.elements.tweakwiseFeaturedProducts.config.groupId.placeHolder')"
+        @input="onElementUpdate"
+        @change="onElementUpdate"
+        @update:value="onElementUpdate"
+    >
+    </sw-text-field>
+
+    <mt-select
+            v-model="category"
+            :options="categoryOptions"
+            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.category.placeHolder')"
+            :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.category.label')"
+    />
+{% endblock %}

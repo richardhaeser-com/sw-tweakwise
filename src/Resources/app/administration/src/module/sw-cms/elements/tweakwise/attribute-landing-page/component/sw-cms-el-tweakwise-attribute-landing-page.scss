@@ -1,0 +1,21 @@
+.sw-cms-el-tweakwise-attribute-landing-page {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 20px 5px;
+  height: 100%;
+
+  .sw-cms-product-box-preview.has--text {
+	grid-template-rows: 140px 70px 26px;
+  }
+
+  .sw-cms-product-box-preview .sw-cms-product-box-preview__image {
+	height: 100%;
+  }
+
+  img {
+	margin: 0;
+	display: block;
+	max-width: 100%;
+  }
+}

@@ -1,0 +1,6 @@
+{% block tweakwise_attribute_landing_page %}
+    {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
+    {% set languageKey = (page.header.activeLanguage.translationCode.code ?? context.languageInfo.localeCode)|split('-')[0]|escape %}
+
+    hier de content
+{% endblock %}

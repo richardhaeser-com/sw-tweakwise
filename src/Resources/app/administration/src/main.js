@@ -1,8 +1,10 @@
 import './module/sw-cms/blocks/tweakwise/cross-selling';
 import './module/sw-cms/blocks/tweakwise/featured-products';
+import './module/sw-cms/blocks/tweakwise/attribute-landing-page';
 import './module/sw-cms/elements/product-listing';
 import './module/sw-cms/elements/tweakwise/cross-selling';
 import './module/sw-cms/elements/tweakwise/featured-products';
+import './module/sw-cms/elements/tweakwise/attribute-landing-page';
 import './module/sw-product';
 import './module/rhae-tweakwise-feed';
 import './module/rhae-tweakwise-frontend';

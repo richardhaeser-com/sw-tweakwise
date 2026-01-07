@@ -1,0 +1,15 @@
+{
+  "sw-cms": {
+    "elements": {
+      "tweakwiseAttributeLandingPage": {
+        "label": "Tweakwise Attribute Landing Page",
+        "config": {
+          "category": {
+            "label": "Category",
+            "placeHolder": "Select a category"
+          }
+        }
+      }
+    }
+  }
+}
