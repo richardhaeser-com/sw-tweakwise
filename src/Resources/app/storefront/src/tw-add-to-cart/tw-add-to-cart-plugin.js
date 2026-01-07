@@ -16,20 +16,17 @@ export default class TwAddToCartPlugin extends Plugin {
         document.addEventListener(
             'submit',
             (event) => {
-                if (typeof tweakwiseProductId === 'undefined' || !tweakwiseProductId) {
-                    return;
-                }
-
                 const form = event.target.closest(
-                    '.is-ctl-product form[data-add-to-cart="true"]'
+                    'form[data-add-to-cart="true"]'
                 );
-
                 if (!form) {
                     return;
                 }
 
                 const data = this._extractAddToCartData(form);
-                this._fireEventTag(data);
+                if (data) {
+                    this._fireEventTag(data);
+                }
             },
             true
         );
@@ -128,7 +125,7 @@ export default class TwAddToCartPlugin extends Plugin {
         });
     }
 
-    _fireEventTag({ quantity, unitPrice, total }) {
+    _fireEventTag({ quantity, unitPrice, total, tweakwiseProductId }) {
         tweakwiseLayer.push({
             event: 'addtocart',
             data: {
@@ -140,6 +137,15 @@ export default class TwAddToCartPlugin extends Plugin {
     }
 
     _extractAddToCartData(form) {
+        if (typeof tweakwiseProductId === 'undefined' || !tweakwiseProductId) {
+            const tweakwiseProductIdElement = form.querySelector('input[name="tweakwiseProductId"]');
+            if (tweakwiseProductIdElement) {
+                tweakwiseProductId = tweakwiseProductIdElement.value;
+            } else {
+                return;
+            }
+        }
+
         const qtyInput = form.querySelector('input[name^="lineItems["][name$="[quantity]"]');
 
         let quantity = 1;
@@ -149,13 +155,23 @@ export default class TwAddToCartPlugin extends Plugin {
             if (Number.isNaN(quantity) || quantity < 1) quantity = 1;
         }
 
-        const unitPrice = this._getUnitPriceFromDom();
-        const total = unitPrice !== null ? this._roundMoney(unitPrice * quantity) : null;
+        let unitPrice = this._getUnitPriceFromDom();
+        if (!unitPrice) {
+            const tweakwisePriceElement = form.querySelector('input[name="tweakwiseProductPrice"]');
+            if (tweakwisePriceElement) {
+                unitPrice = tweakwisePriceElement.value;
+            } else {
+                unitPrice = 0;
+            }
+        }
+
+        const total = unitPrice !== null ? this._roundMoney(unitPrice * quantity) : 0;
 
         return {
             quantity,
             unitPrice,
             total,
+            tweakwiseProductId
         };
     }
 

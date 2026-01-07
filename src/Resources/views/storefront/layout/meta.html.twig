@@ -2,7 +2,7 @@
 
 {% block layout_head_meta_tags %}
     {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
-    {% set languageKey = page.header.activeLanguage.translationCode.code|split('-')[0]|escape %}
+    {% set languageKey = (page.header.activeLanguage.translationCode.code ?? context.languageInfo.localeCode)|split('-')[0]|escape %}
     {% set wayOfSearch = page.extensions.twConfiguration.wayOfSearch|escape %}
 
     {{ parent() }}
@@ -31,22 +31,35 @@
 
         {% if instanceKey %}
             <script>
-                var profileKey = '{{ page.extensions.twConfiguration.profileKey }}';
-                (function(w, d, l, i, p, u) {
-                    w['_twa'] = l;
-                    w[l] = w[l] || [];
-                    w[l].push({ 'twa.start': new Date().getTime(), event: 'twa.js' });
-                    w[l].push({ 'twa.instance': i, event: 'twa.init' });
+                (function () {
+                    window.tweakwise = window.tweakwise || {};
+                    if (typeof window.tweakwise.getProfileKey === 'function') return;
 
-                    p && w[l].push({ 'twa.profile': p, event: 'twa.profile' });
-                                if(p){ w[l].getProfileKey = function(){ return p; } }
+                    window.tweakwise.getProfileKey = function () {
+                        const cached = window.sessionStorage.getItem('tweakwise_profile_key');
+                        if (cached) return Promise.resolve(cached);
 
-                    var f = d.getElementsByTagName('script')[0],
-                        j = d.createElement('script');
-                    j.async = true;
-                    j.src = u;
-                    f.parentNode.insertBefore(j, f);
-                })(window, document, 'tweakwiseLayer', '{{ instanceKey }}', profileKey, "//navigator-analytics.tweakwise.com/bundles/scout.js");
+                        return fetch('/tweakwise/profile-key', {
+                            credentials: 'same-origin',
+                            headers: { 'Accept': 'application/json' }
+                        })
+                            .then(r => {
+                                if (!r.ok) throw new Error('Failed to load profile key (' + r.status + ')');
+                                return r.json();
+                            })
+                            .then(json => {
+                                window.sessionStorage.setItem('tweakwise_profile_key', json.profileKey);
+                                return json.profileKey;
+                            });
+                    };
+                })();
+            </script>
+
+
+            <script>
+                let tweakwiseProductId;
+                window.tweakwiseConfig = window.tweakwiseConfig || {};
+                window.tweakwiseConfig.instanceKey = '{{ instanceKey }}';
             </script>
         {% endif %}
     {% endblock %}

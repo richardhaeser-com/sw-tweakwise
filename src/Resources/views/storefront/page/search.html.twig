@@ -12,17 +12,28 @@
 
     {% if page.extensions.twConfiguration.eventTagEnabled %}
     <script>
-        window.addEventListener('twSuccess', function(e) {
+        window.addEventListener('twSuccess', function (e) {
             const searchTerm = e?.detail?.data?.properties?.searchterm;
-            if (searchTerm !== undefined) {
-                tweakwiseLayer.push({
-                     event: 'search',
-                     data: {
-                         profileKey: '{{ page.extensions.twConfiguration.profileKey }}',
-                         searchTerm: searchTerm
-                     }
-                 });
+            if (searchTerm === undefined) {
+                return;
             }
+
+            (async () => {
+                if (!window.tweakwise || typeof window.tweakwise.getProfileKey !== 'function') {
+                    return;
+                }
+
+                const profileKey = await window.tweakwise.getProfileKey();
+
+                window.tweakwiseLayer = window.tweakwiseLayer || [];
+                window.tweakwiseLayer.push({
+                    event: 'search',
+                    data: {
+                        profileKey: profileKey,
+                        searchTerm: searchTerm
+                    }
+                });
+            })();
         });
     </script>
     {% endif %}

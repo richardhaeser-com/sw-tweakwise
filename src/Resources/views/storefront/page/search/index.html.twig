@@ -1,0 +1,27 @@
+{% sw_extends '@Storefront/storefront/page/search/index.html.twig' %}
+
+{% block page_search %}
+    {% if page.extensions.twConfiguration.eventTagEnabled and page.searchTerm %}
+        <script>
+            const searchTerm = '{{ page.searchTerm }}';
+            (async () => {
+                if (!window.tweakwise || typeof window.tweakwise.getProfileKey !== 'function') {
+                    return;
+                }
+
+                const profileKey = await window.tweakwise.getProfileKey();
+
+                window.tweakwiseLayer = window.tweakwiseLayer || [];
+                window.tweakwiseLayer.push({
+                    event: 'search',
+                    data: {
+                        profileKey: profileKey,
+                        searchTerm: searchTerm
+                    }
+                });
+            })();
+        </script>
+    {% endif %}
+
+    {{ parent() }}
+{% endblock %}
