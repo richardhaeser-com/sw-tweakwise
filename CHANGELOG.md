@@ -8,8 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- We added the add-to-cart and add-to-wishlist event tags on the product detail page as well. This way we also track these actions on the product detail and not only on the listing pages.
+
 ### Changed
 - Added the language parameter in several places to make sure you get the best values for the language of the current domain
+- Flatten iterable values in CustomFieldValueExtension to make these values are also added to the feed (thanks to @quisse)
 
 ## [4.7.1] - 09-12-2025
 
