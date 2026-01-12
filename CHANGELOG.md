@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [5.4.0] - 07-01-2026
 
 ### Added
 - We added the add-to-cart and add-to-wishlist event tags on the product detail page as well. This way we also track these actions on the product detail and not only on the listing pages.
@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - The languageKey assignment is updated to handle null case (thanks to @damian-pastorini)
+- Added missing argument in services definition preventing messages about too few arguments
 
 ## [5.3.0] - 03-12-2025
 
