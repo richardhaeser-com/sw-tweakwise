@@ -47,12 +47,6 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         $domainId = $event->getSalesChannelContext()->getDomainId();
         $rootCategoryId = $event->getSalesChannelContext()->getSalesChannel()->getNavigationCategoryId();
 
-        $categoryData = [];
-        $navigationTree = $this->navigationLoader->load($rootCategoryId, $event->getSalesChannelContext(), $rootCategoryId, 99);
-        foreach ($navigationTree->getTree() as $treeItem) {
-            $this->parseCategoryData($categoryData, $domainId, $treeItem);
-        }
-
         $request = $this->requestStack->getCurrentRequest();
         if (!$request) {
             return;
@@ -87,7 +81,6 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
                 'featuredProductsId' => $result->getCheckoutSalesFeaturedProductsId(),
                 'recommendationsGroupKey' => $result->getCheckoutSalesRecommendationsGroupKey(),
             ],
-            'categoryData' => $categoryData
         ];
 
         $parameters = $event->getParameters();
