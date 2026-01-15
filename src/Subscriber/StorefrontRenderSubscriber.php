@@ -4,7 +4,6 @@ namespace RH\Tweakwise\Subscriber;
 
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
 use RH\Tweakwise\Service\ProductDataService;
-use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -20,7 +19,10 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class StorefrontRenderSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly EntityRepository $frontendRepository, private readonly NavigationLoader $navigationLoader, private readonly ProductDataService $productDataService, private readonly RequestStack $requestStack)
+    public function __construct(
+        private readonly EntityRepository $frontendRepository,
+        private readonly ProductDataService $productDataService,
+        private readonly RequestStack $requestStack)
     {
     }
 
@@ -94,19 +96,6 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
             $page->addExtensions([
                 'twConfiguration' => new ArrayStruct($twConfiguration),
             ]);
-        }
-    }
-
-    private function parseCategoryData(&$categoryData, $domainId, TreeItem $treeItem): void
-    {
-        $category = $treeItem->getCategory();
-        $id = md5($category->getId() . '_' . $domainId);
-        $categoryData[$id] = $category->getId();
-
-        if ($treeItem->getChildren()) {
-            foreach ($treeItem->getChildren() as $child) {
-                $this->parseCategoryData($categoryData, $domainId, $child);
-            }
         }
     }
 }
