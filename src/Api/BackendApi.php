@@ -69,28 +69,6 @@ class BackendApi
         return $data;
     }
 
-    public function getFilterTemplates(): array
-    {
-        try {
-            $response = $this->client->request(
-                'GET',
-                $this->apiUrl . '/filtertemplate',
-                [
-                    'headers' => [
-                        'TWN-InstanceKey' => $this->instanceKey,
-                        'TWN-Authentication' => $this->accessToken,
-                        'accept' => 'application/json',
-                    ],
-                ]
-            );
-        } catch (GuzzleException $exception) {
-            return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
-        }
-
-        $data = json_decode($response->getBody()->getContents(), true);
-        return $data;
-    }
-
     public function getFilterAttributes(): array
     {
         try {
@@ -101,48 +79,6 @@ class BackendApi
                     'headers' => [
                         'TWN-InstanceKey' => $this->instanceKey,
                         'TWN-Authentication' => $this->accessToken,
-                        'accept' => 'application/json',
-                    ],
-                ]
-            );
-        } catch (GuzzleException $exception) {
-            return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
-        }
-
-        $data = json_decode($response->getBody()->getContents(), true);
-        return $data;
-    }
-
-    public function getBuilderTemplates(): array
-    {
-        try {
-            $response = $this->client->request(
-                'GET',
-                $this->apiUrl . '/builder',
-                [
-                    'headers' => [
-                        'TWN-InstanceKey' => $this->instanceKey,
-                        'TWN-Authentication' => $this->accessToken,
-                        'accept' => 'application/json',
-                    ],
-                ]
-            );
-        } catch (GuzzleException $exception) {
-            return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
-        }
-
-        $data = json_decode($response->getBody()->getContents(), true);
-        return $data;
-    }
-
-    public function getSortTemplates(): array
-    {
-        try {
-            $response = $this->client->request(
-                'GET',
-                $this->frontendApiUrl . '/catalog/sorttemplates/' . $this->instanceKey,
-                [
-                    'headers' => [
                         'accept' => 'application/json',
                     ],
                 ]

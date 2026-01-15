@@ -1,0 +1,21 @@
+.tweakwise-filter-card {
+  position: relative;
+
+  &.is-disabled {
+    z-index:0;
+  }
+
+  .tweakwise-filter-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: all;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+

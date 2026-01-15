@@ -23,6 +23,7 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -36,7 +37,8 @@ class AdminController extends AbstractController
         private EntityRepository $customFieldSetRepository,
         private readonly AbstractProductPriceCalculator $calculator,
         private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
-        private RouterInterface $router
+        private RouterInterface $router,
+        private readonly RequestStack $requestStack,
     ) {
     }
     #[Route('/api/_action/rhae-tweakwise/check-possibilities/{token}', name: 'rhae.tweakwise.check_possibilities', methods: ['GET'])]
@@ -225,8 +227,8 @@ class AdminController extends AbstractController
             return new JsonResponse([]);
         }
 
-        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
-        $data = $backendApi->getCategoryTree();
+        $frontendApi = new FrontendApi($frontend->getToken());
+        $data = $frontendApi->getCategoryTree();
         $categoryTree = [];
         if (!array_key_exists('error', $data)) {
             foreach ($data as $categoryId => $categoryName) {
@@ -259,12 +261,12 @@ class AdminController extends AbstractController
             return new JsonResponse([]);
         }
 
-        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
-        $data = $backendApi->getFilterTemplates();
+        $frontendApi = new FrontendApi($frontend->getToken());
+        $data = $frontendApi->getFilterTemplates();
         $filterTemplates = [];
         if (!array_key_exists('error', $data)) {
             foreach ($data as $filterTemplate) {
-                $filterTemplates[] = ['value' => $filterTemplate['FilterTemplateId'], 'label' => $filterTemplate['Name']];
+                $filterTemplates[] = ['value' => $filterTemplate['templateid'], 'label' => $filterTemplate['name']];
             }
             return new JsonResponse($filterTemplates);
 
@@ -275,6 +277,9 @@ class AdminController extends AbstractController
     #[Route('/api/_action/rhae-tweakwise/filterAttributes', name: 'rhae.tweakwise.filter_attributes', methods: ['GET'])]
     public function getFilterAttributes(Context $context): JsonResponse
     {
+        $categoryId = $this->requestStack->getCurrentRequest()->query->get('categoryId');
+        $filterTemplateId = $this->requestStack->getCurrentRequest()->query->get('filterTemplateId');
+
         $criteria = new Criteria();
         $criteria->addFilter(
             new NotFilter(
@@ -293,13 +298,19 @@ class AdminController extends AbstractController
             return new JsonResponse([]);
         }
 
-        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
-        $data = $backendApi->getFilterAttributes();
+        $fontendApi = new FrontendApi($frontend->getToken());
+        $data = $fontendApi->getFacetsForCategory($categoryId, $filterTemplateId);
         $filterAttributes = [];
         if (!array_key_exists('error', $data)) {
-            foreach ($data['Records'] ?: [] as $filterAttribute) {
-                $filterAttributes[] = ['value' => $filterAttribute['Id'], 'label' => $filterAttribute['Name']];
+            foreach ($data['facets'] ?: [] as $facet) {
+                if (array_key_exists('facetsettings', $facet) && is_array($facet['facetsettings'])) {
+                    if (strtolower($facet['facetsettings']['source']) === 'category') {
+                        continue;
+                    }
+                    $filterAttributes[] = ['value' => $facet['facetsettings']['attributename'], 'label' => $facet['facetsettings']['attributename']];
+                }
             }
+
             return new JsonResponse($filterAttributes);
 
         }
@@ -327,8 +338,8 @@ class AdminController extends AbstractController
             return new JsonResponse([]);
         }
 
-        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
-        $data = $backendApi->getSortTemplates();
+        $frontendApi = new FrontendApi($frontend->getToken());
+        $data = $frontendApi->getSortTemplates();
         $sortTemplates = [];
         if (!array_key_exists('error', $data)) {
             foreach ($data as $sortTemplate) {
@@ -361,12 +372,13 @@ class AdminController extends AbstractController
             return new JsonResponse([]);
         }
 
-        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
-        $data = $backendApi->getBuilderTemplates();
+        $frontendApi = new FrontendApi($frontend->getToken());
+        $data = $frontendApi->getBuilderTemplates();
+
         $builderTemplates = [];
         if (!array_key_exists('error', $data)) {
-            foreach ($data['Records'] ?: [] as $builderTemplate) {
-                $builderTemplates[] = ['value' => $builderTemplate['BuilderId'], 'label' => $builderTemplate['Name']];
+            foreach ($data ?: [] as $builderTemplate) {
+                $builderTemplates[] = ['value' => $builderTemplate['id'], 'label' => $builderTemplate['name']];
             }
             return new JsonResponse($builderTemplates);
 

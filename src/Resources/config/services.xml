@@ -64,6 +64,7 @@
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Price\ProductPriceCalculator"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
             <argument type="service" id="router" />
+            <argument type="service" id="request_stack" />
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>

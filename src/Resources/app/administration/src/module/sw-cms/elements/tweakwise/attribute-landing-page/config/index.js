@@ -1,4 +1,5 @@
 import template from './sw-cms-el-config-tweakwise-attribute-landing-page.html.twig';
+import './sw-cms-el-config-tweakwise-attribute-landing-page.scss';
 
 Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page', {
     template,
@@ -23,10 +24,15 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
 
     computed: {
         rules() {
-            if (!this.element.config.rules.value) {
-                this.element.config.rules.value = [];
+            let rules = this.element.config.rules.value;
+            if (!rules) {
+                rules = [];
             }
-            return this.element.config.rules.value;
+
+            for (let index = 0; index < rules.length; index++) {
+                this.loadValuesForRule(index, rules[index].attributeId);
+            }
+            return rules;
         },
         canAddRule() {
             return this.rules.length < this.maxRules;
@@ -110,9 +116,24 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             }
             await this.loadValuesForRule(index, rule.attributeId);
         },
+        async onAttributeValueChange(index, value) {
+            const rule = this.rules[index];
+            rule.valueId = value;
+        },
+
+        async onFilterTemplateChange() {
+            await this.loadFilterAttributes();
+        },
 
         async loadValuesForRule(index, attributeId) {
             this.isLoadingValuesByRuleIndex[index] = true;
+
+            this.valueOptionsByRuleIndex[index] = [
+                { value: '1', label: 'Dummy waarde 1 - ' + attributeId },
+                { value: '2', label: 'Dummy waarde 2 - ' + attributeId },
+                { value: '3', label: 'Dummy waarde 3 - ' + attributeId },
+            ];
+
             this.isLoadingValuesByRuleIndex[index] = false;
         },
         async loadCategoryOptions() {
@@ -150,12 +171,18 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
         },
 
         async loadFilterAttributes() {
-            this.isLoading = true;
+            this.isLoadingAttributes = true;
+            const selectedCategoryId = this.category;
+            const filterTemplateId = this.filterTemplate;
+
             const token = Shopware.Service('loginService').getToken();
             const headers = { headers: { Authorization: `Bearer ${token}` } };
             const httpClient = Shopware.Application.getContainer('init').httpClient;
             const url = `/_action/rhae-tweakwise/filterAttributes`;
-            const response = await httpClient.get(url, headers);
+            const response = await httpClient.get(url, {
+                ...headers,
+                params: { categoryId: selectedCategoryId, filterTemplateId: filterTemplateId },
+            });
 
             if (response.status !== 200) {
                 console.warn('oops');
@@ -163,7 +190,7 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
                 this.attributeOptions = response.data;
             }
 
-            this.isLoading = false;
+            this.isLoadingAttributes = false;
         },
 
         async loadSortTemplates() {
