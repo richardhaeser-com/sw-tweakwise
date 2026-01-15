@@ -4,7 +4,6 @@ namespace RH\Tweakwise\Subscriber;
 
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
 use RH\Tweakwise\Service\ProductDataService;
-use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -22,8 +21,8 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
     public function __construct(
         private readonly EntityRepository $frontendRepository,
         private readonly ProductDataService $productDataService,
-        private readonly RequestStack $requestStack)
-    {
+        private readonly RequestStack $requestStack
+    ) {
     }
 
     public static function getSubscribedEvents(): array
