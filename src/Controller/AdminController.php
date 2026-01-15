@@ -15,6 +15,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetEntity;
 use Shopware\Core\System\CustomField\CustomFieldEntity;
@@ -201,5 +202,175 @@ class AdminController extends AbstractController
             return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productIdHash, 'product' => $product, 'error' => true, 'code' => $response['code'], 'message' => $response['message']]);
         }
         return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productIdHash, 'product' => $product, 'updated' => true]);
+    }
+
+    #[Route('/api/_action/rhae-tweakwise/categoryTree', name: 'rhae.tweakwise.category_tree', methods: ['GET'])]
+    public function getCategoryTree(Context $context): JsonResponse
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new NotFilter(
+                NotFilter::CONNECTION_AND,
+                [
+                    new EqualsFilter('accessToken', null),
+                    new EqualsFilter('accessToken', ''),
+                ]
+            )
+        );
+        $criteria->addAssociation('salesChannelDomains');
+        $criteria->addAssociation('salesChannelDomains.salesChannel');
+
+        $frontend = $this->frontendRepository->search($criteria, $context)->first();
+        if (!$frontend instanceof FrontendEntity) {
+            return new JsonResponse([]);
+        }
+
+        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
+        $data = $backendApi->getCategoryTree();
+        $categoryTree = [];
+        if (!array_key_exists('error', $data)) {
+            foreach ($data as $categoryId => $categoryName) {
+                $categoryTree[] = ['value' => $categoryId, 'label' => $categoryName];
+            }
+            return new JsonResponse($categoryTree);
+
+        }
+        return new JsonResponse([]);
+    }
+
+    #[Route('/api/_action/rhae-tweakwise/filterTemplates', name: 'rhae.tweakwise.filter_templates', methods: ['GET'])]
+    public function getFilterTemplates(Context $context): JsonResponse
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new NotFilter(
+                NotFilter::CONNECTION_AND,
+                [
+                    new EqualsFilter('accessToken', null),
+                    new EqualsFilter('accessToken', ''),
+                ]
+            )
+        );
+        $criteria->addAssociation('salesChannelDomains');
+        $criteria->addAssociation('salesChannelDomains.salesChannel');
+
+        $frontend = $this->frontendRepository->search($criteria, $context)->first();
+        if (!$frontend instanceof FrontendEntity) {
+            return new JsonResponse([]);
+        }
+
+        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
+        $data = $backendApi->getFilterTemplates();
+        $filterTemplates = [];
+        if (!array_key_exists('error', $data)) {
+            foreach ($data as $filterTemplate) {
+                $filterTemplates[] = ['value' => $filterTemplate['FilterTemplateId'], 'label' => $filterTemplate['Name']];
+            }
+            return new JsonResponse($filterTemplates);
+
+        }
+        return new JsonResponse([]);
+    }
+
+    #[Route('/api/_action/rhae-tweakwise/filterAttributes', name: 'rhae.tweakwise.filter_attributes', methods: ['GET'])]
+    public function getFilterAttributes(Context $context): JsonResponse
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new NotFilter(
+                NotFilter::CONNECTION_AND,
+                [
+                    new EqualsFilter('accessToken', null),
+                    new EqualsFilter('accessToken', ''),
+                ]
+            )
+        );
+        $criteria->addAssociation('salesChannelDomains');
+        $criteria->addAssociation('salesChannelDomains.salesChannel');
+
+        $frontend = $this->frontendRepository->search($criteria, $context)->first();
+        if (!$frontend instanceof FrontendEntity) {
+            return new JsonResponse([]);
+        }
+
+        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
+        $data = $backendApi->getFilterAttributes();
+        $filterAttributes = [];
+        if (!array_key_exists('error', $data)) {
+            foreach ($data['Records'] ?: [] as $filterAttribute) {
+                $filterAttributes[] = ['value' => $filterAttribute['Id'], 'label' => $filterAttribute['Name']];
+            }
+            return new JsonResponse($filterAttributes);
+
+        }
+        return new JsonResponse([]);
+    }
+
+    #[Route('/api/_action/rhae-tweakwise/sortTemplates', name: 'rhae.tweakwise.sort_templates', methods: ['GET'])]
+    public function getSortTemplates(Context $context): JsonResponse
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new NotFilter(
+                NotFilter::CONNECTION_AND,
+                [
+                    new EqualsFilter('accessToken', null),
+                    new EqualsFilter('accessToken', ''),
+                ]
+            )
+        );
+        $criteria->addAssociation('salesChannelDomains');
+        $criteria->addAssociation('salesChannelDomains.salesChannel');
+
+        $frontend = $this->frontendRepository->search($criteria, $context)->first();
+        if (!$frontend instanceof FrontendEntity) {
+            return new JsonResponse([]);
+        }
+
+        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
+        $data = $backendApi->getSortTemplates();
+        $sortTemplates = [];
+        if (!array_key_exists('error', $data)) {
+            foreach ($data as $sortTemplate) {
+                $sortTemplates[] = ['value' => $sortTemplate['templateid'], 'label' => $sortTemplate['name']];
+            }
+            return new JsonResponse($sortTemplates);
+
+        }
+        return new JsonResponse([]);
+    }
+
+    #[Route('/api/_action/rhae-tweakwise/builderTemplates', name: 'rhae.tweakwise.builder_templates', methods: ['GET'])]
+    public function getBuilderTemplates(Context $context): JsonResponse
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new NotFilter(
+                NotFilter::CONNECTION_AND,
+                [
+                    new EqualsFilter('accessToken', null),
+                    new EqualsFilter('accessToken', ''),
+                ]
+            )
+        );
+        $criteria->addAssociation('salesChannelDomains');
+        $criteria->addAssociation('salesChannelDomains.salesChannel');
+
+        $frontend = $this->frontendRepository->search($criteria, $context)->first();
+        if (!$frontend instanceof FrontendEntity) {
+            return new JsonResponse([]);
+        }
+
+        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
+        $data = $backendApi->getBuilderTemplates();
+        $builderTemplates = [];
+        if (!array_key_exists('error', $data)) {
+            foreach ($data['Records'] ?: [] as $builderTemplate) {
+                $builderTemplates[] = ['value' => $builderTemplate['BuilderId'], 'label' => $builderTemplate['Name']];
+            }
+            return new JsonResponse($builderTemplates);
+
+        }
+        return new JsonResponse([]);
     }
 }

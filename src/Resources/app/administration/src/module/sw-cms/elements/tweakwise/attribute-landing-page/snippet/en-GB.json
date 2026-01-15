@@ -7,6 +7,18 @@
           "category": {
             "label": "Category",
             "placeHolder": "Select a category"
+          },
+          "filterTemplate": {
+            "label": "Filter template",
+            "placeHolder": "Select a filter template"
+          },
+          "sortTemplate": {
+            "label": "Sort template",
+            "placeHolder": "Select a sort template"
+          },
+          "builderTemplate": {
+            "label": "Builder template",
+            "placeHolder": "Select a builder template"
           }
         }
       }

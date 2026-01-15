@@ -16,6 +16,7 @@ class BackendApi
 {
     private readonly Client $client;
     public $apiUrl = 'https://navigator-api.tweakwise.com';
+    public $frontendApiUrl = 'https://gateway.tweakwisenavigator.com';
     public function __construct(private readonly string $instanceKey, private readonly string $accessToken, private RouterInterface $router)
     {
         $this->client = new Client();
@@ -66,6 +67,153 @@ class BackendApi
 
         $data = json_decode($response->getBody()->getContents(), true);
         return $data;
+    }
+
+    public function getFilterTemplates(): array
+    {
+        try {
+            $response = $this->client->request(
+                'GET',
+                $this->apiUrl . '/filtertemplate',
+                [
+                    'headers' => [
+                        'TWN-InstanceKey' => $this->instanceKey,
+                        'TWN-Authentication' => $this->accessToken,
+                        'accept' => 'application/json',
+                    ],
+                ]
+            );
+        } catch (GuzzleException $exception) {
+            return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
+        }
+
+        $data = json_decode($response->getBody()->getContents(), true);
+        return $data;
+    }
+
+    public function getFilterAttributes(): array
+    {
+        try {
+            $response = $this->client->request(
+                'GET',
+                $this->apiUrl . '/attribute',
+                [
+                    'headers' => [
+                        'TWN-InstanceKey' => $this->instanceKey,
+                        'TWN-Authentication' => $this->accessToken,
+                        'accept' => 'application/json',
+                    ],
+                ]
+            );
+        } catch (GuzzleException $exception) {
+            return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
+        }
+
+        $data = json_decode($response->getBody()->getContents(), true);
+        return $data;
+    }
+
+    public function getBuilderTemplates(): array
+    {
+        try {
+            $response = $this->client->request(
+                'GET',
+                $this->apiUrl . '/builder',
+                [
+                    'headers' => [
+                        'TWN-InstanceKey' => $this->instanceKey,
+                        'TWN-Authentication' => $this->accessToken,
+                        'accept' => 'application/json',
+                    ],
+                ]
+            );
+        } catch (GuzzleException $exception) {
+            return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
+        }
+
+        $data = json_decode($response->getBody()->getContents(), true);
+        return $data;
+    }
+
+    public function getSortTemplates(): array
+    {
+        try {
+            $response = $this->client->request(
+                'GET',
+                $this->frontendApiUrl . '/catalog/sorttemplates/' . $this->instanceKey,
+                [
+                    'headers' => [
+                        'accept' => 'application/json',
+                    ],
+                ]
+            );
+        } catch (GuzzleException $exception) {
+            return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
+        }
+
+        $data = json_decode($response->getBody()->getContents(), true);
+        return $data;
+    }
+
+    public function getCategoryTree(int $totalLevels = 10): array
+    {
+        $categories = [];
+        try {
+            $root = $this->fetchCategoryTreeNode(null);
+            $this->appendNodeRecursive($root, $categories, '', 1, $totalLevels);
+        } catch (GuzzleException $exception) {
+            return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
+        }
+
+        return $categories;
+    }
+
+
+    private function fetchCategoryTreeNode(?int $id): array
+    {
+        if ($id === null) {
+            $url = $this->apiUrl . '/category/tree?type=Category';
+        } else {
+            $url = $this->apiUrl . '/category/tree/children?type=Category&id=' . $id;
+        }
+        $response = $this->client->request('GET', $url, [
+            'headers' => [
+                'TWN-InstanceKey' => $this->instanceKey,
+                'TWN-Authentication' => $this->accessToken,
+                'accept' => 'application/json',
+            ],
+        ]);
+
+        $data = json_decode($response->getBody()->getContents(), true);
+        return is_array($data) ? $data : [];
+    }
+
+    private function appendNodeRecursive(array $node, array &$result, string $previousName, int $level, int $maxLevel): void
+    {
+        if (!isset($node['Id'], $node['Name'])) {
+            return;
+        }
+        $name = $previousName ? $previousName . ' > ' . $node['Name'] : $node['Name'];
+        $result[$node['Id']] = $name;
+
+        if ($level >= $maxLevel) {
+            return;
+        }
+
+        if (isset($node['HasChildren'])) {
+            $childNodes = $this->fetchCategoryTreeNode($node['Id']);
+            foreach ($childNodes as $childNode) {
+                $this->appendNodeRecursive($childNode, $result, $name, $level + 1, $maxLevel);
+            }
+        }
+    }
+    private function getPrefix(int $level)
+    {
+        $prefix = '';
+        for ($i = 1; $i < $level; $i++) {
+            $prefix .= '&nbsp;&nbsp;&nbsp;';
+        }
+        return $prefix;
     }
 
     public function syncProductData(ProductEntity $product, FrontendEntity $frontend, ?ProductEntity $parent, array $customFieldNames): array

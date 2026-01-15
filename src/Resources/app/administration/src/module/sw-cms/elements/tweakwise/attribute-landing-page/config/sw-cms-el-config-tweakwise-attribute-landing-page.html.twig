@@ -1,21 +1,75 @@
 {% block sw_cms_element_tweakwise_attribute_landing_page_config %}
-    <sw-text-field
-        v-model="groupId"
-        class="swag-groupid-field"
-        :label="$tc('sw-cms.elements.tweakwiseFeaturedProducts.config.groupId.label')"
-        :help-text="$tc('sw-cms.elements.tweakwiseFeaturedProducts.config.groupId.helpText')"
-        required
-        :placeholder="$tc('sw-cms.elements.tweakwiseFeaturedProducts.config.groupId.placeHolder')"
-        @input="onElementUpdate"
-        @change="onElementUpdate"
-        @update:value="onElementUpdate"
-    >
-    </sw-text-field>
-
     <mt-select
             v-model="category"
-            :options="categoryOptions"
+            :options="categories"
             :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.category.placeHolder')"
             :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.category.label')"
+    />
+
+    <sw-card title="Filter attributes">
+        <div>
+            <sw-container columns="1fr 1fr 0.3fr" gap="16px" align="center">
+                <span>Attribuut</span>
+                <span>Waarde</span>
+                <span></span>
+            </sw-container>
+        </div>
+        <div v-for="(rule, index) in rules"
+                 :key="index">
+
+            <sw-container columns="1fr 1fr 0.3fr" gap="16px" align="center">
+                <sw-single-select
+                        label=""
+                        :options="attributeOptions"
+                        v-model:value="rule.attributeId"
+                        @update:value="onAttributeChange(index, $event)"
+                        placeholder="Kies attribuut"
+                />
+
+                <sw-single-select
+                        label=""
+                        :options="valueOptionsByRuleIndex[index] || []"
+                        v-model="rule.valueId"
+                        :disabled="!rule.attributeId"
+                        placeholder="Kies waarde"
+                />
+
+                <sw-button variant="danger" size="small" @click="removeRule(index)">
+                    Verwijderen
+                </sw-button>
+            </sw-container>
+
+            <sw-container v-if="isLoadingValuesByRuleIndex[index]" class="sw-mt-8">
+                <sw-loader size="small" />
+            </sw-container>
+        </div>
+
+        <sw-container>
+            <sw-button variant="primary" size="small" :disabled="!canAddRule" @click="addRule">
+                Filter toevoegen ({{ rules.length }}/{{ maxRules }})
+            </sw-button>
+        </sw-container>
+
+        <sw-container v-if="isLoadingAttributes" class="sw-mt-16">
+            <sw-loader />
+        </sw-container>
+    </sw-card>
+    <mt-select
+            v-model="filterTemplate"
+            :options="filterTemplates"
+            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterTemplate.placeHolder')"
+            :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterTemplate.label')"
+    />
+    <mt-select
+            v-model="sortTemplate"
+            :options="sortTemplates"
+            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.sortTemplate.placeHolder')"
+            :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.sortTemplate.label')"
+    />
+    <mt-select
+            v-model="builderTemplate"
+            :options="builderTemplates"
+            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.builderTemplate.placeHolder')"
+            :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.builderTemplate.label')"
     />
 {% endblock %}

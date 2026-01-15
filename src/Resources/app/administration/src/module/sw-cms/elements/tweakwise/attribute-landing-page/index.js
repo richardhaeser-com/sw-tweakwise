@@ -9,10 +9,29 @@ Shopware.Service('cmsService').registerCmsElement({
     configComponent: 'sw-cms-el-config-tweakwise-attribute-landing-page',
     previewComponent: 'sw-cms-el-preview-tweakwise-attribute-landing-page',
     defaultConfig: {
-        groupId: {
+        category: {
             required: true,
             source: 'static',
             value: ''
+        },
+        filterTemplate: {
+            required: false,
+            source: 'static',
+            value: ''
+        },
+        sortTemplate: {
+            required: false,
+            source: 'static',
+            value: ''
+        },
+        builderTemplate: {
+            required: false,
+            source: 'static',
+            value: ''
+        },
+        rules: {
+            source: 'static',
+            value: []
         }
     }
 });
