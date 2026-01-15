@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [5.4.1] - 15-01-2026
 
-### Changed
+### Fixed
 - Removed some unused code to make the plugin perform better with large navigation trees (thanks to @daniel-memo-ict)
 
 ## [5.4.0] - 07-01-2026
