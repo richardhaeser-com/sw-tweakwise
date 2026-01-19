@@ -30,7 +30,9 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             }
 
             for (let index = 0; index < rules.length; index++) {
-                this.loadValuesForRule(index, rules[index].attributeId);
+                if (rules[index].attributeId) {
+                    this.loadValuesForRule(index, rules[index].attributeId);
+                }
             }
             return rules;
         },
@@ -114,7 +116,9 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             if (!rule.attributeId) {
                 this.valueOptionsByRuleIndex[index] = [];
             }
-            await this.loadValuesForRule(index, rule.attributeId);
+            if (rule.attributeId) {
+                await this.loadValuesForRule(index, rule.attributeId);
+            }
         },
         async onAttributeValueChange(index, value) {
             const rule = this.rules[index];
@@ -128,11 +132,19 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
         async loadValuesForRule(index, attributeId) {
             this.isLoadingValuesByRuleIndex[index] = true;
 
-            this.valueOptionsByRuleIndex[index] = [
-                { value: '1', label: 'Dummy waarde 1 - ' + attributeId },
-                { value: '2', label: 'Dummy waarde 2 - ' + attributeId },
-                { value: '3', label: 'Dummy waarde 3 - ' + attributeId },
-            ];
+            const token = Shopware.Service('loginService').getToken();
+            const headers = { headers: { Authorization: `Bearer ${token}` } };
+            const httpClient = Shopware.Application.getContainer('init').httpClient;
+            const url = `_action/rhae-tweakwise/filterAttributeValues`;
+            const response = await httpClient.get(url, {
+                ...headers,
+                params: { urlKey: attributeId },
+            });
+            if (response.status !== 200) {
+                console.warn('oops');
+            } else {
+                this.valueOptionsByRuleIndex[index] = response.data;
+            }
 
             this.isLoadingValuesByRuleIndex[index] = false;
         },

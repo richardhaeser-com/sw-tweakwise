@@ -307,11 +307,48 @@ class AdminController extends AbstractController
                     if (strtolower($facet['facetsettings']['source']) === 'category') {
                         continue;
                     }
-                    $filterAttributes[] = ['value' => $facet['facetsettings']['attributename'], 'label' => $facet['facetsettings']['attributename']];
+                    $filterAttributes[] = ['value' => $facet['facetsettings']['urlkey'], 'label' => $facet['facetsettings']['attributename']];
                 }
             }
 
             return new JsonResponse($filterAttributes);
+
+        }
+        return new JsonResponse([]);
+    }
+    #[Route('/api/_action/rhae-tweakwise/filterAttributeValues', name: 'rhae.tweakwise.filter_attribute_values', methods: ['GET'])]
+    public function getFilterAttributeValues(Context $context): JsonResponse
+    {
+        $urlKey = $this->requestStack->getCurrentRequest()->query->get('urlKey');
+
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new NotFilter(
+                NotFilter::CONNECTION_AND,
+                [
+                    new EqualsFilter('accessToken', null),
+                    new EqualsFilter('accessToken', ''),
+                ]
+            )
+        );
+        $criteria->addAssociation('salesChannelDomains');
+        $criteria->addAssociation('salesChannelDomains.salesChannel');
+
+        $frontend = $this->frontendRepository->search($criteria, $context)->first();
+        if (!$frontend instanceof FrontendEntity) {
+            return new JsonResponse([]);
+        }
+
+        $frontendApi = new FrontendApi($frontend->getToken());
+        $data = $frontendApi->getAttributesForFacet($urlKey);
+
+        $filterAttributeValues = [];
+        if (!array_key_exists('error', $data)) {
+            foreach ($data['attributes'] ?: [] as $attribute) {
+                $filterAttributeValues[] = ['value' => urlencode($attribute['title']), 'label' => $attribute['title']];
+            }
+
+            return new JsonResponse($filterAttributeValues);
 
         }
         return new JsonResponse([]);

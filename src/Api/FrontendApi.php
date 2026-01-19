@@ -81,6 +81,25 @@ class FrontendApi
             return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
         }
     }
+
+    public function getAttributesForFacet(string $urlKey): array
+    {
+        try {
+            $response = $this->client->request(
+                'GET',
+                $this->apiUrl . '/facets/' . $urlKey . '/attributes/' . $this->instanceKey,
+                [
+                    'headers' => [
+                        'accept' => 'application/json',
+                    ],
+                ]
+            );
+
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (GuzzleException $exception) {
+            return ['error' => true, 'code' => $exception->getCode(), 'message' => $exception->getMessage()];
+        }
+    }
     public function getBuilderTemplates(): array
     {
         try {
