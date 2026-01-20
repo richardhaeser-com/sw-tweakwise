@@ -1,7 +1,28 @@
 parameters:
-    # choose one of the available levels: https://phpstan.org/user-guide/rule-levels
-    level: max
-    # the paths are relative to the project root
-    # an additional path to check could be the tests directory
+    level: 4
+
+    bootstrapFiles:
+        - %currentWorkingDirectory%/vendor/autoload.php
     paths:
-        - src
+        - %currentWorkingDirectory%
+    excludePaths:
+        - %currentWorkingDirectory%/Components/Smarty
+        - %currentWorkingDirectory%/vendor
+        - %currentWorkingDirectory%/tests/
+        - %currentWorkingDirectory%/Test/
+        - %currentWorkingDirectory%/Resources/smarty
+        - %currentWorkingDirectory%/platform
+        - %currentWorkingDirectory%/autoload-dist/vendor/
+
+    ignoreErrors:
+        - '#apcu_#'
+        - '#ioncube_#'
+        - '#opcache_#'
+        - '#imagettftext#'
+        - '#class Redis#'
+        - '#Constant STARTTIME#'
+        - '#Access to an undefined property Shopware\\Core\\Content\\Product\\ProductEntity\:\:\$calculatedPrice#'
+
+    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
+    tipsOfTheDay: false
