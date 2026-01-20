@@ -1,0 +1,22 @@
+name: Testing code v2
+
+on: [push, pull_request]
+
+jobs:
+  cs:
+    uses: shopware/github-actions/.github/workflows/cs-fixer.yml@main
+  phpstan:
+    uses: shopware/github-actions/.github/workflows/phpstan.yml@main
+    with:
+      extensionName: RhaeTweakwise
+      shopwareVersion: 6.7.x
+  es-lint:
+    uses: shopware/github-actions/.github/workflows/admin-eslint.yml@main
+    with:
+      extensionName: RhaeTweakwise
+      shopwareVersion: 6.7.x
+  phpunit:
+    uses: shopware/github-actions/.github/workflows/phpunit.yml@main
+    with:
+      extensionName: RhaeTweakwise
+      shopwareVersion: 6.7.x
