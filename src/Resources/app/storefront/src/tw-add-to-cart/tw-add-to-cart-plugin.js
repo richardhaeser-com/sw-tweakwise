@@ -39,6 +39,8 @@ export default class TwAddToCartPlugin extends Plugin {
     _addToCart(e) {
 
         const productId = this._extractShopwareUUID(e.detail.data.itemno);
+        const quantity = e.detail.quantity || 1;
+
         if (!productId) {
             console.log('Not a valid product id given', e.detail.itemno);
             return;
@@ -90,7 +92,7 @@ export default class TwAddToCartPlugin extends Plugin {
         let lineItemQuantityField = document.createElement('input');
         lineItemQuantityField.setAttribute('type', 'hidden');
         lineItemQuantityField.setAttribute('name', 'lineItems[' + productId + '][quantity]');
-        lineItemQuantityField.setAttribute('value', '1');
+        lineItemQuantityField.setAttribute('value', quantity);
 
         let csrfTokenField = document.createElement('input');
         csrfTokenField.setAttribute('type', 'hidden');
