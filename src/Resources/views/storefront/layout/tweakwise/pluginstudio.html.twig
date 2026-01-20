@@ -35,7 +35,8 @@
                         let addToCartEvent = new CustomEvent('twAddToCart', {
                             detail: {
                                 addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
-                                data: event.data
+                                data: event.data,
+                                quantity: event.quantity
                             }
                         });
                         window.dispatchEvent(addToCartEvent);
