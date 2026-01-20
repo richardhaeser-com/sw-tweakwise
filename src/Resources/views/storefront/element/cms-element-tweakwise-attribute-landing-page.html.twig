@@ -2,5 +2,27 @@
     {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
     {% set languageKey = (page.header.activeLanguage.translationCode.code ?? context.languageInfo.localeCode)|split('-')[0]|escape %}
 
-    hier de content
+    <script>
+        window.addEventListener('twn.starter.ready', function () {
+            const listerPage = tweakwiseListerPage({
+                cid: "{{ element.config.category.value }}",
+                output: "#tweakwise-alp",
+                navigation: {
+                    {% if element.config.filterTemplate.value %}filterTemplateId: {{element.config.filterTemplate.value}},{% endif %}
+                    {% if element.config.sortTemplate.value %}sortingTemplateId: {{element.config.sortTemplate.value}},{% endif %}
+                    {% if element.config.builderTemplate.value %}builderTemplateId: {{element.config.builderTemplate.value}},{% endif %}
+                    {% if element.config.rules.value %}
+                    filters: {                
+                        {% for rule in element.config.rules.value %}
+                            "{{ rule.attributeId }}": "{{ rule.valueId }}",
+                        {% endfor %}
+                    }
+                    {% endif %}
+                }
+            });
+        });
+
+    </script>
+    
+    <div id="tweakwise-alp"></div>
 {% endblock %}

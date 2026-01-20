@@ -320,6 +320,7 @@ class AdminController extends AbstractController
     public function getFilterAttributeValues(Context $context): JsonResponse
     {
         $urlKey = $this->requestStack->getCurrentRequest()->query->get('urlKey');
+        $categoryId = $this->requestStack->getCurrentRequest()->query->get('categoryId');
 
         $criteria = new Criteria();
         $criteria->addFilter(
@@ -340,7 +341,7 @@ class AdminController extends AbstractController
         }
 
         $frontendApi = new FrontendApi($frontend->getToken());
-        $data = $frontendApi->getAttributesForFacet($urlKey);
+        $data = $frontendApi->getAttributesForFacet($urlKey, $categoryId);
 
         $filterAttributeValues = [];
         if (!array_key_exists('error', $data)) {

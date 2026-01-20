@@ -82,12 +82,16 @@ class FrontendApi
         }
     }
 
-    public function getAttributesForFacet(string $urlKey): array
+    public function getAttributesForFacet(string $urlKey, string $categoryId): array
     {
         try {
+            $parameters = [
+                'tn_cid=' . $categoryId,
+            ];
+
             $response = $this->client->request(
                 'GET',
-                $this->apiUrl . '/facets/' . $urlKey . '/attributes/' . $this->instanceKey,
+                $this->apiUrl . '/facets/' . $urlKey . '/attributes/' . $this->instanceKey. '/?' . implode('&', $parameters),
                 [
                     'headers' => [
                         'accept' => 'application/json',

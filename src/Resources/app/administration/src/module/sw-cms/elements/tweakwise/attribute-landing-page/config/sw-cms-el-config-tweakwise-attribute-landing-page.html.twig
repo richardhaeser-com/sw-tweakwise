@@ -2,6 +2,7 @@
     <mt-select
             v-model="category"
             :options="categories"
+            @update:model-value="onCategoryChange"
             :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.category.placeHolder')"
             :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.category.label')"
     />
