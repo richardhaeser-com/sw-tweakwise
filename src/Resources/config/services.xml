@@ -25,7 +25,6 @@
         </service>
         <service id="RH\Tweakwise\Subscriber\StorefrontRenderSubscriber">
             <argument type="service" id="s_plugin_rhae_tweakwise_frontend.repository"/>
-            <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader" />
             <argument type="service" id="RH\Tweakwise\Service\ProductDataService" />
             <argument type="service" id="request_stack" />
             <tag name="kernel.event_subscriber"/>
