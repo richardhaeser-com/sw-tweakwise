@@ -346,7 +346,7 @@ class AdminController extends AbstractController
         $filterAttributeValues = [];
         if (!array_key_exists('error', $data)) {
             foreach ($data['attributes'] ?: [] as $attribute) {
-                $filterAttributeValues[] = ['value' => urlencode($attribute['title']), 'label' => $attribute['title']];
+                $filterAttributeValues[] = ['value' => $attribute['title'], 'label' => $attribute['title']];
             }
 
             return new JsonResponse($filterAttributeValues);
