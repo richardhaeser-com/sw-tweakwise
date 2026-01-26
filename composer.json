@@ -51,7 +51,8 @@
     "phpstan/phpstan": "^1.10",
     "friendsofphp/php-cs-fixer": "^3.0",
     "overtrue/phplint": "^9.3",
-    "phpunit/phpunit": "^10.5"
+    "phpunit/phpunit": "^10.5",
+    "captainhook/captainhook": "^5.27"
   },
   "config": {
     "allow-plugins": {
