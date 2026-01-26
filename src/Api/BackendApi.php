@@ -151,12 +151,9 @@ class BackendApi
                         $value = '';
                         break;
                     case 'categories':
-                        if ($categories) {
-                            $property = 'Categories';
-                            $value = $categories;
-                            break;
-                        }
-                        // no break
+                        $property = 'Categories';
+                        $value = $categories;
+                        break;
                     default:
                         $property = '';
                         $value = '';
