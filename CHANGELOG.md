@@ -1,3 +1,8 @@
+# Unreleased
+
+**Fixed**
+- Make sure the categories of a product are always synced with backend-sync even when no categories are selected anymore
+
 # 5.5.0
 20-01-2026
 
