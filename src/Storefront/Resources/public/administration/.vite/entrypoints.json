@@ -1,0 +1,23 @@
+{
+  "base": "/bundles/storefront/administration/",
+  "entryPoints": {
+    "storefront": {
+      "css": [],
+      "dynamic": [],
+      "js": [
+        "/bundles/storefront/administration/js/storefront.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.0.4",
+    7,
+    0,
+    4
+  ],
+  "viteServer": null
+}

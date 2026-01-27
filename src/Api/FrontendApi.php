@@ -91,7 +91,7 @@ class FrontendApi
 
             $response = $this->client->request(
                 'GET',
-                $this->apiUrl . '/facets/' . $urlKey . '/attributes/' . $this->instanceKey. '/?' . implode('&', $parameters),
+                $this->apiUrl . '/facets/' . $urlKey . '/attributes/' . $this->instanceKey . '/?' . implode('&', $parameters),
                 [
                     'headers' => [
                         'accept' => 'application/json',
@@ -123,7 +123,6 @@ class FrontendApi
         $data = json_decode($response->getBody()->getContents(), true);
         return $data;
     }
-
 
     public function getCategoryTree(int $totalLevels = 10): array
     {

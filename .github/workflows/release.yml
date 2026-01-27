@@ -1,0 +1,14 @@
+name: Release to store
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    uses: shopware/github-actions/.github/workflows/store-release.yml@main
+    with:
+      extensionName: RhaeTweakwise
+    secrets:
+      accountUser: ${{ secrets.SHOPWARE_ACCOUNT_USER }}
+      accountPassword: ${{ secrets.SHOPWARE_ACCOUNT_PASSWORD }}
+      ghToken: ${{ secrets.GH_TOKEN }}

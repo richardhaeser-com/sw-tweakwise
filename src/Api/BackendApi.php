@@ -104,7 +104,6 @@ class BackendApi
         return $categories;
     }
 
-
     private function fetchCategoryTreeNode(?int $id): array
     {
         if ($id === null) {
@@ -143,15 +142,6 @@ class BackendApi
             }
         }
     }
-    private function getPrefix(int $level)
-    {
-        $prefix = '';
-        for ($i = 1; $i < $level; $i++) {
-            $prefix .= '&nbsp;&nbsp;&nbsp;';
-        }
-        return $prefix;
-    }
-
     public function syncProductData(ProductEntity $product, FrontendEntity $frontend, ?ProductEntity $parent, array $customFieldNames): array
     {
         $productData = null;
@@ -235,12 +225,9 @@ class BackendApi
                         $value = '';
                         break;
                     case 'categories':
-                        if ($categories) {
-                            $property = 'Categories';
-                            $value = $categories;
-                            break;
-                        }
-                        // no break
+                        $property = 'Categories';
+                        $value = $categories;
+                        break;
                     default:
                         $property = '';
                         $value = '';

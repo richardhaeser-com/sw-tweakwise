@@ -4,8 +4,6 @@ namespace RH\Tweakwise\Subscriber;
 
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
 use RH\Tweakwise\Service\ProductDataService;
-use Shopware\Core\Content\Category\Service\NavigationLoader;
-use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -20,8 +18,11 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class StorefrontRenderSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly EntityRepository $frontendRepository, private readonly NavigationLoader $navigationLoader, private readonly ProductDataService $productDataService, private readonly RequestStack $requestStack)
-    {
+    public function __construct(
+        private readonly EntityRepository $frontendRepository,
+        private readonly ProductDataService $productDataService,
+        private readonly RequestStack $requestStack
+    ) {
     }
 
     public static function getSubscribedEvents(): array
@@ -46,12 +47,6 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
 
         $domainId = $event->getSalesChannelContext()->getDomainId();
         $rootCategoryId = $event->getSalesChannelContext()->getSalesChannel()->getNavigationCategoryId();
-
-        $categoryData = [];
-        $navigationTree = $this->navigationLoader->load($rootCategoryId, $event->getSalesChannelContext(), $rootCategoryId, 99);
-        foreach ($navigationTree->getTree() as $treeItem) {
-            $this->parseCategoryData($categoryData, $domainId, $treeItem);
-        }
 
         $request = $this->requestStack->getCurrentRequest();
         if (!$request) {
@@ -87,7 +82,6 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
                 'featuredProductsId' => $result->getCheckoutSalesFeaturedProductsId(),
                 'recommendationsGroupKey' => $result->getCheckoutSalesRecommendationsGroupKey(),
             ],
-            'categoryData' => $categoryData
         ];
 
         $parameters = $event->getParameters();
@@ -101,19 +95,6 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
             $page->addExtensions([
                 'twConfiguration' => new ArrayStruct($twConfiguration),
             ]);
-        }
-    }
-
-    private function parseCategoryData(&$categoryData, $domainId, TreeItem $treeItem): void
-    {
-        $category = $treeItem->getCategory();
-        $id = md5($category->getId() . '_' . $domainId);
-        $categoryData[$id] = $category->getId();
-
-        if ($treeItem->getChildren()) {
-            foreach ($treeItem->getChildren() as $child) {
-                $this->parseCategoryData($categoryData, $domainId, $child);
-            }
         }
     }
 }

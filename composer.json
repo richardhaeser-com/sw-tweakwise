@@ -3,7 +3,7 @@
   "description": "Tweakwise for Shopware 6",
   "type": "shopware-platform-plugin",
   "license": "proprietary",
-  "version": "5.4.0",
+  "version": "5.5.0",
   "autoload": {
     "psr-4": {
       "RH\\Tweakwise\\": "src/",
@@ -51,11 +51,23 @@
     "phpstan/phpstan": "^1.10",
     "friendsofphp/php-cs-fixer": "^3.0",
     "overtrue/phplint": "^9.3",
-    "phpunit/phpunit": "^10.5"
+    "phpunit/phpunit": "^10.5",
+    "captainhook/captainhook": "^5.27"
   },
   "config": {
     "allow-plugins": {
       "symfony/runtime": true
     }
+  },
+  "scripts": {
+    "phpstan": "php -d memory_limit=-1 vendor/bin/phpstan analyse --configuration phpstan.neon --debug",
+    "cgl": "php -d memory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --using-cache=no --diff",
+    "phplint": "php -d memory_limit=-1 vendor/bin/phplint --configuration=.phplint.yml",
+
+    "test": [
+      "@phpstan",
+      "@cgl",
+      "phplint"
+    ]
   }
 }
