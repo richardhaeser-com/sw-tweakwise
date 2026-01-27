@@ -17,5 +17,12 @@
     font-size: 14px;
     font-weight: 600;
   }
+
+  .attribute-selection {
+    .sw-field, button {
+      margin-top: var(--scale-size-8);
+      margin-bottom: var(--scale-size-8);
+    }
+  }
 }
 

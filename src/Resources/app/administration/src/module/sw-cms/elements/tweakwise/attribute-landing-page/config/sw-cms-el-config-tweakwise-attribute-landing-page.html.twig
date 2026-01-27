@@ -10,11 +10,11 @@
     <div class="tweakwise-filter-card"
          :class="{ 'is-disabled': !category }">
 
-        <sw-card title="Filter attributes">
+        <sw-card :title="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterAttributes')">
             <div>
                 <sw-container columns="1fr 1fr 0.3fr" gap="16px" align="center">
-                    <span>Attribuut</span>
-                    <span>Waarde</span>
+                    <span>{{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.attribute') }}</span>
+                    <span>{{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.value') }}</span>
                     <span></span>
                 </sw-container>
             </div>
@@ -23,13 +23,13 @@
             <div v-for="(rule, index) in rules"
                      :key="index">
 
-                    <sw-container columns="1fr 1fr 0.3fr" gap="16px" align="center">
+                    <sw-container columns="1fr 1fr 0.3fr" gap="16px" align="center" class="attribute-selection">
                         <sw-single-select
                                 label=""
                                 :options="attributeOptions"
                                 v-model:value="rule.attributeId"
                                 @update:value="onAttributeChange(index, $event)"
-                                placeholder="Kies attribuut"
+                                :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.chooseAttribute')"
                         />
 
                         <sw-single-select
@@ -38,11 +38,15 @@
                                 v-model:value="rule.valueId"
                                 :disabled="!rule.attributeId"
                                 @update:value="onAttributeValueChange(index, $event)"
-                                placeholder="Kies waarde"
+                                :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.chooseValue')"
                         />
 
-                        <sw-button variant="danger" size="small" @click="removeRule(index)">
-                            Verwijderen
+                        <sw-button :title="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.delete')" variant="danger" size="small" @click="removeRule(index)">
+                            <mt-icon
+                                name="regular-trash"
+                                size="16px"
+                            />
+
                         </sw-button>
                     </sw-container>
 
@@ -53,7 +57,7 @@
 
             <sw-container>
                 <sw-button variant="primary" size="small" :disabled="!canAddRule" @click="addRule">
-                    Filter toevoegen ({{ rules.length }}/{{ maxRules }})
+                    {{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.addFilter') }}({{ rules.length }}/{{ maxRules }})
                 </sw-button>
             </sw-container>
 
@@ -62,7 +66,7 @@
             </sw-container>
         </sw-card>
         <div v-if="!category" class="tweakwise-filter-card__overlay">
-            <span>Kies eerst een categorie</span>
+            <span>{{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.chooseCategoryFirst') }}</span>
         </div>
     </div>
     <mt-select

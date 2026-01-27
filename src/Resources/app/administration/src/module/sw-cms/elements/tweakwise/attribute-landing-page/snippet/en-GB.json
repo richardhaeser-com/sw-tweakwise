@@ -3,7 +3,18 @@
     "elements": {
       "tweakwiseAttributeLandingPage": {
         "label": "Tweakwise Attribute Landing Page",
+        "component": {
+          "filter": "Filter"
+        },
         "config": {
+          "delete": "Delete",
+          "attribute": "Attribute",
+          "value": "Value",
+          "addFilter": "Add filter",
+          "chooseCategoryFirst": "Choose category first",
+          "filterAttributes": "Filter attributes",
+          "chooseAttribute": "Choose attribute",
+          "chooseValue": "Choose value",
           "category": {
             "label": "Category",
             "placeHolder": "Select a category"

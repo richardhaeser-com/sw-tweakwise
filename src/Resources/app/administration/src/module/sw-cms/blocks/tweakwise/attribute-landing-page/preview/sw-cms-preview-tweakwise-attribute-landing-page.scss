@@ -1,7 +1,7 @@
 .sw-cms-preview-tweakwise-attribute-landing-page {
-  align-items: center;
+  align-items: start;
   display: grid;
-  grid-template-columns: 20px 1fr 20px;
+  grid-template-columns: 1fr 2fr;
   grid-gap: 5px;
   padding: 15px;
 
@@ -15,5 +15,23 @@
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	grid-gap: 0 15px;
+  }
+
+  .sw-cms-el-category-placeholder-listing div,
+  .sw-cms-el-category-placeholder-listing div.sw-cms-el-category-navigation__placeholder--subcategory
+  {
+    margin: 5px 10px;
+    height: .5em;
+    border-radius: 4px;
+    background-color: #f0f2f5
+  }
+
+  .sw-cms-el-category-placeholder-listing div.sw-cms-el-category-navigation__placeholder--subcategory {
+    margin: 5px 10px 5px 20px
+  }
+
+  hr {
+    margin: 5px auto !important;
+    border-width: 1px !important;
   }
 }

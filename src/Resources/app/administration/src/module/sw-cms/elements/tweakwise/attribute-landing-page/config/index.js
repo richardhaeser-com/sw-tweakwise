@@ -14,7 +14,7 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             filterTemplates: [],
             sortTemplates: [],
             builderTemplates: [],
-            maxRules: 10,
+            maxRules: 20,
             attributeOptions: [],
             valueOptionsByRuleIndex: [],
             isLoadingAttributes: false,
@@ -105,8 +105,6 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
         },
         removeRule(index) {
             this.rules.splice(index, 1);
-            this.$delete(this.valueOptionsByRuleIndex, index);
-            this.$delete(this.isLoadingValuesByRuleIndex, index);
         },
         async onAttributeChange(index, value) {
             this.rules[index].attributeId = value;

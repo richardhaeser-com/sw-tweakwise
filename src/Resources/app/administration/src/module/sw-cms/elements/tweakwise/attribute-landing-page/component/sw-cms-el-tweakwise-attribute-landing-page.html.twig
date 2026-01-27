@@ -1,12 +1,26 @@
 {% block sw_cms_element_tweakwise_attribute_landing_page %}
-    <div class="sw-cms-el-tweakwise-attribute-landing-page">
-        <sw-cms-product-box-preview/>
-        <sw-cms-product-box-preview/>
-        <sw-cms-product-box-preview/>
-        <sw-cms-product-box-preview/>
-        <sw-cms-product-box-preview/>
-        <sw-cms-product-box-preview/>
-        <sw-cms-product-box-preview/>
-        <sw-cms-product-box-preview/>
+    <div class="sw-cms-component-tweakwise-attribute-landing-page">
+        <div class="sw-cms-component-tweakwise-attribute-landing-page__filter-box">
+            <p>{{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.component.filter') }}</p>
+            <hr>
+            <div class="sw-cms-el-category-placeholder-listing">
+                <div class="sw-cms-el-category-navigation__placeholder"></div>
+                <div class="sw-cms-el-category-navigation__placeholder--subcategory"></div>
+                <div class="sw-cms-el-category-navigation__placeholder"></div>
+                <div class="sw-cms-el-category-navigation__placeholder--subcategory"></div>
+                <div class="sw-cms-el-category-navigation__placeholder--subcategory"></div>
+                <div class="sw-cms-el-category-navigation__placeholder--subcategory"></div>
+            </div>
+        </div>
+        <div class="sw-cms-component-tweakwise-attribute-landing-page__product-box">
+            <sw-cms-product-box-preview/>
+            <sw-cms-product-box-preview/>
+            <sw-cms-product-box-preview/>
+            <sw-cms-product-box-preview/>
+            <sw-cms-product-box-preview/>
+            <sw-cms-product-box-preview/>
+            <sw-cms-product-box-preview/>
+            <sw-cms-product-box-preview/>
+        </div>
     </div>
 {% endblock %}
