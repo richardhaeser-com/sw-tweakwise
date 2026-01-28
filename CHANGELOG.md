@@ -1,7 +1,8 @@
-# Unreleased
+# 5.5.1
 
 **Fixed**
 - Make sure the categories of a product are always synced with backend-sync even when no categories are selected anymore
+- In some cases the groupcode whas defined incorrect with variant products, this is now resolved resulting in the right groupcode
 
 # 5.5.0
 20-01-2026

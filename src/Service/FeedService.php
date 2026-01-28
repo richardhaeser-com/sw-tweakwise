@@ -518,6 +518,7 @@ class FeedService
             if (!in_array($productId, $this->uniqueProductIds, true)) {
                 $childFilter = null;
                 $getVariants = false;
+                $parent = null;
                 if ($product->getParentId()) {
                     $criteria = new Criteria([$product->getParentId()]);
                     $criteria->addAssociation('children');
