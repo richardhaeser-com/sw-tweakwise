@@ -32,7 +32,10 @@ class ProductDataExtension extends AbstractExtension
     public function getCrossSellIdByProductNumber(array $twigContext, string $productNumber, string $domainId): string
     {
         $product = $this->productDataService->getProductFromProductNumber($productNumber, $twigContext['context']->getContext());
-        return ProductDataService::getTweakwiseProductId($this->productDataService->getProductShownInListing($product, $twigContext['context']), $domainId);
+        if ($product instanceof ProductEntity) {
+            return ProductDataService::getTweakwiseProductId($this->productDataService->getProductShownInListing($product, $twigContext['context']), $domainId);
+        }
+        return '';
     }
 
     public function getProductFromProductNumber(array $twigContext, string $productNumber): ?ProductEntity
