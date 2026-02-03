@@ -7,7 +7,10 @@
         {% set tweakwiseBoughtItems = [] %}
         {% for item in page.order.nestedLineItems %}
             {% if item.payload.productNumber %}
-                {% set tweakwiseBoughtItems = tweakwiseBoughtItems|merge([tweakwise_product_id_by_product_number(item.payload.productNumber, context.domainId)]) %}
+                {% set product = tweakwise_product_id_by_product_number(item.payload.productNumber, context.domainId) %}
+                {% if product %}
+                    {% set tweakwiseBoughtItems = tweakwiseBoughtItems|merge([product]) %}
+                {% endif %}
             {% endif %}
         {% endfor %}
 

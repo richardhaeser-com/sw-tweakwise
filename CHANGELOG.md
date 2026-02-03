@@ -1,3 +1,8 @@
+# 4.9.1
+
+**Fixed**
+- If the cart contains line items with a product number that does not exist as a product, these items will now be ignored when determining the purchased items for the purchase event
+
 # 4.9.0
 
 **Changed**
