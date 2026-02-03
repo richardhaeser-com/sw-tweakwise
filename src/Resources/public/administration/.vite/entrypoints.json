@@ -1,0 +1,25 @@
+{
+  "base": "/bundles/rhaetweakwise/administration/",
+  "entryPoints": {
+    "rhae-tweakwise": {
+      "css": [
+        "/bundles/rhaetweakwise/administration/css/rhae-tweakwise.css"
+      ],
+      "dynamic": [],
+      "js": [
+        "/bundles/rhaetweakwise/administration/js/rhae-tweakwise.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.0.4",
+    7,
+    0,
+    4
+  ],
+  "viteServer": null
+}
