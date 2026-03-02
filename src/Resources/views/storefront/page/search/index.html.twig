@@ -3,23 +3,16 @@
 {% block page_search %}
     {% if page.extensions.twConfiguration.eventTagEnabled and page.searchTerm %}
         <script>
-            const searchTerm = '{{ page.searchTerm }}';
-            (async () => {
-                if (!window.tweakwise || typeof window.tweakwise.getProfileKey !== 'function') {
-                    return;
-                }
+            window.addEventListener('etInit', function (e) {
+                const searchTerm = '{{ page.searchTerm }}';
 
-                const profileKey = await window.tweakwise.getProfileKey();
-
-                window.tweakwiseLayer = window.tweakwiseLayer || [];
                 window.tweakwiseLayer.push({
                     event: 'search',
                     data: {
-                        profileKey: profileKey,
                         searchTerm: searchTerm
                     }
                 });
-            })();
+            });
         </script>
     {% endif %}
 

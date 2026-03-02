@@ -18,22 +18,17 @@
                 return;
             }
 
-            (async () => {
-                if (!window.tweakwise || typeof window.tweakwise.getProfileKey !== 'function') {
-                    return;
+            if (!window.tweakwise || typeof window.tweakwise.getProfileKey !== 'function') {
+                return;
+            }
+
+            window.tweakwiseLayer = window.tweakwiseLayer || [];
+            window.tweakwiseLayer.push({
+                event: 'search',
+                data: {
+                    searchTerm: searchTerm
                 }
-
-                const profileKey = await window.tweakwise.getProfileKey();
-
-                window.tweakwiseLayer = window.tweakwiseLayer || [];
-                window.tweakwiseLayer.push({
-                    event: 'search',
-                    data: {
-                        profileKey: profileKey,
-                        searchTerm: searchTerm
-                    }
-                });
-            })();
+            });
         });
     </script>
     {% endif %}

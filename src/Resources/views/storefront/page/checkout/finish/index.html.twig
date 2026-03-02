@@ -18,20 +18,15 @@
         {% endif %}
 
         <script>
-            (async () => {
-                window.tweakwiseLayer = window.tweakwiseLayer || [];
-
-                const profileKey = await window.tweakwise.getProfileKey();
-
+            window.addEventListener('etInit', function (e) {
                 window.tweakwiseLayer.push({
                     event: 'purchase',
                     data: {
-                        profileKey: profileKey,
                         productKeys: [{{ tweakwiseBoughtItems|map(i => '"' ~ i ~ '"')|join(',')|raw }}],
                         revenue: {{ revenue|floatval }}
                     }
                 });
-            })();
+            });
         </script>
     {% endif %}
 
