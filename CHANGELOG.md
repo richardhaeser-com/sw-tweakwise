@@ -1,3 +1,8 @@
+# Unreleased
+
+**Fixed**
+- Resolved a timing issue for the productView and purchase events to make sure the events are collected correctly
+
 # 4.9.1
 
 **Fixed**

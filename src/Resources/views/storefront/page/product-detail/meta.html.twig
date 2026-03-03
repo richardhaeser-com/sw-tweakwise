@@ -3,23 +3,18 @@
 {% block layout_head_canonical %}
     {{ parent() }}
 
-    {% if page.extensions.twConfiguration.eventTagEnabled and page.extensions.twConfiguration.crossSellProductId  %}
-<script>
-    tweakwiseProductId = '{{ page.extensions.twConfiguration.crossSellProductId }}';
+    {% if page.extensions.twConfiguration.eventTagEnabled and page.extensions.twConfiguration.crossSellProductId %}
+        <script>
+            window.addEventListener('etInit', function (e) {
+                var tweakwiseProductId = '{{ page.extensions.twConfiguration.crossSellProductId }}';
 
-    (async () => {
-        window.tweakwiseLayer = window.tweakwiseLayer || [];
-
-        const profileKey = await window.tweakwise.getProfileKey();
-
-        window.tweakwiseLayer.push({
-            event: 'productView',
-            data: {
-                profileKey: profileKey,
-                productKey: tweakwiseProductId
-            }
-        });
-    })();
-</script>
+                window.tweakwiseLayer.push({
+                    event: 'productView',
+                    data: {
+                        productKey: tweakwiseProductId
+                    }
+                });
+            });
+        </script>
     {% endif %}
 {% endblock %}
