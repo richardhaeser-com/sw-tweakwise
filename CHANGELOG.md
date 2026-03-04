@@ -1,4 +1,4 @@
-# Unreleased
+# 5.6.0
 
 **Added**
 - Added properties in feed containing the cheapest price of a product (sw-cheapestprice-net and sw-cheapestprice-gross) and if the product needs a "from" prefix for the price (sw-has-from-price).
