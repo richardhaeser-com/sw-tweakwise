@@ -3,6 +3,14 @@
     {% set price = product.calculatedPrices.last %}
 {%- endif -%}
 
+{% set displayFrom = product.calculatedPrices.count > 1 %}
+{% set displayParent = product.variantListingConfig.displayParent and product.parentId === null %}
+
+{% if displayParent %}
+    {% set totalVariants = product.cheapestPriceContainer.value %}
+    {% set hasDifferentPrice = totalVariants|filter(variant => variant.default != null)|length > 0 %}
+{% endif %}
+
 {% block feed_item %}
 <item>
     {% block feed_item_inner %}
@@ -142,6 +150,25 @@
                             <value>{{ product.productNumber }}</value>
                         </attribute>
                     {% endblock %}
+                    {% block feed_item_cheapestprice_net %}
+                        <attribute>
+                            <name>sw-cheapestprice-net</name>
+                            <value>{{ product.cheapestPrice.price.last.net }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_cheapestprice_gross %}
+                        <attribute>
+                            <name>sw-cheapestprice-gross</name>
+                            <value>{{ product.cheapestPrice.price.last.gross }}</value>
+                        </attribute>
+                    {% endblock %}
+                    {% block feed_item_has_from_price %}
+                        <attribute>
+                            <name>sw-has-from-price</name>
+                            <value>{% if displayFrom or (displayParent and hasDifferentPrice and totalVariants|length > 1) %}true{% else %}false{% endif %}</value>
+                        </attribute>
+                    {% endblock %}
+
                     {% block feed_item_label %}
                         {% set label = '' %}
                         {%  if (product.availableStock < 1) %}
