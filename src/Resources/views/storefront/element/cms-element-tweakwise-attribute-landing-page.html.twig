@@ -1,26 +1,43 @@
 {% block tweakwise_attribute_landing_page %}
-    {% set instanceKey = page.extensions.twConfiguration.instanceKey|escape %}
-    {% set languageKey = (page.header.activeLanguage.translationCode.code ?? context.languageInfo.localeCode)|split('-')[0]|escape %}
+    {% set standardRules = [] %}
+    {% set customParameters = [] %}
+
+    {% for rule in element.config.rules.value %}
+        {% set valueIds = rule.valueIds ?? [] %}
+
+        {% if rule.attributeId and rule.attributeId starts with '__custom_attribute__:' %}
+            {% set customAttributeName = rule.attributeId|replace({'__custom_attribute__:': ''}) %}
+            {% set customValueString = valueIds|join('|') %}
+            {% set customParameter = customAttributeName|url_encode ~ '=' ~ customValueString|url_encode %}
+            {% set customParameters = customParameters|merge([customParameter]) %}
+        {% elseif rule.attributeId %}
+            {% set standardRules = standardRules|merge([rule]) %}
+        {% endif %}
+    {% endfor %}
 
     <script>
         window.addEventListener('twn.starter.ready', function () {
             const listerPage = tweakwiseListerPage({
                 cid: "{{ element.config.category.value }}",
                 output: "#tweakwise-alp",
-                {% if element.config.filterTemplate.value %}filterTemplateId: {{element.config.filterTemplate.value}},{% endif %}
-                {% if element.config.sortTemplate.value %}sortingTemplateId: {{element.config.sortTemplate.value}},{% endif %}
-                {% if element.config.builderTemplate.value %}builderTemplateId: {{element.config.builderTemplate.value}},{% endif %}
-                {% if element.config.rules.value %}
+                {% if element.config.filterTemplate.value %}filterTemplateId: {{ element.config.filterTemplate.value }},{% endif %}
+                {% if element.config.sortTemplate.value %}sortingTemplateId: {{ element.config.sortTemplate.value }},{% endif %}
+                {% if element.config.builderTemplate.value %}builderTemplateId: {{ element.config.builderTemplate.value }},{% endif %}
+
+                {% if standardRules|length > 0 %}
                 selection: {
-                    {% for rule in element.config.rules.value %}
-                        "tn_fk_{{ rule.attributeId }}": "{{ rule.valueId }}",
+                    {% for rule in standardRules %}
+                    "tn_fk_{{ rule.attributeId }}": "{{ (rule.valueIds ?? [])|join('|') }}"{% if not loop.last %},{% endif %}
                     {% endfor %}
-                }
+                },
+                {% endif %}
+
+                {% if customParameters|length > 0 %}
+                parameters: "{{ customParameters|join('&') }}",
                 {% endif %}
             });
         });
-
     </script>
-    
+
     <div id="tweakwise-alp"></div>
 {% endblock %}
