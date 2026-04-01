@@ -32,18 +32,6 @@
                             style="opacity: 0; cursor: default;"
                     >
                         <mt-icon
-                                name="regular-plus-s"
-                                size="16px"
-                        />
-                    </sw-button>
-
-                    <sw-button
-                            class="attribute-selection__icon-button"
-                            size="small"
-                            variant="tertiary"
-                            style="opacity: 0; cursor: default;"
-                    >
-                        <mt-icon
                                 name="regular-trash"
                                 size="16px"
                         />
@@ -56,164 +44,100 @@
                     :key="index"
                     class="attribute-selection"
             >
-                <div class="attribute-selection__attribute-cell">
-                    <div class="attribute-selection__attribute-top">
-                        <sw-single-select
-                                label=""
-                                :options="attributeOptions"
-                                v-model:value="rule.attributeId"
-                                @update:value="onAttributeChange(index, $event)"
-                                :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.chooseAttribute')"
-                        />
+                <template v-if="rule.type === 'custom'">
+                    <sw-text-field
+                            label=""
+                            v-model:value="rule.attributeId"
+                            placeholder="Eigen attribuut"
+                            @update:value="onCustomAttributeChange(index, $event)"
+                    />
 
+                    <sw-text-field
+                            label=""
+                            v-model:value="rule.customValue"
+                            placeholder="Eigen waarde"
+                            @update:value="onCustomValueChange(index, $event)"
+                    />
+
+                    <div class="attribute-selection__actions">
                         <sw-button
                                 class="attribute-selection__icon-button"
-                                :title="'Eigen attribuut toevoegen'"
+                                :title="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.delete')"
                                 variant="tertiary"
                                 size="small"
-                                @click="showCustomAttributeInput(index)"
+                                @click="removeRule(index)"
                         >
                             <mt-icon
-                                    name="regular-plus-s"
+                                    name="regular-trash"
+                                    size="16px"
+                            />
+                        </sw-button>
+                    </div>
+                </template>
+
+                <template v-else>
+                    <sw-single-select
+                            label=""
+                            :options="attributeOptions"
+                            v-model:value="rule.attributeId"
+                            @update:value="onAttributeChange(index, $event)"
+                            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.chooseAttribute')"
+                    />
+
+                    <sw-multi-select
+                            label=""
+                            :options="valueOptionsByRuleIndex[index] || []"
+                            v-model:value="rule.valueIds"
+                            :disabled="!rule.attributeId"
+                            @update:value="onAttributeValueChange(index, $event)"
+                            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.chooseValue')"
+                    />
+
+                    <div class="attribute-selection__actions">
+                        <sw-button
+                                class="attribute-selection__icon-button"
+                                :title="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.delete')"
+                                variant="tertiary"
+                                size="small"
+                                @click="removeRule(index)"
+                        >
+                            <mt-icon
+                                    name="regular-trash"
                                     size="16px"
                             />
                         </sw-button>
                     </div>
 
                     <div
-                            v-if="showCustomAttributeInputByRuleIndex[index]"
-                            class="attribute-selection__attribute-custom"
+                            v-if="isLoadingValuesByRuleIndex[index]"
+                            class="attribute-selection__loader"
                     >
-                        <sw-text-field
-                                :ref="'customAttributeInput-' + index"
-                                label=""
-                                v-model:value="customAttributeByRuleIndex[index]"
-                                placeholder="Eigen attribuut toevoegen"
-                                @mousedown.stop
-                                @click.stop
-                                @focus.stop
-                                @keyup.enter.native="addCustomAttribute(index)"
-                        />
-
-                        <sw-button
-                                size="small"
-                                variant="primary"
-                                :disabled="!customAttributeByRuleIndex[index] || !customAttributeByRuleIndex[index].trim()"
-                                @click="addCustomAttribute(index)"
-                        >
-                            Toevoegen
-                        </sw-button>
-
-                        <sw-button
-                                class="attribute-selection__icon-button"
-                                size="small"
-                                variant="tertiary"
-                                @click="hideCustomAttributeInput(index)"
-                        >
-                            <mt-icon
-                                    name="regular-times-s"
-                                    size="10px"
-                            />
-                        </sw-button>
+                        <sw-loader size="small" />
                     </div>
-                </div>
-
-                <sw-multi-select
-                        label=""
-                        :options="valueOptionsByRuleIndex[index] || []"
-                        v-model:value="rule.valueIds"
-                        :disabled="!rule.attributeId"
-                        @update:value="onAttributeValueChange(index, $event)"
-                        :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.chooseValue')"
-                />
-
-                <div class="attribute-selection__actions">
-                    <sw-button
-                            class="attribute-selection__icon-button"
-                            :title="'Eigen waarde toevoegen'"
-                            variant="tertiary"
-                            size="small"
-                            :disabled="!rule.attributeId"
-                            @click="showCustomValueInput(index)"
-                    >
-                        <mt-icon
-                                name="regular-plus-s"
-                                size="16px"
-                        />
-                    </sw-button>
-
-                    <sw-button
-                            class="attribute-selection__icon-button"
-                            :title="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.delete')"
-                            variant="tertiary"
-                            size="small"
-                            @click="removeRule(index)"
-                    >
-                        <mt-icon
-                                name="regular-trash"
-                                size="16px"
-                        />
-                    </sw-button>
-                </div>
-
-                <div
-                        v-if="showCustomValueInputByRuleIndex[index]"
-                        class="attribute-selection__custom-value"
-                >
-                    <div class="attribute-selection__custom-value-inner">
-                        <sw-text-field
-                                :ref="'customValueInput-' + index"
-                                label=""
-                                v-model:value="customValueByRuleIndex[index]"
-                                :disabled="!rule.attributeId"
-                                placeholder="Eigen waarde toevoegen"
-                                @mousedown.stop
-                                @click.stop
-                                @focus.stop
-                                @keyup.enter.native="addCustomValue(index)"
-                        />
-
-                        <sw-button
-                                size="small"
-                                variant="primary"
-                                :disabled="!rule.attributeId || !customValueByRuleIndex[index] || !customValueByRuleIndex[index].trim()"
-                                @click="addCustomValue(index)"
-                        >
-                            Toevoegen
-                        </sw-button>
-
-                        <sw-button
-                                class="attribute-selection__icon-button"
-                                size="small"
-                                variant="tertiary"
-                                @click="hideCustomValueInput(index)"
-                        >
-                            <mt-icon
-                                    name="regular-times-s"
-                                    size="10px"
-                            />
-                        </sw-button>
-                    </div>
-                </div>
-
-                <div
-                        v-if="isLoadingValuesByRuleIndex[index]"
-                        class="attribute-selection__loader"
-                >
-                    <sw-loader size="small" />
-                </div>
+                </template>
             </div>
 
-            <sw-container>
-                <sw-button
-                        variant="primary"
-                        size="small"
-                        :disabled="!canAddRule"
-                        @click="addRule"
-                >
-                    {{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.addFilter') }} ({{ rules.length }}/{{ maxRules }})
-                </sw-button>
-            </sw-container>
+            <sw-button
+                    variant="primary"
+                    size="small"
+                    :disabled="!canAddRule"
+                    @click="addRule"
+            >
+                {{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.addFilter') }}
+            </sw-button>
+
+            <sw-button
+                    variant="secondary"
+                    size="small"
+                    :disabled="!canAddRule"
+                    @click="addCustomRule"
+            >
+                {{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.addCustomFilter') }}
+            </sw-button>
+
+            <div class="attribute-selection__counter">
+                Filters: {{ rules.length }}/{{ maxRules }}
+            </div>
 
             <sw-container
                     v-if="isLoadingAttributes"

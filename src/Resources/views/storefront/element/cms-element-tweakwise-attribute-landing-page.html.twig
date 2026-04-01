@@ -1,41 +1,118 @@
 {% block tweakwise_attribute_landing_page %}
-    {% set standardRules = [] %}
-    {% set customParameters = [] %}
+    {% set groupedSelectionValues = {} %}
+    {% set groupedParameterValues = {} %}
 
-    {% for rule in element.config.rules.value %}
-        {% set valueIds = rule.valueIds ?? [] %}
+    {% for rule in element.config.rules.value|default([]) %}
+        {% if rule.type == 'custom' %}
+            {% set rawAttributeId = (rule.attributeId ?? '')|trim %}
+            {% set selectionAttributeId = (rule.selectionAttributeId ?? '')|trim %}
+            {% set rawCustomValue = (rule.customValue ?? '')|trim %}
 
-        {% if rule.attributeId and rule.attributeId starts with '__custom_attribute__:' %}
-            {% set customAttributeName = rule.attributeId|replace({'__custom_attribute__:': ''}) %}
-            {% set customValueString = valueIds|join('|') %}
-            {% set customParameter = customAttributeName|url_encode ~ '=' ~ customValueString|url_encode %}
-            {% set customParameters = customParameters|merge([customParameter]) %}
-        {% elseif rule.attributeId %}
-            {% set standardRules = standardRules|merge([rule]) %}
+            {% if rawCustomValue %}
+                {% set splitValues = rawCustomValue|split('|') %}
+                {% set cleanedValues = [] %}
+
+                {% for value in splitValues %}
+                    {% set cleanedValue = value|trim %}
+                    {% if cleanedValue %}
+                        {% set cleanedValues = cleanedValues|merge([cleanedValue]) %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if cleanedValues|length > 0 %}
+                    {% if selectionAttributeId %}
+                        {% set existingValues = groupedSelectionValues[selectionAttributeId]|default([]) %}
+                        {% set groupedSelectionValues = groupedSelectionValues|merge({
+                            (selectionAttributeId): existingValues|merge(cleanedValues)
+                        }) %}
+                    {% elseif rawAttributeId %}
+                        {% set existingValues = groupedParameterValues[rawAttributeId]|default([]) %}
+                        {% set groupedParameterValues = groupedParameterValues|merge({
+                            (rawAttributeId): existingValues|merge(cleanedValues)
+                        }) %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% else %}
+            {% set attributeId = (rule.attributeId ?? '')|trim %}
+            {% set rawValueIds = rule.valueIds|default([]) %}
+
+            {% if attributeId %}
+                {% set cleanedValues = [] %}
+
+                {% for value in rawValueIds %}
+                    {% set cleanedValue = value|trim %}
+                    {% if cleanedValue %}
+                        {% set cleanedValues = cleanedValues|merge([cleanedValue]) %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if cleanedValues|length > 0 %}
+                    {% set existingValues = groupedSelectionValues[attributeId]|default([]) %}
+                    {% set groupedSelectionValues = groupedSelectionValues|merge({
+                        (attributeId): existingValues|merge(cleanedValues)
+                    }) %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    {% set selectionEntries = [] %}
+    {% for attributeId, values in groupedSelectionValues %}
+        {% set uniqueValues = [] %}
+
+        {% for value in values %}
+            {% if value not in uniqueValues %}
+                {% set uniqueValues = uniqueValues|merge([value]) %}
+            {% endif %}
+        {% endfor %}
+
+        {% if uniqueValues|length > 0 %}
+            {% set selectionEntries = selectionEntries|merge([{
+                key: 'tn_fk_' ~ attributeId,
+                value: uniqueValues|join('|')
+            }]) %}
+        {% endif %}
+    {% endfor %}
+
+    {% set parameterEntries = [] %}
+    {% for attributeId, values in groupedParameterValues %}
+        {% set uniqueValues = [] %}
+
+        {% for value in values %}
+            {% if value not in uniqueValues %}
+                {% set uniqueValues = uniqueValues|merge([value]) %}
+            {% endif %}
+        {% endfor %}
+
+        {% if uniqueValues|length > 0 %}
+            {% set parameterEntries = parameterEntries|merge([
+                attributeId|url_encode ~ '=' ~ (uniqueValues|join('|'))|url_encode
+            ]) %}
         {% endif %}
     {% endfor %}
 
     <script>
         window.addEventListener('twn.starter.ready', function () {
-            const listerPage = tweakwiseListerPage({
+            const config = {
                 cid: "{{ element.config.category.value }}",
                 output: "#tweakwise-alp",
                 {% if element.config.filterTemplate.value %}filterTemplateId: {{ element.config.filterTemplate.value }},{% endif %}
                 {% if element.config.sortTemplate.value %}sortingTemplateId: {{ element.config.sortTemplate.value }},{% endif %}
                 {% if element.config.builderTemplate.value %}builderTemplateId: {{ element.config.builderTemplate.value }},{% endif %}
-
-                {% if standardRules|length > 0 %}
+                {% if selectionEntries|length > 0 %}
                 selection: {
-                    {% for rule in standardRules %}
-                    "tn_fk_{{ rule.attributeId }}": "{{ (rule.valueIds ?? [])|join('|') }}"{% if not loop.last %},{% endif %}
+                    {% for entry in selectionEntries %}
+                    "{{ entry.key }}": "{{ entry.value }}"{% if not loop.last %},{% endif %}
                     {% endfor %}
                 },
                 {% endif %}
-
-                {% if customParameters|length > 0 %}
-                parameters: "{{ customParameters|join('&') }}",
+                {% if parameterEntries|length > 0 %}
+                parameters: "{{ parameterEntries|join('&') }}",
                 {% endif %}
-            });
+            };
+
+            tweakwiseListerPage(config);
         });
     </script>
 

@@ -1,8 +1,6 @@
 import template from './sw-cms-el-config-tweakwise-attribute-landing-page.html.twig';
 import './sw-cms-el-config-tweakwise-attribute-landing-page.scss';
 
-const CUSTOM_ATTRIBUTE_PREFIX = '__custom_attribute__:';
-
 Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page', {
     template,
 
@@ -19,10 +17,6 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             maxRules: 20,
             attributeOptions: [],
             valueOptionsByRuleIndex: [],
-            customAttributeByRuleIndex: {},
-            customValueByRuleIndex: {},
-            showCustomAttributeInputByRuleIndex: {},
-            showCustomValueInputByRuleIndex: {},
             isLoading: false,
             isLoadingAttributes: false,
             isLoadingValuesByRuleIndex: {}
@@ -39,18 +33,42 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             }
 
             for (let index = 0; index < rules.length; index++) {
-                if (!Array.isArray(rules[index].valueIds)) {
-                    if (Array.isArray(rules[index].valueId)) {
-                        rules[index].valueIds = rules[index].valueId;
-                    } else if (rules[index].valueId) {
-                        rules[index].valueIds = [rules[index].valueId];
-                    } else {
-                        rules[index].valueIds = [];
-                    }
+                const rule = rules[index];
+
+                if (!rule.type) {
+                    rule.type = 'standard';
                 }
 
-                if (rules[index].attributeId) {
-                    this.ensureCustomAttributeOptionExists(rules[index].attributeId);
+                if (rule.type === 'custom') {
+                    if (typeof rule.attributeId !== 'string') {
+                        rule.attributeId = rule.attributeId ? String(rule.attributeId) : '';
+                    }
+
+                    if (typeof rule.customValue !== 'string') {
+                        if (Array.isArray(rule.valueIds) && rule.valueIds.length > 0) {
+                            rule.customValue = rule.valueIds.join('|');
+                        } else if (rule.valueId) {
+                            rule.customValue = rule.valueId;
+                        } else {
+                            rule.customValue = '';
+                        }
+                    }
+
+                    if (typeof rule.selectionAttributeId === 'undefined') {
+                        rule.selectionAttributeId = null;
+                    }
+
+                    rule.valueIds = [];
+                } else {
+                    if (!Array.isArray(rule.valueIds)) {
+                        if (Array.isArray(rule.valueId)) {
+                            rule.valueIds = rule.valueId;
+                        } else if (rule.valueId) {
+                            rule.valueIds = [rule.valueId];
+                        } else {
+                            rule.valueIds = [];
+                        }
+                    }
                 }
             }
 
@@ -118,87 +136,34 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             this.restoreRuleValueOptions();
         },
 
-        focusInputByRefName(refName) {
-            this.$nextTick(() => {
-                const fieldComponent = this.$refs[refName];
-
-                if (!fieldComponent) {
-                    return;
-                }
-
-                const fieldElement = Array.isArray(fieldComponent) ? fieldComponent[0] : fieldComponent;
-                const input = fieldElement?.$el?.querySelector('input');
-
-                if (input) {
-                    input.focus();
-                    input.select();
-                }
-            });
-        },
-
-        isCustomAttributeValue(value) {
-            return typeof value === 'string' && value.startsWith(CUSTOM_ATTRIBUTE_PREFIX);
-        },
-
-        encodeCustomAttributeValue(value) {
-            return `${CUSTOM_ATTRIBUTE_PREFIX}${value}`;
-        },
-
-        decodeCustomAttributeValue(value) {
-            if (!this.isCustomAttributeValue(value)) {
-                return value;
-            }
-
-            return value.substring(CUSTOM_ATTRIBUTE_PREFIX.length);
-        },
-
-        ensureCustomAttributeOptionExists(value) {
-            if (!this.isCustomAttributeValue(value)) {
-                return;
-            }
-
-            const exists = this.attributeOptions.some((option) => option.value === value);
-
-            if (exists) {
-                return;
-            }
-
-            this.attributeOptions = [
-                ...this.attributeOptions,
-                {
-                    label: this.decodeCustomAttributeValue(value),
-                    value
-                }
-            ];
-        },
-
-        restoreCustomAttributeOptionsFromRules() {
-            const rules = this.element.config.rules.value || [];
-
-            rules.forEach((rule) => {
-                if (rule.attributeId) {
-                    this.ensureCustomAttributeOptionExists(rule.attributeId);
-                }
-            });
-        },
-
-        restoreRuleValueOptions() {
-            const rules = this.element.config.rules.value || [];
-
-            rules.forEach((rule, index) => {
-                if (rule.attributeId) {
-                    this.ensureCustomAttributeOptionExists(rule.attributeId);
-                    this.loadValuesForRule(index, rule.attributeId);
-                }
-            });
-        },
-
         ensureRuleStructure() {
             if (!this.element.config.rules.value) {
                 this.element.config.rules.value = [];
             }
 
             this.element.config.rules.value = this.element.config.rules.value.map((rule) => {
+                const isCustom = rule.type === 'custom';
+
+                if (isCustom) {
+                    let customValue = '';
+
+                    if (typeof rule.customValue === 'string') {
+                        customValue = rule.customValue;
+                    } else if (Array.isArray(rule.valueIds) && rule.valueIds.length > 0) {
+                        customValue = rule.valueIds.join('|');
+                    } else if (rule.valueId) {
+                        customValue = rule.valueId;
+                    }
+
+                    return {
+                        type: 'custom',
+                        attributeId: rule.attributeId || '',
+                        customValue,
+                        selectionAttributeId: rule.selectionAttributeId || null,
+                        valueIds: []
+                    };
+                }
+
                 let valueIds = [];
 
                 if (Array.isArray(rule.valueIds)) {
@@ -210,9 +175,61 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
                 }
 
                 return {
+                    type: 'standard',
                     attributeId: rule.attributeId || null,
                     valueIds
                 };
+            });
+        },
+
+        parseCustomValues(customValue) {
+            return String(customValue || '')
+                .split('|')
+                .map((value) => value.trim())
+                .filter(Boolean);
+        },
+
+        findMatchingAttributeOption(input) {
+            const normalizedInput = String(input || '').trim().toLowerCase();
+
+            if (!normalizedInput) {
+                return null;
+            }
+
+            return this.attributeOptions.find((option) => {
+                const optionValue = String(option.value || '').trim().toLowerCase();
+                const optionLabel = String(option.label || '').trim().toLowerCase();
+
+                return optionValue === normalizedInput || optionLabel === normalizedInput;
+            }) || null;
+        },
+
+        resolveCustomRuleSelectionAttribute(index) {
+            const rule = this.rules[index];
+
+            if (!rule || rule.type !== 'custom') {
+                return;
+            }
+
+            const matchingOption = this.findMatchingAttributeOption(rule.attributeId);
+            rule.selectionAttributeId = matchingOption ? matchingOption.value : null;
+        },
+
+        resolveExistingCustomRules() {
+            this.rules.forEach((rule, index) => {
+                if (rule.type === 'custom') {
+                    this.resolveCustomRuleSelectionAttribute(index);
+                }
+            });
+        },
+
+        restoreRuleValueOptions() {
+            const rules = this.element.config.rules.value || [];
+
+            rules.forEach((rule, index) => {
+                if (rule.type === 'standard' && rule.attributeId) {
+                    this.loadValuesForRule(index, rule.attributeId);
+                }
             });
         },
 
@@ -226,7 +243,24 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             }
 
             this.rules.push({
+                type: 'standard',
                 attributeId: null,
+                valueIds: []
+            });
+
+            this.onElementUpdate();
+        },
+
+        addCustomRule() {
+            if (!this.canAddRule) {
+                return;
+            }
+
+            this.rules.push({
+                type: 'custom',
+                attributeId: '',
+                customValue: '',
+                selectionAttributeId: null,
                 valueIds: []
             });
 
@@ -237,61 +271,22 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             this.rules.splice(index, 1);
 
             delete this.valueOptionsByRuleIndex[index];
-            delete this.customAttributeByRuleIndex[index];
-            delete this.customValueByRuleIndex[index];
-            delete this.showCustomAttributeInputByRuleIndex[index];
-            delete this.showCustomValueInputByRuleIndex[index];
             delete this.isLoadingValuesByRuleIndex[index];
 
             this.onElementUpdate();
         },
 
-        showCustomAttributeInput(index) {
+        onCustomAttributeChange(index, value) {
             const rule = this.rules[index];
-
-            if (this.isCustomAttributeValue(rule.attributeId)) {
-                this.customAttributeByRuleIndex[index] = this.decodeCustomAttributeValue(rule.attributeId);
-            }
-
-            this.showCustomAttributeInputByRuleIndex[index] = true;
-            this.focusInputByRefName(`customAttributeInput-${index}`);
+            rule.attributeId = value;
+            this.resolveCustomRuleSelectionAttribute(index);
+            this.onElementUpdate();
         },
 
-        hideCustomAttributeInput(index) {
-            this.showCustomAttributeInputByRuleIndex[index] = false;
-            this.customAttributeByRuleIndex[index] = '';
-        },
-
-        showCustomValueInput(index) {
-            this.showCustomValueInputByRuleIndex[index] = true;
-            this.focusInputByRefName(`customValueInput-${index}`);
-        },
-
-        hideCustomValueInput(index) {
-            this.showCustomValueInputByRuleIndex[index] = false;
-            this.customValueByRuleIndex[index] = '';
-        },
-
-        addCustomAttribute(index) {
+        onCustomValueChange(index, value) {
             const rule = this.rules[index];
-            const customAttribute = (this.customAttributeByRuleIndex[index] || '').trim();
-
-            if (!customAttribute) {
-                return;
-            }
-
-            const storedValue = this.encodeCustomAttributeValue(customAttribute);
-
-            this.ensureCustomAttributeOptionExists(storedValue);
-
-            rule.attributeId = storedValue;
-            rule.valueIds = [];
-            this.valueOptionsByRuleIndex[index] = [];
-            this.customValueByRuleIndex[index] = '';
-            this.showCustomAttributeInputByRuleIndex[index] = false;
-            this.showCustomValueInputByRuleIndex[index] = false;
-            this.customAttributeByRuleIndex[index] = '';
-
+            rule.customValue = value;
+            this.resolveCustomRuleSelectionAttribute(index);
             this.onElementUpdate();
         },
 
@@ -300,19 +295,9 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
 
             rule.attributeId = value;
             rule.valueIds = [];
-            this.customValueByRuleIndex[index] = '';
-            this.showCustomAttributeInputByRuleIndex[index] = false;
-            this.showCustomValueInputByRuleIndex[index] = false;
 
             if (!rule.attributeId) {
                 this.valueOptionsByRuleIndex[index] = [];
-                this.onElementUpdate();
-                return;
-            }
-
-            if (this.isCustomAttributeValue(rule.attributeId)) {
-                this.ensureCustomAttributeOptionExists(rule.attributeId);
-                await this.loadValuesForRule(index, rule.attributeId);
                 this.onElementUpdate();
                 return;
             }
@@ -325,15 +310,16 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             await this.loadFilterAttributes();
 
             this.rules.forEach((rule, index) => {
-                rule.valueIds = [];
-                this.valueOptionsByRuleIndex[index] = [];
-                this.customAttributeByRuleIndex[index] = '';
-                this.customValueByRuleIndex[index] = '';
-                this.showCustomAttributeInputByRuleIndex[index] = false;
-                this.showCustomValueInputByRuleIndex[index] = false;
+                if (rule.type === 'standard') {
+                    rule.valueIds = [];
+                    this.valueOptionsByRuleIndex[index] = [];
+                } else if (rule.type === 'custom') {
+                    rule.selectionAttributeId = null;
+                }
             });
 
             this.restoreRuleValueOptions();
+            this.resolveExistingCustomRules();
             this.onElementUpdate();
         },
 
@@ -347,52 +333,16 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             await this.loadFilterAttributes();
 
             this.rules.forEach((rule, index) => {
-                rule.attributeId = null;
-                rule.valueIds = [];
-                this.valueOptionsByRuleIndex[index] = [];
-                this.customAttributeByRuleIndex[index] = '';
-                this.customValueByRuleIndex[index] = '';
-                this.showCustomAttributeInputByRuleIndex[index] = false;
-                this.showCustomValueInputByRuleIndex[index] = false;
+                if (rule.type === 'standard') {
+                    rule.attributeId = null;
+                    rule.valueIds = [];
+                    this.valueOptionsByRuleIndex[index] = [];
+                } else if (rule.type === 'custom') {
+                    rule.selectionAttributeId = null;
+                }
             });
 
-            this.onElementUpdate();
-        },
-
-        addCustomValue(index) {
-            const rule = this.rules[index];
-            const customValue = (this.customValueByRuleIndex[index] || '').trim();
-
-            if (!customValue) {
-                return;
-            }
-
-            const currentOptions = this.valueOptionsByRuleIndex[index] || [];
-            const existingOption = currentOptions.find((option) => option.value === customValue);
-
-            if (!existingOption) {
-                this.valueOptionsByRuleIndex[index] = [
-                    ...currentOptions,
-                    {
-                        label: customValue,
-                        value: customValue
-                    }
-                ];
-            }
-
-            if (!Array.isArray(rule.valueIds)) {
-                rule.valueIds = [];
-            }
-
-            if (!rule.valueIds.includes(customValue)) {
-                rule.valueIds = [
-                    ...rule.valueIds,
-                    customValue
-                ];
-            }
-
-            this.customValueByRuleIndex[index] = '';
-            this.showCustomValueInputByRuleIndex[index] = false;
+            this.resolveExistingCustomRules();
             this.onElementUpdate();
         },
 
@@ -400,16 +350,7 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             this.isLoadingValuesByRuleIndex[index] = true;
 
             const existingRules = this.element.config.rules.value || [];
-            const existingCustomValues = existingRules[index]?.valueIds || [];
-
-            if (this.isCustomAttributeValue(attributeId)) {
-                this.valueOptionsByRuleIndex[index] = existingCustomValues.map((value) => ({
-                    label: value,
-                    value
-                }));
-                this.isLoadingValuesByRuleIndex[index] = false;
-                return;
-            }
+            const existingValues = existingRules[index]?.valueIds || [];
 
             const selectedCategoryId = this.category;
             if (!selectedCategoryId) {
@@ -433,7 +374,7 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
                 const fetchedOptions = Array.isArray(response.data) ? response.data : [];
                 const mergedOptions = [...fetchedOptions];
 
-                existingCustomValues.forEach((selectedValue) => {
+                existingValues.forEach((selectedValue) => {
                     const exists = mergedOptions.some((option) => option.value === selectedValue);
 
                     if (!exists) {
@@ -491,7 +432,6 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
 
             if (!this.category || !this.filterTemplate) {
                 this.attributeOptions = [];
-                this.restoreCustomAttributeOptionsFromRules();
                 this.isLoadingAttributes = false;
                 return;
             }
@@ -516,7 +456,7 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
                 console.warn('Could not load filter attributes');
             } else {
                 this.attributeOptions = Array.isArray(response.data) ? response.data : [];
-                this.restoreCustomAttributeOptionsFromRules();
+                this.resolveExistingCustomRules();
             }
 
             this.isLoadingAttributes = false;

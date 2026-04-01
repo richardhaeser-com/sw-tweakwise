@@ -11,6 +11,7 @@
           "attribute": "Attribute",
           "value": "Value",
           "addFilter": "Add filter",
+          "addCustomFilter": "Add custom filter",
           "chooseCategoryFirst": "Choose category first",
           "filterAttributes": "Filter attributes",
           "chooseAttribute": "Choose attribute",
