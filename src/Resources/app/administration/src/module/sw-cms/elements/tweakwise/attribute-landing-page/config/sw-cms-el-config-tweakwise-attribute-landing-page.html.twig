@@ -7,6 +7,14 @@
             :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.category.label')"
     />
 
+    <mt-select
+            v-model="filterTemplate"
+            :options="filterTemplates"
+            @update:model-value="onFilterTemplateChange"
+            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterTemplate.placeHolder')"
+            :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterTemplate.label')"
+    />
+
     <div class="tweakwise-filter-card"
          :class="{ 'is-disabled': !category }">
 
@@ -69,13 +77,6 @@
             <span>{{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.chooseCategoryFirst') }}</span>
         </div>
     </div>
-    <mt-select
-            v-model="filterTemplate"
-            :options="filterTemplates"
-            @update:model-value="onFilterTemplateChange"
-            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterTemplate.placeHolder')"
-            :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterTemplate.label')"
-    />
     <mt-select
             v-model="sortTemplate"
             :options="sortTemplates"
