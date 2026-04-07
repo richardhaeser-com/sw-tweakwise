@@ -1,0 +1,11 @@
+{
+  "main.js": {
+    "file": "js/rhae-tweakwise.js",
+    "name": "rhae-tweakwise",
+    "src": "main.js",
+    "isEntry": true,
+    "css": [
+      "css/rhae-tweakwise.css"
+    ]
+  }
+}
