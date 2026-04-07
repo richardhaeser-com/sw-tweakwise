@@ -14,7 +14,7 @@
                     instancekey: "{{ page.extensions.twConfiguration.instanceKey|escape }}",
                     related: {
                         productId: "{{ page.extensions.twConfiguration.crossSellProductId }}",
-                        groupKey: "{{ element.config.groupKey.value }}"
+                        groupKey: {{ element.config.groupKey.value|json_encode|raw }}
                     },
                     on: {
                         "twn.add-to-cart": function (event) {

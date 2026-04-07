@@ -1,3 +1,8 @@
+# Unreleased
+
+**Fixed**
+- Escaped group key name correctly to prevent issues with special characters in the group key in the cross-sell element
+
 # 4.10.0
 
 **Added**
