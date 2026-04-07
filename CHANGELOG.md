@@ -2,6 +2,7 @@
 
 **Fixed**
 - Escaped group key name correctly to prevent issues with special characters in the group key in the cross-sell element
+- Use annotation for profile key route to make sure it is working in older Shopware 6.5 instances as well
 
 # 4.10.0
 
