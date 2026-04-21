@@ -155,6 +155,12 @@
         </div>
     </div>
 
+    <mt-checkbox
+            v-model="showSelectedFilters"
+            :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.showSelectedFilters')"
+            class="tweakwise-show-selected-filters"
+    />
+
     <mt-select
             v-model="sortTemplate"
             :options="sortTemplates"

@@ -29,6 +29,11 @@ Shopware.Service('cmsService').registerCmsElement({
             source: 'static',
             value: ''
         },
+        showSelectedFilters: {
+            required: false,
+            source: 'static',
+            value: false
+        },
         rules: {
             source: 'static',
             value: []

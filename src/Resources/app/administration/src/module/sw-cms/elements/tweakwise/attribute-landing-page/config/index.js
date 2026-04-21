@@ -117,6 +117,16 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             set(value) {
                 this.element.config.builderTemplate.value = value;
             }
+        },
+
+        showSelectedFilters: {
+            get() {
+                return this.element.config.showSelectedFilters.value;
+            },
+
+            set(value) {
+                this.element.config.showSelectedFilters.value = value;
+            }
         }
     },
 

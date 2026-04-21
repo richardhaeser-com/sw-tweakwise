@@ -1,4 +1,5 @@
 {% block tweakwise_attribute_landing_page %}
+    {% set showSelectedFilters = element.config.showSelectedFilters.value|default(false) %}
     {% set groupedSelectionValues = {} %}
     {% set groupedParameterValues = {} %}
 
@@ -20,7 +21,7 @@
                 {% endfor %}
 
                 {% if cleanedValues|length > 0 %}
-                    {% if selectionAttributeId %}
+                    {% if showSelectedFilters and selectionAttributeId %}
                         {% set existingValues = groupedSelectionValues[selectionAttributeId]|default([]) %}
                         {% set groupedSelectionValues = groupedSelectionValues|merge({
                             (selectionAttributeId): existingValues|merge(cleanedValues)
@@ -48,10 +49,17 @@
                 {% endfor %}
 
                 {% if cleanedValues|length > 0 %}
-                    {% set existingValues = groupedSelectionValues[attributeId]|default([]) %}
-                    {% set groupedSelectionValues = groupedSelectionValues|merge({
-                        (attributeId): existingValues|merge(cleanedValues)
-                    }) %}
+                    {% if showSelectedFilters %}
+                        {% set existingValues = groupedSelectionValues[attributeId]|default([]) %}
+                        {% set groupedSelectionValues = groupedSelectionValues|merge({
+                            (attributeId): existingValues|merge(cleanedValues)
+                        }) %}
+                    {% else %}
+                        {% set existingValues = groupedParameterValues[attributeId]|default([]) %}
+                        {% set groupedParameterValues = groupedParameterValues|merge({
+                            (attributeId): existingValues|merge(cleanedValues)
+                        }) %}
+                    {% endif %}
                 {% endif %}
             {% endif %}
         {% endif %}

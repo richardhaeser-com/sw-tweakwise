@@ -31,7 +31,8 @@
           "builderTemplate": {
             "label": "Builder template",
             "placeHolder": "Select a builder template"
-          }
+          },
+          "showSelectedFilters": "Show selected filters"
         }
       }
     }
