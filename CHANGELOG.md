@@ -1,4 +1,7 @@
-# Unreleased
+# 5.7.0
+
+**Added**
+- Added the possibility to create Attribute Landing Pages by using the CMS element "Attribute Landing Page".
 
 **Fixed**
 - Escaped group key name correctly to prevent issues with special characters in the group key in the cross-sell element
