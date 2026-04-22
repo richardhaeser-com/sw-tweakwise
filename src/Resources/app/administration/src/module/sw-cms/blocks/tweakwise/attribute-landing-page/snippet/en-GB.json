@@ -1,0 +1,11 @@
+{
+  "sw-cms": {
+    "blocks": {
+      "tweakwiseAttributeLandingPage": {
+        "preview": {
+          "filter": "Filter"
+        }
+      }
+    }
+  }
+}

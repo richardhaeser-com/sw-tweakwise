@@ -1,0 +1,115 @@
+.tweakwise-filter-card {
+  position: relative;
+
+  &.is-disabled {
+    z-index: 0;
+  }
+
+  .tweakwise-filter-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: all;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .attribute-selection {
+    .sw-field,
+    .mt-field {
+      margin-top: var(--scale-size-4);
+      margin-bottom: var(--scale-size-4);
+    }
+
+    // Alleen normale buttons spacing geven (niet icon buttons)
+    .sw-button:not(.attribute-selection__icon-button) button:not(.sw-label__dismiss) {
+      margin-top: var(--scale-size-4);
+      margin-bottom: var(--scale-size-4);
+    }
+  }
+}
+
+.attribute-selection {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  column-gap: 16px;
+  row-gap: 8px;
+  align-items: start;
+  margin-bottom: 12px;
+}
+
+.attribute-selection--header {
+  margin-bottom: 0;
+  align-items: center;
+}
+
+.attribute-selection__attribute-cell {
+  min-width: 0;
+}
+
+.attribute-selection__attribute-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.attribute-selection__attribute-custom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+  min-width: 0;
+}
+
+.attribute-selection__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  align-self: center;
+  height: 100%;
+}
+
+.attribute-selection__custom-value {
+  grid-column: 2 / 4;
+  min-width: 0;
+}
+
+.attribute-selection__custom-value-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.attribute-selection__loader {
+  grid-column: 2 / 4;
+}
+
+.attribute-selection__icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.attribute-selection__counter {
+  margin-top: 12px; // ruimte boven de tekst
+  font-size: 12px;  // kleiner maken
+  color: #6b7280;   // iets subtieler (optioneel)
+}
+
+.tweakwise-show-selected-filters {
+  margin-bottom: 2rem;
+}

@@ -1,0 +1,177 @@
+{% block sw_cms_element_tweakwise_attribute_landing_page_config %}
+    <mt-select
+            v-model="category"
+            :options="categories"
+            @update:model-value="onCategoryChange"
+            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.category.placeHolder')"
+            :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.category.label')"
+    />
+
+    <mt-select
+            v-model="filterTemplate"
+            :options="filterTemplates"
+            @update:model-value="onFilterTemplateChange"
+            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterTemplate.placeHolder')"
+            :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterTemplate.label')"
+    />
+
+    <div
+            class="tweakwise-filter-card"
+            :class="{ 'is-disabled': !category }"
+    >
+        <sw-card :title="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterAttributes')">
+            <div class="attribute-selection attribute-selection--header">
+                <span>{{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.attribute') }}</span>
+                <span>{{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.value') }}</span>
+
+                <div class="attribute-selection__actions">
+                    <sw-button
+                            class="attribute-selection__icon-button"
+                            size="small"
+                            variant="tertiary"
+                            style="opacity: 0; cursor: default;"
+                    >
+                        <mt-icon
+                                name="regular-trash"
+                                size="16px"
+                        />
+                    </sw-button>
+                </div>
+            </div>
+
+            <div
+                    v-for="(rule, index) in rules"
+                    :key="index"
+                    class="attribute-selection"
+            >
+                <template v-if="rule.type === 'custom'">
+                    <sw-text-field
+                            label=""
+                            v-model:value="rule.attributeId"
+                            placeholder="Eigen attribuut"
+                            @update:value="onCustomAttributeChange(index, $event)"
+                    />
+
+                    <sw-text-field
+                            label=""
+                            v-model:value="rule.customValue"
+                            placeholder="Eigen waarde"
+                            @update:value="onCustomValueChange(index, $event)"
+                    />
+
+                    <div class="attribute-selection__actions">
+                        <sw-button
+                                class="attribute-selection__icon-button"
+                                :title="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.delete')"
+                                variant="tertiary"
+                                size="small"
+                                @click="removeRule(index)"
+                        >
+                            <mt-icon
+                                    name="regular-trash"
+                                    size="16px"
+                            />
+                        </sw-button>
+                    </div>
+                </template>
+
+                <template v-else>
+                    <sw-single-select
+                            label=""
+                            :options="attributeOptions"
+                            v-model:value="rule.attributeId"
+                            @update:value="onAttributeChange(index, $event)"
+                            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.chooseAttribute')"
+                    />
+
+                    <sw-multi-select
+                            label=""
+                            :options="valueOptionsByRuleIndex[index] || []"
+                            v-model:value="rule.valueIds"
+                            :disabled="!rule.attributeId"
+                            @update:value="onAttributeValueChange(index, $event)"
+                            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.chooseValue')"
+                    />
+
+                    <div class="attribute-selection__actions">
+                        <sw-button
+                                class="attribute-selection__icon-button"
+                                :title="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.delete')"
+                                variant="tertiary"
+                                size="small"
+                                @click="removeRule(index)"
+                        >
+                            <mt-icon
+                                    name="regular-trash"
+                                    size="16px"
+                            />
+                        </sw-button>
+                    </div>
+
+                    <div
+                            v-if="isLoadingValuesByRuleIndex[index]"
+                            class="attribute-selection__loader"
+                    >
+                        <sw-loader size="small" />
+                    </div>
+                </template>
+            </div>
+
+            <sw-button
+                    variant="primary"
+                    size="small"
+                    :disabled="!canAddRule"
+                    @click="addRule"
+            >
+                {{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.addFilter') }}
+            </sw-button>
+
+            <sw-button
+                    variant="secondary"
+                    size="small"
+                    :disabled="!canAddRule"
+                    @click="addCustomRule"
+            >
+                {{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.addCustomFilter') }}
+            </sw-button>
+
+            <div class="attribute-selection__counter">
+                Filters: {{ rules.length }}/{{ maxRules }}
+            </div>
+
+            <sw-container
+                    v-if="isLoadingAttributes"
+                    class="sw-mt-16"
+            >
+                <sw-loader />
+            </sw-container>
+        </sw-card>
+
+        <div
+                v-if="!category"
+                class="tweakwise-filter-card__overlay"
+        >
+            <span>{{ $tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.chooseCategoryFirst') }}</span>
+        </div>
+    </div>
+
+    <mt-checkbox
+            v-model="showSelectedFilters"
+            :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.showSelectedFilters')"
+            class="tweakwise-show-selected-filters"
+    />
+
+    <mt-select
+            v-model="sortTemplate"
+            :options="sortTemplates"
+            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.sortTemplate.placeHolder')"
+            :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.sortTemplate.label')"
+    />
+
+    <mt-select
+            v-model="builderTemplate"
+            :options="builderTemplates"
+            :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.builderTemplate.placeHolder')"
+            :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.builderTemplate.label')"
+    />
+{% endblock %}
