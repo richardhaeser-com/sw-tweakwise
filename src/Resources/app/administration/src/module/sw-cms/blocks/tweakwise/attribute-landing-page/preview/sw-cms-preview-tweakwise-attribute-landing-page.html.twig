@@ -1,0 +1,20 @@
+{% block sw_cms_block_tweakwise_attribute_landing_page_preview %}
+    <div class="sw-cms-preview-tweakwise-attribute-landing-page">
+        <div class="sw-cms-preview-tweakwise-attribute-landing-page__filter-box">
+            <p>{{ $tc('sw-cms.blocks.tweakwiseAttributeLandingPage.preview.filter') }}</p>
+            <hr>
+            <div class="sw-cms-el-category-placeholder-listing">
+                <div class="sw-cms-el-category-navigation__placeholder"></div>
+                <div class="sw-cms-el-category-navigation__placeholder--subcategory"></div>
+                <div class="sw-cms-el-category-navigation__placeholder"></div>
+                <div class="sw-cms-el-category-navigation__placeholder--subcategory"></div>
+                <div class="sw-cms-el-category-navigation__placeholder--subcategory"></div>
+                <div class="sw-cms-el-category-navigation__placeholder--subcategory"></div>
+            </div>
+        </div>
+        <div class="sw-cms-preview-tweakwise-attribute-landing-page__product-box">
+            <sw-cms-product-box-preview/>
+            <sw-cms-product-box-preview/>
+        </div>
+    </div>
+{% endblock %}

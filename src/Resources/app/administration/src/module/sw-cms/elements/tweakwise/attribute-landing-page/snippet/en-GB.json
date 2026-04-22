@@ -1,0 +1,40 @@
+{
+  "sw-cms": {
+    "elements": {
+      "tweakwiseAttributeLandingPage": {
+        "label": "Tweakwise Attribute Landing Page",
+        "component": {
+          "filter": "Filter"
+        },
+        "config": {
+          "delete": "Delete",
+          "attribute": "Attribute",
+          "value": "Value",
+          "addFilter": "Add filter",
+          "addCustomFilter": "Add custom filter",
+          "chooseCategoryFirst": "Choose category first",
+          "filterAttributes": "Filter attributes",
+          "chooseAttribute": "Choose attribute",
+          "chooseValue": "Choose value",
+          "category": {
+            "label": "Category",
+            "placeHolder": "Select a category"
+          },
+          "filterTemplate": {
+            "label": "Filter template",
+            "placeHolder": "Select a filter template"
+          },
+          "sortTemplate": {
+            "label": "Sort template",
+            "placeHolder": "Select a sort template"
+          },
+          "builderTemplate": {
+            "label": "Builder template",
+            "placeHolder": "Select a builder template"
+          },
+          "showSelectedFilters": "Show selected filters"
+        }
+      }
+    }
+  }
+}
