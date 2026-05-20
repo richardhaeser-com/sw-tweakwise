@@ -1,29 +1,49 @@
-@import "~scss/variables";
-
 .sw-cms-el-tweakwise-cross-selling {
-  &__title {
-	display: inline-block;
-	margin-bottom: 20px;
-	padding-bottom: 5px;
-	border-bottom: 1px solid $color-gray-900;
-	font-size: $font-size-xs;
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &__overlay-icon {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+    background: #ffffff;
+    border-radius: 50%;
+    border: 1px #20123a solid;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    box-sizing: content-box;
+    z-index: 1;
+    pointer-events: none;
   }
 
   &__content {
-	display: grid;
-	grid-template-columns: 32px 1fr 32px;
-	gap: 0 8px;
+    display: grid;
+    grid-template-columns: 24px 1fr 24px;
+    gap: 0 8px;
+    align-items: center;
+    flex: 1;
   }
 
   &__navigation {
-	align-self: center;
-	justify-self: center;
+    align-self: center;
+    justify-self: center;
   }
 
-  &__product-holder {
-	width: 100%;
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
-	gap: 0 32px;
+  .sw-cms-el-cross-selling__product-holder {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0 8px;
+  }
+
+  .sw-cms-product-box-preview.has--text {
+    grid-template-rows: 140px 70px 26px;
+  }
+
+  .sw-cms-product-box-preview .sw-cms-product-box-preview__image {
+    height: 100%;
   }
 }

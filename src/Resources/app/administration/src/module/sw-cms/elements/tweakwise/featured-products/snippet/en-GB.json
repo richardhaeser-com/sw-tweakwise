@@ -4,10 +4,31 @@
       "tweakwiseFeaturedProducts": {
         "label": "Tweakwise Featured Products",
         "config": {
+          "tab": {
+            "data": "Data",
+            "display": "Display"
+          },
+          "display": {
+            "overrideNotice": "The settings below will override the default display settings configured in Tweakwise."
+          },
           "groupId": {
             "label": "Featured recommendation ID",
             "helpText": "You can find the Featured recommendation ID in the URL (featuredRecId) of the selected featured products group in the Tweakwise app. Can't find this id? Contact customer service of Tweakwise to retrieve this ID.",
             "placeHolder": "Enter the Featured recommendation ID"
+          },
+          "device": {
+            "desktop": "Desktop",
+            "tablet": "Tablet",
+            "mobile": "Mobile"
+          },
+          "items": {
+            "label": "Items to show"
+          },
+          "view": {
+            "label": "Display",
+            "placeholder": "Default",
+            "carousel": "Carousel",
+            "grid": "Grid"
           }
         }
       }

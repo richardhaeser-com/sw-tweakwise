@@ -1,9 +1,26 @@
 .sw-cms-el-tweakwise-featured-products {
+  position: relative;
   align-items: center;
   display: grid;
   grid-template-columns: 10px 1fr 1fr 1fr 1fr 10px;
   grid-gap: 5px;
   height: 100%;
+
+  &__overlay-icon {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+    background: #ffffff;
+    border-radius: 50%;
+    border: 1px #20123a solid;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    box-sizing: content-box;
+    z-index: 1;
+    pointer-events: none;
+  }
 
   .sw-cms-product-box-preview.has--text {
 	grid-template-rows: 140px 70px 26px;

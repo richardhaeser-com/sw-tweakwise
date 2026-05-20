@@ -4,10 +4,31 @@
       "tweakwiseCrossSelling": {
         "label": "Tweakwise Cross Selling",
         "config": {
+          "tab": {
+            "data": "Gegevens",
+            "display": "Weergave"
+          },
+          "display": {
+            "overrideNotice": "De onderstaande instellingen overschrijven de standaard weergave-instellingen die zijn geconfigureerd in Tweakwise."
+          },
           "groupKey": {
             "label": "Groeperingscode",
             "helpText": "Je kunt de groeperingscode vinden in het overzicht van de Up- & cross-selling in Tweakwise",
             "placeHolder": "Geef de groeperingscode"
+          },
+          "device": {
+            "desktop": "Desktop",
+            "tablet": "Tablet",
+            "mobile": "Mobiel"
+          },
+          "items": {
+            "label": "Te tonen aantal items"
+          },
+          "view": {
+            "label": "Weergave",
+            "placeholder": "Standaard",
+            "carousel": "Carrousel",
+            "grid": "Grid"
           }
         }
       }

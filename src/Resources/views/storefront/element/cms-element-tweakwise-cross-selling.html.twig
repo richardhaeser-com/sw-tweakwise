@@ -14,8 +14,18 @@
                     instancekey: "{{ page.extensions.twConfiguration.instanceKey|escape }}",
                     related: {
                         productId: "{{ page.extensions.twConfiguration.crossSellProductId }}",
-                        groupKey: {{ element.config.groupKey.value|json_encode|raw }}
+                        groupKey: {{ element.config.groupKey.value|json_encode|raw }},
                     },
+                    {% if element.config.itemsDesktop.value or element.config.itemsTablet.value or element.config.itemsMobile.value or element.config.viewDesktop.value or element.config.viewTablet.value or element.config.viewMobile.value %}
+                    products: {
+                        {% if element.config.itemsDesktop.value and element.config.viewDesktop.value != 'grid' %}desktop: {{ element.config.itemsDesktop.value }},{% endif %}
+                        {% if element.config.itemsTablet.value and element.config.viewTablet.value != 'grid' %}tablet: {{ element.config.itemsTablet.value }},{% endif %}
+                        {% if element.config.itemsMobile.value and element.config.viewMobile.value != 'grid' %}mobile: {{ element.config.itemsMobile.value }},{% endif %}
+                        {% if element.config.viewDesktop.value %}desktopView: "{{ element.config.viewDesktop.value }}",{% endif %}
+                        {% if element.config.viewTablet.value %}tabletView: "{{ element.config.viewTablet.value }}",{% endif %}
+                        {% if element.config.viewMobile.value %}mobileView: "{{ element.config.viewMobile.value }}",{% endif %}
+                    },
+                    {% endif %}
                     on: {
                         "twn.add-to-cart": function (event) {
                             let addToCartEvent = new CustomEvent('twAddToCart', {

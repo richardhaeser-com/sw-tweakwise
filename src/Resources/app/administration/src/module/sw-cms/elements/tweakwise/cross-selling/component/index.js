@@ -1,42 +1,13 @@
 import template from './sw-cms-el-tweakwise-cross-selling.html.twig';
 import './sw-cms-el-tweakwise-cross-selling.scss';
-
-const { Mixin } = Shopware;
+import tweakwiseIcon from '../../assets/tweakwise-icon.png';
 
 Shopware.Component.register('sw-cms-el-tweakwise-cross-selling', {
     template,
 
-    mixins: [
-        Mixin.getByName('cms-element'),
-        Mixin.getByName('placeholder'),
-    ],
-
     computed: {
-        demoProductElement() {
-            return {
-                config: {
-                    boxLayout: {
-                        source: 'static',
-                        value: 'standard',
-                    },
-                    displayMode: {
-                        source: 'static',
-                        value: 'standard',
-                    },
-                    elMinWidth: {
-                        source: 'static',
-                        value: '200px',
-                    },
-                },
-            };
-        },
-        sliderBoxMinWidth() {
-            return `repeat(auto-fit, minmax(200px, 1fr))`;
-        },
-        tweakwiseCrossSelling() {
-            return {
-                name: 'Tweakwise Cross Selling',
-            };
-        },
+        tweakwiseIcon() {
+            return tweakwiseIcon;
+        }
     }
 });

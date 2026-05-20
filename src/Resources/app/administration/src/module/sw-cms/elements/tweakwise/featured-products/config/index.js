@@ -1,4 +1,5 @@
 import template from './sw-cms-el-config-tweakwise-featured-products.html.twig';
+import './sw-cms-el-config-tweakwise-featured-products.scss';
 
 Shopware.Component.register('sw-cms-el-config-tweakwise-featured-products', {
     template,
@@ -16,7 +17,68 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-featured-products', {
             set(value) {
                 this.element.config.groupId.value = value;
             }
-        }
+        },
+
+        itemsDesktop: {
+            get() {
+                return this.element.config.itemsDesktop.value;
+            },
+
+            set(value) {
+                this.element.config.itemsDesktop.value = value;
+            }
+        },
+
+        itemsTablet: {
+            get() {
+                return this.element.config.itemsTablet.value;
+            },
+
+            set(value) {
+                this.element.config.itemsTablet.value = value;
+            }
+        },
+
+        itemsMobile: {
+            get() {
+                return this.element.config.itemsMobile.value;
+            },
+
+            set(value) {
+                this.element.config.itemsMobile.value = value;
+            }
+        },
+
+        viewDesktop: {
+            get() {
+                return this.element.config.viewDesktop.value;
+            },
+
+            set(value) {
+                this.element.config.viewDesktop.value = value;
+            }
+        },
+
+        viewTablet: {
+            get() {
+                return this.element.config.viewTablet.value;
+            },
+
+            set(value) {
+                this.element.config.viewTablet.value = value;
+            }
+        },
+
+        viewMobile: {
+            get() {
+                return this.element.config.viewMobile.value;
+            },
+
+            set(value) {
+                this.element.config.viewMobile.value = value;
+            }
+        },
+
     },
 
     created() {
@@ -29,8 +91,6 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-featured-products', {
         },
 
         onElementUpdate(value) {
-            this.element.config.groupId.value = value;
-
             this.$emit('element-update', this.element);
         }
     }

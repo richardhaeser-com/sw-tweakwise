@@ -1,6 +1,6 @@
 {% block sw_cms_element_tweakwise_cross_selling %}
     <div class="sw-cms-el-tweakwise-cross-selling">
-        <h2 class="sw-cms-el-tweakwise-cross-selling__title">{{ placeholder(tweakwiseCrossSelling, 'name', tweakwiseCrossSelling.name) }}</h2>
+        <img :src="tweakwiseIcon" class="sw-cms-el-tweakwise-cross-selling__overlay-icon" alt="" />
         <div class="sw-cms-el-tweakwise-cross-selling__content">
             <div class="sw-cms-el-tweakwise-cross-selling__navigation">
                 <sw-icon
@@ -10,16 +10,11 @@
                 />
             </div>
 
-            <div
-                    ref="productHolder"
-                    class="sw-cms-el-cross-selling__product-holder"
-                    :style="sliderBoxMinWidth"
-            >
-                <sw-cms-el-product-box
-                        v-for="index in 4"
-                        :key="index"
-                        :element="demoProductElement"
-                />
+            <div class="sw-cms-el-cross-selling__product-holder">
+                <sw-cms-product-box-preview/>
+                <sw-cms-product-box-preview/>
+                <sw-cms-product-box-preview/>
+                <sw-cms-product-box-preview/>
             </div>
 
             <div class="sw-cms-el-tweakwise-cross-selling__navigation">
