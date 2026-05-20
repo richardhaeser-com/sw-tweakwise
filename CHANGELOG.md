@@ -1,3 +1,11 @@
+# Unreleased
+
+**Changed**
+- Updated output selector in search template
+
+**Fixed**
+- Prevent division by zero when calculating the net price in the product feed if `price.quantity` is empty or zero
+
 # 4.10.1
 
 **Fixed**
