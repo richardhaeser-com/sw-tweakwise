@@ -4,10 +4,30 @@
       "tweakwiseFeaturedProducts": {
         "label": "Tweakwise Uitgelichte Producten",
         "config": {
+          "tab": {
+            "data": "Gegevens",
+            "display": "Weergave"
+          },
+          "display": {
+            "overrideNotice": "De onderstaande instellingen overschrijven de standaard weergave-instellingen die zijn geconfigureerd in Tweakwise."
+          },
           "groupId": {
             "label": "Uitgelichte producten ID",
             "helpText": "Je kunt het Uitgelichte producten ID vinden in de URL (featuredRecId) van de betreffende Uitgelichte Producten groep in de Tweakwise app. Kom je er niet uit? Neem contact op met de customer service van Tweakwise.",
             "placeHolder": "Geef het Uitgelichte producten ID op"
+          },
+          "device": {
+            "desktop": "Desktop",
+            "tablet": "Tablet",
+            "mobile": "Mobiel"
+          },
+          "items": {
+            "label": "Te tonen aantal items"
+          },
+          "view": {
+            "label": "Weergave",
+            "carousel": "Carrousel",
+            "grid": "Grid"
           }
         }
       }

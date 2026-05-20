@@ -4,10 +4,30 @@
       "tweakwiseCrossSelling": {
         "label": "Tweakwise Cross Selling",
         "config": {
+          "tab": {
+            "data": "Data",
+            "display": "Display"
+          },
+          "display": {
+            "overrideNotice": "The settings below will override the default display settings configured in Tweakwise."
+          },
           "groupKey": {
             "label": "Group key",
             "helpText": "You can find the group key in the overview of Upselling & cross-selling",
             "placeHolder": "Enter the Group key"
+          },
+          "device": {
+            "desktop": "Desktop",
+            "tablet": "Tablet",
+            "mobile": "Mobile"
+          },
+          "items": {
+            "label": "Items to show"
+          },
+          "view": {
+            "label": "Display",
+            "carousel": "Carousel",
+            "grid": "Grid"
           }
         }
       }

@@ -1,11 +1,18 @@
 {
   "main.js": {
-    "file": "assets/rhae-tweakwise-CJVWHCns.js",
+    "file": "assets/rhae-tweakwise-BGJeL1cN.js",
     "name": "rhae-tweakwise",
     "src": "main.js",
     "isEntry": true,
     "css": [
-      "assets/rhae-tweakwise-cAZkG3MQ.css"
+      "assets/rhae-tweakwise-BtMkt-Ev.css"
+    ],
+    "assets": [
+      "assets/tweakwise-icon-YL0y9bwf.png"
     ]
+  },
+  "module/sw-cms/elements/tweakwise/assets/tweakwise-icon.png": {
+    "file": "assets/tweakwise-icon-YL0y9bwf.png",
+    "src": "module/sw-cms/elements/tweakwise/assets/tweakwise-icon.png"
   }
 }

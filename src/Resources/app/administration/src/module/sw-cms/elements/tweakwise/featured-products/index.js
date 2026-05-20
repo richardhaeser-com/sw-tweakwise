@@ -13,6 +13,30 @@ Shopware.Service('cmsService').registerCmsElement({
             required: true,
             source: 'static',
             value: ''
+        },
+        itemsDesktop: {
+            source: 'static',
+            value: null
+        },
+        itemsTablet: {
+            source: 'static',
+            value: null
+        },
+        itemsMobile: {
+            source: 'static',
+            value: null
+        },
+        viewDesktop: {
+            source: 'static',
+            value: null
+        },
+        viewTablet: {
+            source: 'static',
+            value: null
+        },
+        viewMobile: {
+            source: 'static',
+            value: null
         }
     }
 });

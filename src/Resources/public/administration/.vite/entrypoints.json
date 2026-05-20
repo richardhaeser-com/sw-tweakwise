@@ -3,11 +3,11 @@
   "entryPoints": {
     "rhae-tweakwise": {
       "css": [
-        "/bundles/rhaetweakwise/administration/assets/rhae-tweakwise-cAZkG3MQ.css"
+        "/bundles/rhaetweakwise/administration/assets/rhae-tweakwise-BtMkt-Ev.css"
       ],
       "dynamic": [],
       "js": [
-        "/bundles/rhaetweakwise/administration/assets/rhae-tweakwise-CJVWHCns.js"
+        "/bundles/rhaetweakwise/administration/assets/rhae-tweakwise-BGJeL1cN.js"
       ],
       "legacy": false,
       "preload": []

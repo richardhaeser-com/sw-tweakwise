@@ -1,5 +1,9 @@
 # Unreleased
 
+**Added**
+- The Tweakwise Featured Products and Cross Selling CMS element configurations now have a Display tab where you can set the number of items and the display type (Carousel or Grid) per breakpoint (desktop, tablet, mobile).
+- The admin canvas preview of the Featured Products and Cross Selling CMS elements now shows the Tweakwise icon as a recognisable overlay.
+
 **Changed**
 - Updated output selector in search template
 

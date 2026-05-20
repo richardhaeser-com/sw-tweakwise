@@ -1,14 +1,122 @@
 {% block sw_cms_element_dailymotion_config %}
-    <sw-text-field
-        v-model="groupKey"
-        class="swag-groupkey-field"
-        :label="$tc('sw-cms.elements.tweakwiseCrossSelling.config.groupKey.label')"
-        :help-text="$tc('sw-cms.elements.tweakwiseCrossSelling.config.groupKey.helpText')"
-        required
-        :placeholder="$tc('sw-cms.elements.tweakwiseCrossSelling.config.groupKey.placeHolder')"
-        @input="onElementUpdate"
-        @change="onElementUpdate"
-        @update:value="onElementUpdate"
+    <sw-tabs
+        position="left"
+        default-item="data"
     >
-    </sw-text-field>
+        <template #default="{ active }">
+            <sw-tabs-item name="data" :active-tab="active">
+                {{ $tc('sw-cms.elements.tweakwiseCrossSelling.config.tab.data') }}
+            </sw-tabs-item>
+            <sw-tabs-item name="display" :active-tab="active">
+                {{ $tc('sw-cms.elements.tweakwiseCrossSelling.config.tab.display') }}
+            </sw-tabs-item>
+        </template>
+
+        <template #content="{ active }">
+            <template v-if="active === 'data'">
+                <sw-text-field
+                    v-model="groupKey"
+                    class="swag-groupkey-field"
+                    :label="$tc('sw-cms.elements.tweakwiseCrossSelling.config.groupKey.label')"
+                    :help-text="$tc('sw-cms.elements.tweakwiseCrossSelling.config.groupKey.helpText')"
+                    required
+                    :placeholder="$tc('sw-cms.elements.tweakwiseCrossSelling.config.groupKey.placeHolder')"
+                    @input="onElementUpdate"
+                    @change="onElementUpdate"
+                    @update:value="onElementUpdate"
+                >
+                </sw-text-field>
+            </template>
+
+            <template v-if="active === 'display'">
+                <sw-alert variant="info" :closable="false">
+                    {{ $tc('sw-cms.elements.tweakwiseCrossSelling.config.display.overrideNotice') }}
+                </sw-alert>
+                <div class="sw-cms-el-config-tweakwise-cross-selling__display-grid">
+
+                    <div>
+                        <div class="sw-cms-el-config-tweakwise-cross-selling__display-column-header">
+                            <sw-icon name="regular-desktop" small></sw-icon>
+                            {{ $tc('sw-cms.elements.tweakwiseCrossSelling.config.device.desktop') }}
+                        </div>
+                        <sw-select-field
+                            v-model="viewDesktop"
+                            size="small"
+                            :label="$tc('sw-cms.elements.tweakwiseCrossSelling.config.view.label')"
+                            :options="viewOptions"
+                            @change="onElementUpdate"
+                        >
+                        </sw-select-field>
+                        <sw-number-field
+                            v-model="itemsDesktop"
+                            size="small"
+                            number-type="int"
+                            :label="$tc('sw-cms.elements.tweakwiseCrossSelling.config.items.label')"
+                            :min="1"
+                            :allow-empty="true"
+                            :disabled="viewDesktop === 'grid'"
+                            @change="onElementUpdate"
+                            @update:value="onElementUpdate"
+                        >
+                        </sw-number-field>
+                    </div>
+
+                    <div>
+                        <div class="sw-cms-el-config-tweakwise-cross-selling__display-column-header">
+                            <sw-icon name="regular-tablet" small></sw-icon>
+                            {{ $tc('sw-cms.elements.tweakwiseCrossSelling.config.device.tablet') }}
+                        </div>
+                        <sw-select-field
+                            v-model="viewTablet"
+                            size="small"
+                            :label="$tc('sw-cms.elements.tweakwiseCrossSelling.config.view.label')"
+                            :options="viewOptions"
+                            @change="onElementUpdate"
+                        >
+                        </sw-select-field>
+                        <sw-number-field
+                            v-model="itemsTablet"
+                            size="small"
+                            number-type="int"
+                            :label="$tc('sw-cms.elements.tweakwiseCrossSelling.config.items.label')"
+                            :min="1"
+                            :allow-empty="true"
+                            :disabled="viewTablet === 'grid'"
+                            @change="onElementUpdate"
+                            @update:value="onElementUpdate"
+                        >
+                        </sw-number-field>
+                    </div>
+
+                    <div>
+                        <div class="sw-cms-el-config-tweakwise-cross-selling__display-column-header">
+                            <sw-icon name="regular-mobile" small></sw-icon>
+                            {{ $tc('sw-cms.elements.tweakwiseCrossSelling.config.device.mobile') }}
+                        </div>
+                        <sw-select-field
+                            v-model="viewMobile"
+                            size="small"
+                            :label="$tc('sw-cms.elements.tweakwiseCrossSelling.config.view.label')"
+                            :options="viewOptions"
+                            @change="onElementUpdate"
+                        >
+                        </sw-select-field>
+                        <sw-number-field
+                            v-model="itemsMobile"
+                            size="small"
+                            number-type="int"
+                            :label="$tc('sw-cms.elements.tweakwiseCrossSelling.config.items.label')"
+                            :min="1"
+                            :allow-empty="true"
+                            :disabled="viewMobile === 'grid'"
+                            @change="onElementUpdate"
+                            @update:value="onElementUpdate"
+                        >
+                        </sw-number-field>
+                    </div>
+
+                </div>
+            </template>
+        </template>
+    </sw-tabs>
 {% endblock %}
