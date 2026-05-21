@@ -1,4 +1,4 @@
-# Unreleased
+# 5.8.0
 
 **Added**
 - The Tweakwise Featured Products and Cross Selling CMS element configurations now have a Display tab where you can set the number of items and the display type (Carousel or Grid) per breakpoint (desktop, tablet, mobile).
