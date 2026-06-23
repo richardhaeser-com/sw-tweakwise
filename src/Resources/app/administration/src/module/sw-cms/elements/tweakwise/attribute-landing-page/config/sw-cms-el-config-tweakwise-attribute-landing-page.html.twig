@@ -1,16 +1,16 @@
 {% block sw_cms_element_tweakwise_attribute_landing_page_config %}
-    <mt-select
-            v-model="category"
+    <sw-single-select
+            v-model:value="category"
             :options="categories"
-            @update:model-value="onCategoryChange"
+            @update:value="onCategoryChange"
             :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.category.placeHolder')"
             :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.category.label')"
     />
 
-    <mt-select
-            v-model="filterTemplate"
+    <sw-single-select
+            v-model:value="filterTemplate"
             :options="filterTemplates"
-            @update:model-value="onFilterTemplateChange"
+            @update:value="onFilterTemplateChange"
             :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterTemplate.placeHolder')"
             :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterTemplate.label')"
     />
@@ -31,7 +31,7 @@
                             variant="tertiary"
                             style="opacity: 0; cursor: default;"
                     >
-                        <mt-icon
+                        <sw-icon
                                 name="regular-trash"
                                 size="16px"
                         />
@@ -67,7 +67,7 @@
                                 size="small"
                                 @click="removeRule(index)"
                         >
-                            <mt-icon
+                            <sw-icon
                                     name="regular-trash"
                                     size="16px"
                             />
@@ -101,7 +101,7 @@
                                 size="small"
                                 @click="removeRule(index)"
                         >
-                            <mt-icon
+                            <sw-icon
                                     name="regular-trash"
                                     size="16px"
                             />
@@ -155,21 +155,21 @@
         </div>
     </div>
 
-    <mt-checkbox
-            v-model="showSelectedFilters"
+    <sw-checkbox-field
+            v-model:value="showSelectedFilters"
             :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.showSelectedFilters')"
             class="tweakwise-show-selected-filters"
     />
 
-    <mt-select
-            v-model="sortTemplate"
+    <sw-single-select
+            v-model:value="sortTemplate"
             :options="sortTemplates"
             :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.sortTemplate.placeHolder')"
             :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.sortTemplate.label')"
     />
 
-    <mt-select
-            v-model="builderTemplate"
+    <sw-single-select
+            v-model:value="builderTemplate"
             :options="builderTemplates"
             :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.builderTemplate.placeHolder')"
             :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.builderTemplate.label')"
