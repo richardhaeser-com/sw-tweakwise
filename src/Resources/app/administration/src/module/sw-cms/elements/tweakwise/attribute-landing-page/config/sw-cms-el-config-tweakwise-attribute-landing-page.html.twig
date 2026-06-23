@@ -3,7 +3,6 @@
     <sw-single-select
             v-model:value="category"
             :options="categories"
-            @update:value="onCategoryChange"
             :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.category.placeHolder')"
             :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.category.label')"
     />
@@ -11,7 +10,6 @@
     <sw-single-select
             v-model:value="filterTemplate"
             :options="filterTemplates"
-            @update:value="onFilterTemplateChange"
             :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterTemplate.placeHolder')"
             :label="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.filterTemplate.label')"
     />
@@ -48,16 +46,16 @@
                 <template v-if="rule.type === 'custom'">
                     <sw-text-field
                             label=""
-                            v-model:value="rule.attributeId"
+                            :value="rule.attributeId"
                             placeholder="Eigen attribuut"
-                            @update:value="onCustomAttributeChange(index, $event)"
+                            @input="onCustomAttributeChange(index, $event)"
                     />
 
                     <sw-text-field
                             label=""
-                            v-model:value="rule.customValue"
+                            :value="rule.customValue"
                             placeholder="Eigen waarde"
-                            @update:value="onCustomValueChange(index, $event)"
+                            @input="onCustomValueChange(index, $event)"
                     />
 
                     <div class="attribute-selection__actions">
@@ -81,7 +79,6 @@
                             label=""
                             :options="attributeOptions"
                             v-model:value="rule.attributeId"
-                            @update:value="onAttributeChange(index, $event)"
                             :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.chooseAttribute')"
                     />
 
@@ -90,7 +87,6 @@
                             :options="valueOptionsByRuleIndex[index] || []"
                             v-model:value="rule.valueIds"
                             :disabled="!rule.attributeId"
-                            @update:value="onAttributeValueChange(index, $event)"
                             :placeholder="$tc('sw-cms.elements.tweakwiseAttributeLandingPage.config.chooseValue')"
                     />
 

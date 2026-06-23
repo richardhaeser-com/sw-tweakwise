@@ -79,6 +79,10 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             return this.rules.length < this.maxRules;
         },
 
+        ruleAttributeIds() {
+            return (this.element.config?.rules?.value || []).map((r) => r.attributeId);
+        },
+
         category: {
             get() {
                 return this.element.config?.category?.value ?? null;
@@ -127,6 +131,64 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             set(value) {
                 this.element.config.showSelectedFilters.value = value;
             }
+        }
+    },
+
+    watch: {
+        category(newValue) {
+            this.loadFilterAttributes(newValue, this.filterTemplate).then(() => {
+                this.rules.forEach((rule, index) => {
+                    if (rule.type === 'standard') {
+                        rule.valueIds = [];
+                        this.$set(this.valueOptionsByRuleIndex, index, []);
+                    } else if (rule.type === 'custom') {
+                        rule.selectionAttributeId = null;
+                    }
+                });
+                this.restoreRuleValueOptions();
+                this.resolveExistingCustomRules();
+                this.onElementUpdate();
+            });
+        },
+
+        filterTemplate(newValue) {
+            this.loadFilterAttributes(this.category, newValue).then(() => {
+                this.rules.forEach((rule, index) => {
+                    if (rule.type === 'standard') {
+                        rule.attributeId = null;
+                        rule.valueIds = [];
+                        this.$set(this.valueOptionsByRuleIndex, index, []);
+                    } else if (rule.type === 'custom') {
+                        rule.selectionAttributeId = null;
+                    }
+                });
+                this.resolveExistingCustomRules();
+                this.onElementUpdate();
+            });
+        },
+
+        'element.config.rules.value': {
+            deep: true,
+            handler() {
+                this.onElementUpdate();
+            }
+        },
+
+        ruleAttributeIds(newIds, oldIds) {
+            newIds.forEach((id, index) => {
+                if (!oldIds || id !== oldIds[index]) {
+                    const rule = this.rules[index];
+                    if (!rule || rule.type !== 'standard') {
+                        return;
+                    }
+                    rule.valueIds = [];
+                    this.$set(this.valueOptionsByRuleIndex, index, []);
+                    if (id) {
+                        this.loadValuesForRule(index, id);
+                    }
+                    this.onElementUpdate();
+                }
+            });
         }
     },
 
@@ -280,8 +342,8 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
         removeRule(index) {
             this.rules.splice(index, 1);
 
-            delete this.valueOptionsByRuleIndex[index];
-            delete this.isLoadingValuesByRuleIndex[index];
+            this.$delete(this.valueOptionsByRuleIndex, index);
+            this.$delete(this.isLoadingValuesByRuleIndex, index);
 
             this.onElementUpdate();
         },
@@ -300,64 +362,8 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             this.onElementUpdate();
         },
 
-        async onAttributeChange(index, value) {
-            const rule = this.rules[index];
-
-            rule.attributeId = value;
-            rule.valueIds = [];
-
-            if (!rule.attributeId) {
-                this.valueOptionsByRuleIndex[index] = [];
-                this.onElementUpdate();
-                return;
-            }
-
-            await this.loadValuesForRule(index, rule.attributeId);
-            this.onElementUpdate();
-        },
-
-        async onCategoryChange() {
-            await this.loadFilterAttributes();
-
-            this.rules.forEach((rule, index) => {
-                if (rule.type === 'standard') {
-                    rule.valueIds = [];
-                    this.valueOptionsByRuleIndex[index] = [];
-                } else if (rule.type === 'custom') {
-                    rule.selectionAttributeId = null;
-                }
-            });
-
-            this.restoreRuleValueOptions();
-            this.resolveExistingCustomRules();
-            this.onElementUpdate();
-        },
-
-        async onAttributeValueChange(index, value) {
-            const rule = this.rules[index];
-            rule.valueIds = Array.isArray(value) ? value : [];
-            this.onElementUpdate();
-        },
-
-        async onFilterTemplateChange() {
-            await this.loadFilterAttributes();
-
-            this.rules.forEach((rule, index) => {
-                if (rule.type === 'standard') {
-                    rule.attributeId = null;
-                    rule.valueIds = [];
-                    this.valueOptionsByRuleIndex[index] = [];
-                } else if (rule.type === 'custom') {
-                    rule.selectionAttributeId = null;
-                }
-            });
-
-            this.resolveExistingCustomRules();
-            this.onElementUpdate();
-        },
-
         async loadValuesForRule(index, attributeId) {
-            this.isLoadingValuesByRuleIndex[index] = true;
+            this.$set(this.isLoadingValuesByRuleIndex, index, true);
 
             const existingRules = this.element.config.rules.value || [];
             const existingValues = existingRules[index]?.valueIds || [];
@@ -395,10 +401,10 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
                     }
                 });
 
-                this.valueOptionsByRuleIndex[index] = mergedOptions;
+                this.$set(this.valueOptionsByRuleIndex, index, mergedOptions);
             }
 
-            this.isLoadingValuesByRuleIndex[index] = false;
+            this.$set(this.isLoadingValuesByRuleIndex, index, false);
         },
 
         async loadCategoryOptions() {
@@ -437,17 +443,16 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
             this.isLoading = false;
         },
 
-        async loadFilterAttributes() {
+        async loadFilterAttributes(categoryId = this.category, filterTemplateId = this.filterTemplate) {
             this.isLoadingAttributes = true;
 
-            if (!this.category || !this.filterTemplate) {
+            if (!categoryId || !filterTemplateId) {
                 this.attributeOptions = [];
                 this.isLoadingAttributes = false;
                 return;
             }
 
-            const selectedCategoryId = this.category;
-            const filterTemplateId = this.filterTemplate;
+            const selectedCategoryId = categoryId;
 
             const token = Shopware.Service('loginService').getToken();
             const headers = { headers: { Authorization: `Bearer ${token}` } };
