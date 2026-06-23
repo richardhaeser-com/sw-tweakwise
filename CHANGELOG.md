@@ -1,4 +1,4 @@
-# Not yet released
+# 4.12.0
 
 **Added**
 - Added the possibility to create Attribute Landing Pages by using the CMS element "Attribute Landing Page".
