@@ -25,7 +25,7 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
 
     computed: {
         rules() {
-            let rules = this.element.config.rules.value;
+            let rules = this.element.config?.rules?.value;
 
             if (!rules) {
                 rules = [];
@@ -81,7 +81,7 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
 
         category: {
             get() {
-                return this.element.config.category.value;
+                return this.element.config?.category?.value ?? null;
             },
 
             set(value) {
@@ -91,7 +91,7 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
 
         filterTemplate: {
             get() {
-                return this.element.config.filterTemplate.value;
+                return this.element.config?.filterTemplate?.value ?? null;
             },
 
             set(value) {
@@ -101,7 +101,7 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
 
         sortTemplate: {
             get() {
-                return this.element.config.sortTemplate.value;
+                return this.element.config?.sortTemplate?.value ?? null;
             },
 
             set(value) {
@@ -111,7 +111,7 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
 
         builderTemplate: {
             get() {
-                return this.element.config.builderTemplate.value;
+                return this.element.config?.builderTemplate?.value ?? null;
             },
 
             set(value) {
@@ -121,7 +121,7 @@ Shopware.Component.register('sw-cms-el-config-tweakwise-attribute-landing-page',
 
         showSelectedFilters: {
             get() {
-                return this.element.config.showSelectedFilters.value;
+                return this.element.config?.showSelectedFilters?.value ?? false;
             },
 
             set(value) {
