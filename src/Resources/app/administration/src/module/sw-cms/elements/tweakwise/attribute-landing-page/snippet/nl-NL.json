@@ -1,0 +1,40 @@
+{
+  "sw-cms": {
+    "elements": {
+      "tweakwiseAttributeLandingPage": {
+        "label": "Tweakwise Attribuut Landingspagina",
+        "component": {
+          "filter": "Filter"
+        },
+        "config": {
+          "delete": "Verwijderen",
+          "attribute": "Attribuut",
+          "value": "Waarde",
+          "addFilter": "Filter toevoegen",
+          "addCustomFilter": "Eigen filter toevoegen",
+          "chooseCategoryFirst": "Kies eerst een categorie",
+          "filterAttributes": "Filterattributen",
+          "chooseAttribute": "Kies attribuut",
+          "chooseValue": "Kies waarde",
+          "category": {
+            "label": "Categorie",
+            "placeHolder": "Selecteer een categorie"
+          },
+          "filterTemplate": {
+            "label": "Filter template",
+            "placeHolder": "Selecteer een filter template"
+          },
+          "sortTemplate": {
+            "label": "Sorteer template",
+            "placeHolder": "Selecteer een sorteer template"
+          },
+          "builderTemplate": {
+            "label": "Builder template",
+            "placeHolder": "Selecteer een builder template"
+          },
+          "showSelectedFilters": "Geselecteerde filters tonen"
+        }
+      }
+    }
+  }
+}
