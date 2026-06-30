@@ -131,6 +131,7 @@ class AdminController extends AbstractController
         $criteria->addAssociation('seoUrls');
         $criteria->addAssociation('cover');
         $criteria->addAssociation('cover.media');
+        $criteria->addAssociation('cover.media.thumbnails');
         $criteria->addAssociation('categories');
         $criteria->addAssociation('streams');
         $criteria->addAssociation('streams.categories');

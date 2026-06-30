@@ -219,6 +219,13 @@ class BackendApi
                         if ($product->getCover()?->getMedia()?->getUrl()) {
                             $property = 'Image';
                             $value = $product->getCover()->getMedia()->getUrl();
+                            $width = 0;
+                            foreach ($product->getCover()->getMedia()->getThumbnails() ?? [] as $thumbnail) {
+                                if ($thumbnail->getWidth() > $width) {
+                                    $value = $thumbnail->getUrl();
+                                    $width = $thumbnail->getWidth();
+                                }
+                            }
                             break;
                         }
                         $property = '';
