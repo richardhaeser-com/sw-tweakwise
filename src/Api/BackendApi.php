@@ -17,9 +17,9 @@ class BackendApi
     private readonly Client $client;
     public $apiUrl = 'https://navigator-api.tweakwise.com';
     public $frontendApiUrl = 'https://gateway.tweakwisenavigator.com';
-    public function __construct(private readonly string $instanceKey, private readonly string $accessToken, private RouterInterface $router)
+    public function __construct(private readonly string $instanceKey, private readonly string $accessToken, private RouterInterface $router, ?Client $client = null)
     {
-        $this->client = new Client();
+        $this->client = $client ?? new Client();
     }
 
     public function getProductData(ProductEntity $product, string $domainId): array
@@ -142,7 +142,7 @@ class BackendApi
             }
         }
     }
-    public function syncProductData(ProductEntity $product, FrontendEntity $frontend, ?ProductEntity $parent, array $customFieldNames): array
+    public function syncProductData(ProductEntity $product, FrontendEntity $frontend, ?ProductEntity $parent, array $customFieldNames, bool $groupedProducts = true): array
     {
         $productData = null;
         $domain = $frontend->getSalesChannelDomains()->first();
@@ -183,7 +183,12 @@ class BackendApi
                 switch ($propertyToSync) {
                     case 'name':
                         $property = 'Name';
-                        $value = $product->getTranslation('name') ?: $parent?->getTranslation('name') ?: '';
+                        // Use the product's own translated name only — no parent fallback.
+                        // The XML feed (product.xml.twig) uses {{ product.translated.name }} without
+                        // any parent fallback, so the sync must behave identically.
+                        // Shopware's DAL always populates translated.name for active products via
+                        // translation inheritance, so a missing name is not a production scenario.
+                        $value = $product->getTranslation('name') ?? '';
                         break;
                     case 'unitPrice':
                         /** @var CalculatedPrice $price */
@@ -191,25 +196,23 @@ class BackendApi
                         if ((int)$product->calculatedPrices->count()) {
                             $price = $product->calculatedPrices->last();
                         }
-
-                        if (!$price) {
-                            /** @var CalculatedPrice $price */
-                            $price = $parent->calculatedPrice;
-                            if ((int)$parent->calculatedPrices->count()) {
-                                $price = $parent->calculatedPrices->last();
-                            }
-
-                        }
+                        // No parent fallback for price — the XML feed template uses the product's
+                        // own calculatedPrice only (no parent fallback in product.xml.twig).
+                        // Shopware's price calculator always assigns a price to every loaded product,
+                        // so a missing calculated price is not a production scenario.
                         $property = 'Price';
                         $value = $price?->getUnitPrice() ?: 0;
                         break;
                     case 'availableStock':
                         $property = 'Stock';
-                        $value = $product->getAvailableStock() ?: $parent->getAvailableStock() ?: 0;
+                        // Use ?? (null-coalescing) not ?: so that stock=0 is kept as-is and not
+                        // treated as "no value", which would otherwise send the parent's stock for
+                        // out-of-stock variants — diverging from what the XML feed emits.
+                        $value = $product->getAvailableStock() ?? $parent?->getAvailableStock() ?? 0;
                         break;
                     case 'manufacturer':
                         $property = 'Brand';
-                        $value = $product->getManufacturer()?->getTranslation('name') ?: $parent->getManufacturer()?->getTranslation('name') ?: '';
+                        $value = $product->getManufacturer()?->getTranslation('name') ?: $parent?->getManufacturer()?->getTranslation('name') ?: '';
                         break;
                     case 'url':
                         $property = 'Url';
@@ -234,6 +237,15 @@ class BackendApi
                     case 'categories':
                         $property = 'Categories';
                         $value = $categories;
+                        break;
+                    case 'groupcode':
+                        if (!$groupedProducts) {
+                            $property = '';
+                            $value = '';
+                            break;
+                        }
+                        $property = 'GroupCode';
+                        $value = $parent?->getProductNumber() ?: $product->getProductNumber();
                         break;
                     default:
                         $property = '';

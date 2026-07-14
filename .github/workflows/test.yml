@@ -58,8 +58,32 @@ jobs:
 
   unit:
     needs: static
-    name: Unit testing
+    name: Unit tests
     runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl
+          coverage: pcov
+
+      - name: Install dependencies
+        run: composer update --no-ansi --no-interaction --no-progress
+
+      - name: Run unit tests
+        run: |
+          php -d pcov.enabled=1 vendor/bin/phpunit --configuration phpunit.unit.xml
+
+  integration:
+    needs: static
+    name: Integration tests
+    runs-on: ubuntu-latest
+
     steps:
       - name: Setup Shopware
         uses: shopware/setup-shopware@main
@@ -84,7 +108,7 @@ jobs:
           bin/console plugin:refresh
           bin/console plugin:install -c -a RhaeTweakwise
 
-      - name: Run Tests
+      - name: Run integration tests
         run: |
           cd custom/plugins/RhaeTweakwise/
-          php -d pcov.enabled=1 ../../../vendor/bin/phpunit
+          php -d pcov.enabled=1 ../../../vendor/bin/phpunit --configuration phpunit.integration.xml

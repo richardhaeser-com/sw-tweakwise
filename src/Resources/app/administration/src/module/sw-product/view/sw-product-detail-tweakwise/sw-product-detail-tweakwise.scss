@@ -2,4 +2,31 @@
   button.mt-button {
     margin-top: 12px;
   }
+
+  .tweakwise-feeds__title {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--color-text-secondary-default, #6c6e85);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .tweakwise-feeds__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--color-line-primary, #e5e7ef);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    button.mt-button {
+      margin-top: 0;
+      flex-shrink: 0;
+    }
+  }
 }
