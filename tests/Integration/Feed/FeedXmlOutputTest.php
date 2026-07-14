@@ -127,6 +127,17 @@ class FeedXmlOutputTest extends TestCase
 
         $productId = $this->ids->get($productParams['number']);
 
+        // In non-grouped mode, Shopware's listingLoader only returns variants that
+        // are designated as the "main variant" of their parent group.  Set
+        // mainVariantId on the parent so this variant is returned by the listing.
+        if ($parentParams !== null && !$isGrouped) {
+            $parentId = $this->ids->get($parentParams['number']);
+            $this->getContainer()->get('product.repository')->update([[
+                'id'            => $parentId,
+                'mainVariantId' => $productId,
+            ]], $this->context);
+        }
+
         // -----------------------------------------------------------------
         // 3. Create a canonical SEO URL
         //    (FeedService::getUrlOfEntity filters by isCanonical = true)
@@ -228,11 +239,19 @@ class FeedXmlOutputTest extends TestCase
         // 9. Assert rendered field values
         // -----------------------------------------------------------------
 
-        // <name> — CDATA-wrapped; SimpleXML returns the text content transparently
+        // <name> — CDATA-wrapped; SimpleXML returns the text content transparently.
+        // In a real Shopware installation, a variant with no own name inherits the
+        // parent's translated name via Shopware's translation-inheritance mechanism.
+        // The expected name from rawCases() may be '' for the "empty name" fixture;
+        // the integration test accepts the inherited parent name in that case.
+        $expectedName = $expected['Name'];
+        if ($expectedName === '' && $parentParams !== null) {
+            $expectedName = $parentParams['name'];
+        }
         $this->assertSame(
-            $expected['Name'],
+            $expectedName,
             (string) $item->name,
-            '<name> must equal the product\'s translated name.'
+            '<name> must equal the product\'s translated name (parent name inherited when variant name is empty).'
         );
 
         // <price> — unitPrice rounded to 2dp; Twig round(2,'common') and PHP
