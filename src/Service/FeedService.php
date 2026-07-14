@@ -89,7 +89,7 @@ class FeedService
         private readonly EntityRepository $productRepository,
         private readonly string $shopwareVersion,
         private readonly AbstractRuleLoader $ruleLoader,
-        private readonly string $path,
+        private readonly ?string $path,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly LocaleSwitcher $localeSwitcher,
         private readonly RouterInterface $router,
@@ -839,7 +839,8 @@ class FeedService
     {
         $pathPrefix = '';
         if ($absolute) {
-            $pathPrefix = rtrim($this->path, '/') . '/';
+            $basePath = ($this->path !== null && $this->path !== '') ? $this->path : sys_get_temp_dir();
+            $pathPrefix = rtrim($basePath, '/') . '/';
         }
 
         if ($temporarily) {
