@@ -55,7 +55,7 @@ class FrontendApi
         return $data;
     }
 
-    public function getFacetsForCategory(string $categoryId, string $filterTemplate = null): array
+    public function getFacetsForCategory(string $categoryId, ?string $filterTemplate = null): array
     {
         $parameters = [
             'tn_cid=' . $categoryId,
