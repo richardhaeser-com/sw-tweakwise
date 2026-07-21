@@ -62,7 +62,8 @@
             "manufacturer": "Fabrikant",
             "url": "Url",
             "images": "Afbeeldingen",
-            "categories": "Categorieën"
+            "categories": "Categorieën",
+            "groupcode": "Groepscode"
           }
         },
         "fullPathCid": "Laat categorieën met dezelfde bovenliggende categorie zien bij categorie filters",

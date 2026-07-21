@@ -62,7 +62,8 @@
             "manufacturer": "Manufacturer",
             "url": "Url",
             "images": "Images",
-            "categories": "Categories"
+            "categories": "Categories",
+            "groupcode": "Group code"
           }
         },
         "fullPathCid": "Show sibling categories in category filtering",
