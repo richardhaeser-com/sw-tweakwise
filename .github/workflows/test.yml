@@ -104,7 +104,7 @@ jobs:
           composer config repositories.tweakwise.shopware6 "path" "custom/plugins/RhaeTweakwise"
           composer config allow-plugins.php-http/discovery false
           composer config minimum-stability dev
-          composer require richardhaeser/sw-tweakwise
+          composer require richardhaeser/sw-tweakwise --no-audit
           bin/console plugin:refresh
           bin/console plugin:install -c -a RhaeTweakwise
 
