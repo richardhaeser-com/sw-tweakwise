@@ -657,7 +657,152 @@ class FeedXmlOutputTest extends TestCase
     }
 
     // =========================================================================
-    // Helpers
+    // Product exclusion — feed must NOT contain certain products
+    //
+    // FeedService applies ProductAvailableFilter(VISIBILITY_LINK) which requires:
+    //   - product.active = true
+    //   - a product_visibility record for the sales channel with visibility >= 10
+    //
+    // Products failing either condition are silently excluded from the feed at
+    // query time, before any rendering happens. These tests confirm the exclusion
+    // is enforced in the real generated XML, not just assumed from the filter.
+    // =========================================================================
+
+    /**
+     * An inactive product (active=false) must not appear in the feed, even when
+     * it has a valid visibility record. ProductAvailableFilter requires active=true.
+     */
+    public function testInactiveProductIsExcludedFromFeed(): void
+    {
+        $this->createStandaloneProduct('PROD-ACTIVE', 'Active Product', 5, 'Brand', 10.00, 'product/active');
+
+        (new ProductBuilder($this->ids, 'PROD-INACTIVE'))
+            ->name('Inactive Product')
+            ->price(10.00)
+            ->stock(5)
+            ->active(false)
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
+            ->write($this->getContainer());
+
+        $xml = $this->generateFeed(grouped: false);
+
+        $this->assertItemPresent($xml, 'PROD-ACTIVE', 'Active product must appear in the feed.');
+        $this->assertItemAbsent($xml, 'PROD-INACTIVE', 'Inactive product must not appear in the feed.');
+    }
+
+    /**
+     * A product with no visibility record for the sales channel must not appear
+     * in the feed. ProductAvailableFilter requires a visibility record >= VISIBILITY_LINK.
+     */
+    public function testProductWithNoVisibilityIsExcludedFromFeed(): void
+    {
+        $this->createStandaloneProduct('PROD-VISIBLE', 'Visible Product', 3, 'Brand', 15.00, 'product/visible');
+
+        (new ProductBuilder($this->ids, 'PROD-NO-VIS'))
+            ->name('No Visibility Product')
+            ->price(15.00)
+            ->stock(3)
+            ->write($this->getContainer());
+
+        $xml = $this->generateFeed(grouped: false);
+
+        $this->assertItemPresent($xml, 'PROD-VISIBLE', 'Product with visibility must appear in the feed.');
+        $this->assertItemAbsent($xml, 'PROD-NO-VIS', 'Product with no visibility record must not appear in the feed.');
+    }
+
+    /**
+     * A product visible only via direct link (VISIBILITY_LINK = 10) must still
+     * appear in the feed — the feed uses VISIBILITY_LINK as its minimum threshold.
+     * It must have visibility attribute = 1 (PRODUCT_NOT_VISIBLE) in the XML,
+     * meaning Tweakwise hides it from listings but it exists in the index.
+     */
+    public function testProductWithVisibilityLinkAppearsInFeedWithVisibility1(): void
+    {
+        $productId = $this->ids->create('PROD-LINK');
+
+        (new ProductBuilder($this->ids, 'PROD-LINK'))
+            ->name('Link-Only Product')
+            ->price(20.00)
+            ->stock(2)
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_LINK)
+            ->write($this->getContainer());
+
+        $this->createSeoUrl($productId, 'product/link-only');
+
+        $xml = $this->generateFeed(grouped: false);
+        $item = $this->findItem($xml, 'PROD-LINK');
+
+        $this->assertSame(
+            FeedService::PRODUCT_NOT_VISIBLE,
+            $this->extractVisibility($item),
+            'VISIBILITY_LINK (10) must produce visibility=1 in the feed XML.'
+        );
+    }
+
+    /**
+     * A product with VISIBILITY_SEARCH (20) must appear in the feed with
+     * visibility attribute = 3 (PRODUCT_VISIBILITY_SEARCH).
+     */
+    public function testProductWithVisibilitySearchAppearsInFeedWithVisibility3(): void
+    {
+        $productId = $this->ids->create('PROD-SEARCH');
+
+        (new ProductBuilder($this->ids, 'PROD-SEARCH'))
+            ->name('Search-Only Product')
+            ->price(25.00)
+            ->stock(4)
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_SEARCH)
+            ->write($this->getContainer());
+
+        $this->createSeoUrl($productId, 'product/search-only');
+
+        $xml = $this->generateFeed(grouped: false);
+        $item = $this->findItem($xml, 'PROD-SEARCH');
+
+        $this->assertSame(
+            FeedService::PRODUCT_VISIBILITY_SEARCH,
+            $this->extractVisibility($item),
+            'VISIBILITY_SEARCH (20) must produce visibility=3 in the feed XML.'
+        );
+    }
+
+    /**
+     * In a feed with excludeChildren=true, variant products (products with a parentId)
+     * must not appear in the feed. Only standalone and parent products are included.
+     */
+    public function testExcludeChildrenFeedOmitsVariants(): void
+    {
+        $this->createStandaloneProduct('PROD-STANDALONE-EC', 'Standalone EC', 5, 'Brand', 10.00, 'product/standalone-ec');
+
+        $variantId = $this->ids->create('variant-ec');
+
+        (new ProductBuilder($this->ids, 'parent-ec'))
+            ->name('Parent EC')
+            ->price(20.00)
+            ->stock(0)
+            ->manufacturer('Brand')
+            ->variantListingConfig(['displayParent' => true])
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
+            ->write($this->getContainer());
+
+        (new ProductBuilder($this->ids, 'variant-ec'))
+            ->name('Variant EC')
+            ->price(20.00)
+            ->stock(3)
+            ->parent('parent-ec')
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
+            ->write($this->getContainer());
+
+        $this->createSeoUrl($this->ids->get('parent-ec'), 'product/parent-ec');
+        $this->createSeoUrl($variantId, 'product/variant-ec');
+        $this->updateVariantListing([$this->ids->get('parent-ec')]);
+
+        $xml = $this->generateFeed(grouped: false, excludeChildren: true);
+
+        $this->assertItemPresent($xml, 'PROD-STANDALONE-EC', 'Standalone must appear in excludeChildren feed.');
+        $this->assertItemAbsent($xml, 'variant-ec', 'Variant must not appear in excludeChildren feed.');
+    }
+
     // =========================================================================
 
     private function createStandaloneProduct(
@@ -717,7 +862,7 @@ class FeedXmlOutputTest extends TestCase
      * Creates a feed record for the default sales channel domain, runs
      * FeedService::generateFeed(), and returns the parsed XML root element.
      */
-    private function generateFeed(bool $grouped): \SimpleXMLElement
+    private function generateFeed(bool $grouped, bool $excludeChildren = false): \SimpleXMLElement
     {
         $domainCriteria = new Criteria();
         $domainCriteria->addFilter(new EqualsFilter('salesChannelId', TestDefaults::SALES_CHANNEL));
@@ -739,6 +884,7 @@ class FeedXmlOutputTest extends TestCase
             'type'                => 'full',
             'limit'               => '500',
             'groupedProducts'     => $grouped,
+            'excludeChildren'     => $excludeChildren,
             'salesChannelDomains' => [['id' => $domain->getId()]],
         ]], $this->context);
 
@@ -771,10 +917,7 @@ class FeedXmlOutputTest extends TestCase
      */
     private function findItem(\SimpleXMLElement $xml, string $numberOrKey): \SimpleXMLElement
     {
-        // Resolve from IdsCollection if possible (for named keys like 'variant-gdp').
-        // ProductBuilder uses the key as product number when no explicit number is set.
         $number = $numberOrKey;
-
         $escapedNumber = htmlspecialchars($number, ENT_XML1, 'UTF-8');
         $matches = $xml->xpath(
             sprintf('//item[attributes/attribute[name="sw-product-number" and value="%s"]]', $escapedNumber)
@@ -783,6 +926,28 @@ class FeedXmlOutputTest extends TestCase
         $this->assertNotEmpty($matches, sprintf('Product "%s" must appear in the rendered feed XML.', $number));
 
         return $matches[0];
+    }
+
+    private function assertItemPresent(\SimpleXMLElement $xml, string $numberOrKey, string $message = ''): void
+    {
+        $number = $numberOrKey;
+        $escapedNumber = htmlspecialchars($number, ENT_XML1, 'UTF-8');
+        $matches = $xml->xpath(
+            sprintf('//item[attributes/attribute[name="sw-product-number" and value="%s"]]', $escapedNumber)
+        );
+
+        $this->assertNotEmpty($matches, $message ?: sprintf('Product "%s" must appear in the feed XML.', $number));
+    }
+
+    private function assertItemAbsent(\SimpleXMLElement $xml, string $numberOrKey, string $message = ''): void
+    {
+        $number = $numberOrKey;
+        $escapedNumber = htmlspecialchars($number, ENT_XML1, 'UTF-8');
+        $matches = $xml->xpath(
+            sprintf('//item[attributes/attribute[name="sw-product-number" and value="%s"]]', $escapedNumber)
+        );
+
+        $this->assertEmpty($matches, $message ?: sprintf('Product "%s" must NOT appear in the feed XML.', $number));
     }
 
     private function extractVisibility(\SimpleXMLElement $item): ?int
