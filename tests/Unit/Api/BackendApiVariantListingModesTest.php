@@ -486,6 +486,199 @@ class BackendApiVariantListingModesTest extends TestCase
     }
 
     // =========================================================================
+    // Grouped feed × Shopware variant listing mode combinations
+    //
+    // In grouped mode buildGroupedProductsFilter() excludes parent products.
+    // What BackendApi receives is always a variant entity with groupedProducts=true,
+    // regardless of the listing mode configured on the parent. These tests guard
+    // parity between the feed XML and the sync payload for each combination.
+    // =========================================================================
+
+    /**
+     * Grouped + displayParent=true:
+     * In non-grouped mode the parent itself is the listing item. In grouped mode the
+     * parent is excluded by buildGroupedProductsFilter(); variants appear individually.
+     * AdminController calls syncProductData($variant, $frontend, $parent, ..., true).
+     *
+     * Expected: GroupCode = parent product number (same as any grouped variant).
+     * Feed parity: product.xml.twig receives groupCode=parent.productNumber.
+     */
+    public function testGroupedWithDisplayParentVariantUsesParentNumberAsGroupCode(): void
+    {
+        $parent = $this->makeProduct('PARENT-GDP-001', 'Display Parent (excluded from grouped feed)', 0, 'GDP Brand');
+        $variant = $this->makeProduct('VARIANT-GDP-001', 'Grouped DisplayParent Variant', 5, 'GDP Brand');
+
+        $posted = $this->sync($variant, $parent, groupedProducts: true);
+
+        $this->assertSame('PARENT-GDP-001', $posted['GroupCode']);
+    }
+
+    /**
+     * Grouped + displayParent=true: all scalar fields come from the variant, not the parent.
+     * The parent product number provides GroupCode but nothing else.
+     */
+    public function testGroupedWithDisplayParentVariantAllFieldsFromVariant(): void
+    {
+        $parent = $this->makeProduct('PARENT-GDP-FULL', 'Display Parent', 0, 'GDP Parent Brand');
+        $variant = $this->makeProductWithCover(
+            'VARIANT-GDP-FULL',
+            'Grouped DisplayParent Variant Full',
+            5,
+            'GDP Brand',
+            'product/grouped-display-parent-variant',
+            28.00,
+            'https://cdn.example.com/gdp-thumb.jpg',
+            500
+        );
+
+        $posted = $this->sync($variant, $parent, groupedProducts: true);
+
+        $this->assertSame('Grouped DisplayParent Variant Full', $posted['Name']);
+        $this->assertEquals(28.00, $posted['Price']);
+        $this->assertSame(5, $posted['Stock']);
+        $this->assertSame('GDP Brand', $posted['Brand']);
+        $this->assertSame('PARENT-GDP-FULL', $posted['GroupCode']);
+        $this->assertSame('https://cdn.example.com/gdp-thumb.jpg', $posted['Image']);
+    }
+
+    /**
+     * Grouped + displayParent=true: variant without its own manufacturer inherits
+     * the parent brand (same fallback rule as all other grouped paths).
+     */
+    public function testGroupedWithDisplayParentVariantWithoutManufacturerInheritsParentBrand(): void
+    {
+        $parent = $this->makeProduct('PARENT-GDP-002', 'Display Parent Brand Holder', 0, 'Inherited GDP Brand');
+        $variant = $this->makeProduct('VARIANT-GDP-002', 'No-Brand DisplayParent Variant', 4, null);
+
+        $posted = $this->sync($variant, $parent, groupedProducts: true);
+
+        $this->assertSame('Inherited GDP Brand', $posted['Brand']);
+    }
+
+    /**
+     * Grouped + mainVariantId set:
+     * In non-grouped mode only the pinned mainVariant appears in the listing.
+     * In grouped mode all variants appear individually (the parent is excluded).
+     * AdminController calls syncProductData($variant, $frontend, $parent, ..., true).
+     *
+     * Expected: GroupCode = parent product number (same as any grouped variant).
+     * Feed parity: product.xml.twig receives groupCode=parent.productNumber.
+     */
+    public function testGroupedWithMainVariantIdVariantUsesParentNumberAsGroupCode(): void
+    {
+        $parent = $this->makeProduct('PARENT-GMV-001', 'Main Variant Parent (excluded from grouped feed)', 0, 'GMV Brand');
+        $variant = $this->makeProduct('VARIANT-GMV-001', 'Grouped MainVariant Variant', 3, 'GMV Brand');
+
+        $posted = $this->sync($variant, $parent, groupedProducts: true);
+
+        $this->assertSame('PARENT-GMV-001', $posted['GroupCode']);
+    }
+
+    /**
+     * Grouped + mainVariantId set: all scalar fields come from the variant.
+     */
+    public function testGroupedWithMainVariantIdVariantAllFieldsFromVariant(): void
+    {
+        $parent = $this->makeProduct('PARENT-GMV-FULL', 'Main Variant Parent', 0, 'GMV Parent Brand');
+        $variant = $this->makeProductWithCover(
+            'VARIANT-GMV-FULL',
+            'Grouped MainVariant Variant Full',
+            3,
+            'GMV Brand',
+            'product/grouped-main-variant',
+            45.00,
+            'https://cdn.example.com/gmv-thumb.jpg',
+            600
+        );
+
+        $posted = $this->sync($variant, $parent, groupedProducts: true);
+
+        $this->assertSame('Grouped MainVariant Variant Full', $posted['Name']);
+        $this->assertEquals(45.00, $posted['Price']);
+        $this->assertSame(3, $posted['Stock']);
+        $this->assertSame('GMV Brand', $posted['Brand']);
+        $this->assertSame('PARENT-GMV-FULL', $posted['GroupCode']);
+        $this->assertSame('https://cdn.example.com/gmv-thumb.jpg', $posted['Image']);
+    }
+
+    /**
+     * Grouped + mainVariantId set: variant without its own manufacturer inherits
+     * the parent brand (same fallback rule as all other grouped paths).
+     */
+    public function testGroupedWithMainVariantIdVariantWithoutManufacturerInheritsParentBrand(): void
+    {
+        $parent = $this->makeProduct('PARENT-GMV-002', 'Main Variant Parent Brand Holder', 0, 'Inherited GMV Brand');
+        $variant = $this->makeProduct('VARIANT-GMV-002', 'No-Brand MainVariant Variant', 2, null);
+
+        $posted = $this->sync($variant, $parent, groupedProducts: true);
+
+        $this->assertSame('Inherited GMV Brand', $posted['Brand']);
+    }
+
+    /**
+     * Grouped + expand-variants (expressionForListings=true):
+     * In non-grouped mode renderProducts() sets $getVariants=false because
+     * expressionForListings suppresses the otherVariants block — each variant is its
+     * own independent listing item. In grouped mode $feed->isGroupedProducts() also
+     * forces $getVariants=false (FeedService line 558-560). Both paths produce the
+     * same result: otherVariantsXml='', GroupCode=parent product number.
+     *
+     * AdminController calls syncProductData($variant, $frontend, $parent, ..., true).
+     * Expected: GroupCode = parent product number; all fields from the variant.
+     * Feed parity: template receives groupCode=parent.productNumber, otherVariantsXml=''.
+     */
+    public function testGroupedWithExpandVariantsVariantUsesParentNumberAsGroupCode(): void
+    {
+        $parent = $this->makeProduct('PARENT-GEV-001', 'Expand Variants Parent (excluded from grouped feed)', 0, 'GEV Brand');
+        $variant = $this->makeProduct('VARIANT-GEV-001', 'Grouped ExpandVariants Variant', 8, 'GEV Brand');
+
+        $posted = $this->sync($variant, $parent, groupedProducts: true);
+
+        $this->assertSame('PARENT-GEV-001', $posted['GroupCode']);
+    }
+
+    /**
+     * Grouped + expand-variants: all scalar fields come from the variant.
+     */
+    public function testGroupedWithExpandVariantsVariantAllFieldsFromVariant(): void
+    {
+        $parent = $this->makeProduct('PARENT-GEV-FULL', 'Expand Variants Parent', 0, 'GEV Parent Brand');
+        $variant = $this->makeProductWithCover(
+            'VARIANT-GEV-FULL',
+            'Grouped ExpandVariants Variant Full',
+            8,
+            'GEV Brand',
+            'product/grouped-expand-variants',
+            19.50,
+            'https://cdn.example.com/gev-thumb.jpg',
+            400
+        );
+
+        $posted = $this->sync($variant, $parent, groupedProducts: true);
+
+        $this->assertSame('Grouped ExpandVariants Variant Full', $posted['Name']);
+        $this->assertSame(19.50, $posted['Price']);
+        $this->assertSame(8, $posted['Stock']);
+        $this->assertSame('GEV Brand', $posted['Brand']);
+        $this->assertSame('PARENT-GEV-FULL', $posted['GroupCode']);
+        $this->assertSame('https://cdn.example.com/gev-thumb.jpg', $posted['Image']);
+    }
+
+    /**
+     * Grouped + expand-variants: variant without its own manufacturer inherits
+     * the parent brand (same fallback rule as all other grouped paths).
+     */
+    public function testGroupedWithExpandVariantsVariantWithoutManufacturerInheritsParentBrand(): void
+    {
+        $parent = $this->makeProduct('PARENT-GEV-002', 'Expand Variants Parent Brand Holder', 0, 'Inherited GEV Brand');
+        $variant = $this->makeProduct('VARIANT-GEV-002', 'No-Brand ExpandVariants Variant', 6, null);
+
+        $posted = $this->sync($variant, $parent, groupedProducts: true);
+
+        $this->assertSame('Inherited GEV Brand', $posted['Brand']);
+    }
+
+    // =========================================================================
     // Cross-mode invariants
     // =========================================================================
 

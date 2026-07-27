@@ -494,6 +494,128 @@ class ProductFixtureFactory
                 false,
             ],
 
+            // -----------------------------------------------------------------------
+            // Grouped feed × Shopware variant listing mode combinations
+            //
+            // In grouped mode buildGroupedProductsFilter() excludes parent products
+            // (parentId=null AND childCount>0). What reaches renderProducts() is always
+            // a variant entity — regardless of the listing mode configured on the parent.
+            // The three cases below guard that the feed XML and the backend sync produce
+            // identical output for each listing-mode + grouped combination.
+            // -----------------------------------------------------------------------
+
+            'grouped + displayParent=true: variant still gets groupcode from parent, own fields' => [
+                // Shopware config: variantListingConfig.displayParent = true.
+                // In non-grouped mode this causes the parent to appear in the listing.
+                // In grouped mode the parent is excluded by the filter; variants appear
+                // individually. renderProducts() receives the variant with isGroupedProducts()=true.
+                // Expected: GroupCode = parent number, all other fields from the variant.
+                self::create([
+                    'number'      => 'VARIANT-GDP-001',
+                    'name'        => 'Grouped DisplayParent Variant',
+                    'stock'       => 5,
+                    'brand'       => 'GDP Brand',
+                    'price'       => 28.00,
+                    'originalUrl' => 'https://cdn.example.com/gdp-orig.jpg',
+                    'thumbnails'  => ['https://cdn.example.com/gdp-thumb.jpg' => 500],
+                    'seoPath'     => 'product/grouped-display-parent-variant',
+                ]),
+                self::create([
+                    'number'  => 'PARENT-GDP-001',
+                    'name'    => 'Display Parent (excluded from grouped feed)',
+                    'stock'   => 0,
+                    'brand'   => 'GDP Brand',
+                    'price'   => 28.00,
+                    'seoPath' => 'product/grouped-display-parent',
+                ]),
+                [
+                    'Name'      => 'Grouped DisplayParent Variant',
+                    'Price'     => 28.00,
+                    'Stock'     => 5,
+                    'Brand'     => 'GDP Brand',
+                    'Image'     => 'https://cdn.example.com/gdp-thumb.jpg',
+                    'GroupCode' => 'PARENT-GDP-001',
+                    'Url'       => self::DOMAIN_URL . '/product/grouped-display-parent-variant',
+                ],
+                true,
+            ],
+
+            'grouped + mainVariantId set: variant gets groupcode from parent, own fields' => [
+                // Shopware config: variantListingConfig.mainVariantId is set to one specific
+                // variant. In non-grouped mode only that variant appears in the listing.
+                // In grouped mode all variants appear individually (the parent is excluded).
+                // renderProducts() receives each variant with isGroupedProducts()=true.
+                // Expected: GroupCode = parent number, all other fields from the variant.
+                self::create([
+                    'number'      => 'VARIANT-GMV-001',
+                    'name'        => 'Grouped MainVariant Variant',
+                    'stock'       => 3,
+                    'brand'       => 'GMV Brand',
+                    'price'       => 45.00,
+                    'originalUrl' => 'https://cdn.example.com/gmv-orig.jpg',
+                    'thumbnails'  => ['https://cdn.example.com/gmv-thumb.jpg' => 600],
+                    'seoPath'     => 'product/grouped-main-variant',
+                ]),
+                self::create([
+                    'number'  => 'PARENT-GMV-001',
+                    'name'    => 'Main Variant Parent (excluded from grouped feed)',
+                    'stock'   => 0,
+                    'brand'   => 'GMV Brand',
+                    'price'   => 45.00,
+                    'seoPath' => 'product/grouped-main-variant-parent',
+                ]),
+                [
+                    'Name'      => 'Grouped MainVariant Variant',
+                    'Price'     => 45.00,
+                    'Stock'     => 3,
+                    'Brand'     => 'GMV Brand',
+                    'Image'     => 'https://cdn.example.com/gmv-thumb.jpg',
+                    'GroupCode' => 'PARENT-GMV-001',
+                    'Url'       => self::DOMAIN_URL . '/product/grouped-main-variant',
+                ],
+                true,
+            ],
+
+            'grouped + expand-variants: variant gets groupcode from parent, no otherVariants block' => [
+                // Shopware config: a configurator group has expressionForListings=true.
+                // In non-grouped mode renderProducts() sets $getVariants=false for this
+                // product because expressionForListings suppresses the otherVariants block
+                // (each variant is its own independent item).
+                // In grouped mode $feed->isGroupedProducts() also forces $getVariants=false
+                // (line 558-560). Both paths reach the same result: otherVariantsXml=''.
+                //
+                // Parity assertion: the feed must produce GroupCode=parent and no otherVariants
+                // XML; the sync must produce the same payload as any other grouped variant.
+                self::create([
+                    'number'      => 'VARIANT-GEV-001',
+                    'name'        => 'Grouped ExpandVariants Variant',
+                    'stock'       => 8,
+                    'brand'       => 'GEV Brand',
+                    'price'       => 19.50,
+                    'originalUrl' => 'https://cdn.example.com/gev-orig.jpg',
+                    'thumbnails'  => ['https://cdn.example.com/gev-thumb.jpg' => 400],
+                    'seoPath'     => 'product/grouped-expand-variants',
+                ]),
+                self::create([
+                    'number'  => 'PARENT-GEV-001',
+                    'name'    => 'Expand Variants Parent (excluded from grouped feed)',
+                    'stock'   => 0,
+                    'brand'   => 'GEV Brand',
+                    'price'   => 19.50,
+                    'seoPath' => 'product/grouped-expand-variants-parent',
+                ]),
+                [
+                    'Name'      => 'Grouped ExpandVariants Variant',
+                    'Price'     => 19.50,
+                    'Stock'     => 8,
+                    'Brand'     => 'GEV Brand',
+                    'Image'     => 'https://cdn.example.com/gev-thumb.jpg',
+                    'GroupCode' => 'PARENT-GEV-001',
+                    'Url'       => self::DOMAIN_URL . '/product/grouped-expand-variants',
+                ],
+                true,
+            ],
+
             'non-grouped, displayParent=true: parent product synced directly — no groupcode' => [
                 // When variantListingConfig.displayParent = true the parent product itself
                 // appears in the listing (not a variant). The feed renders the parent entity;
@@ -704,8 +826,28 @@ class ProductFixtureFactory
                 false,
             ],
 
+            'grouped + displayParent=true: variant still gets groupcode from parent, own fields' => [
+                ['number' => 'VARIANT-GDP-001', 'name' => 'Grouped DisplayParent Variant', 'stock' => 5, 'brand' => 'GDP Brand', 'price' => 28.00, 'seoPath' => 'product/grouped-display-parent-variant'],
+                ['number' => 'PARENT-GDP-001', 'name' => 'Display Parent (excluded from grouped feed)', 'stock' => 0, 'brand' => 'GDP Brand', 'price' => 28.00, 'seoPath' => 'product/grouped-display-parent'],
+                ['Name' => 'Grouped DisplayParent Variant', 'Price' => 28.00, 'Stock' => 5, 'Brand' => 'GDP Brand', 'GroupCode' => 'PARENT-GDP-001', 'Url' => 'product/grouped-display-parent-variant'],
+                true,
+            ],
+
+            'grouped + mainVariantId set: variant gets groupcode from parent, own fields' => [
+                ['number' => 'VARIANT-GMV-001', 'name' => 'Grouped MainVariant Variant', 'stock' => 3, 'brand' => 'GMV Brand', 'price' => 45.00, 'seoPath' => 'product/grouped-main-variant'],
+                ['number' => 'PARENT-GMV-001', 'name' => 'Main Variant Parent (excluded from grouped feed)', 'stock' => 0, 'brand' => 'GMV Brand', 'price' => 45.00, 'seoPath' => 'product/grouped-main-variant-parent'],
+                ['Name' => 'Grouped MainVariant Variant', 'Price' => 45.00, 'Stock' => 3, 'Brand' => 'GMV Brand', 'GroupCode' => 'PARENT-GMV-001', 'Url' => 'product/grouped-main-variant'],
+                true,
+            ],
+
+            'grouped + expand-variants: variant gets groupcode from parent, no otherVariants block' => [
+                ['number' => 'VARIANT-GEV-001', 'name' => 'Grouped ExpandVariants Variant', 'stock' => 8, 'brand' => 'GEV Brand', 'price' => 19.50, 'seoPath' => 'product/grouped-expand-variants'],
+                ['number' => 'PARENT-GEV-001', 'name' => 'Expand Variants Parent (excluded from grouped feed)', 'stock' => 0, 'brand' => 'GEV Brand', 'price' => 19.50, 'seoPath' => 'product/grouped-expand-variants-parent'],
+                ['Name' => 'Grouped ExpandVariants Variant', 'Price' => 19.50, 'Stock' => 8, 'Brand' => 'GEV Brand', 'GroupCode' => 'PARENT-GEV-001', 'Url' => 'product/grouped-expand-variants'],
+                true,
+            ],
+
             'non-grouped, displayParent=true: parent product synced directly — no groupcode' => [
-                ['number' => 'PARENT-DISPLAY', 'name' => 'Display Parent Product', 'stock' => 12, 'brand' => 'Display Parent Brand', 'price' => 55.00, 'seoPath' => 'product/display-parent'],
                 null,
                 ['Name' => 'Display Parent Product', 'Price' => 55.00, 'Stock' => 12, 'Brand' => 'Display Parent Brand', 'GroupCode' => '', 'Url' => 'product/display-parent'],
                 false,
