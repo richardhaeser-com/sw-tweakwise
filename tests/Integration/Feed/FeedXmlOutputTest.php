@@ -92,6 +92,7 @@ class FeedXmlOutputTest extends TestCase
                     ? $this->assertEmpty((string) $item->groupcode, '<groupcode> must be absent')
                     : $this->assertSame((string) $expectedValue, (string) $item->groupcode, '<groupcode> mismatch'),
                 'Url'       => $this->assertStringContainsString((string) $expectedValue, (string) $item->url, '<url> must contain seo path'),
+                'Image'     => $this->assertSame((string) $expectedValue, (string) $item->image, '<image> mismatch'),
                 default     => null,
             };
         }
@@ -247,6 +248,10 @@ class FeedXmlOutputTest extends TestCase
 
             $parentBuilder->write($this->getContainer());
             $this->createSeoUrl($parentId, $parentParams['seoPath']);
+
+            if (isset($parentParams['image'])) {
+                $this->attachCoverImage($parentId, $parentParams['image']);
+            }
         }
 
         $productId = $this->ids->create($productParams['number']);
@@ -293,6 +298,17 @@ class FeedXmlOutputTest extends TestCase
 
             $productBuilder->write($this->getContainer());
         }
+
+        // Attach cover image if specified
+        if (isset($productParams['image'])) {
+            $this->attachCoverImage($productId, $productParams['image']);
+        }
+
+        // Attach a non-cover media item if specified (to test cover is used over first image)
+        if (isset($productParams['otherImage'])) {
+            $this->attachNonCoverImage($productId, $productParams['otherImage']);
+        }
+
         $this->createSeoUrl($productId, $productParams['seoPath']);
 
         // For mainVariantId listing mode, update the parent config now that we have the variant ID
@@ -308,6 +324,46 @@ class FeedXmlOutputTest extends TestCase
         }
 
         return $productParams['number'];
+    }
+
+    private function attachCoverImage(string $productId, string $url): void
+    {
+        $mediaId        = Uuid::randomHex();
+        $productMediaId = Uuid::randomHex();
+
+        $this->getContainer()->get('media.repository')->create([[
+            'id'  => $mediaId,
+            'url' => $url,
+        ]], $this->context);
+
+        $this->getContainer()->get('product_media.repository')->create([[
+            'id'        => $productMediaId,
+            'productId' => $productId,
+            'mediaId'   => $mediaId,
+            'position'  => 1,
+        ]], $this->context);
+
+        $this->getContainer()->get('product.repository')->update([[
+            'id'      => $productId,
+            'coverId' => $productMediaId,
+        ]], $this->context);
+    }
+
+    private function attachNonCoverImage(string $productId, string $url): void
+    {
+        $mediaId = Uuid::randomHex();
+
+        $this->getContainer()->get('media.repository')->create([[
+            'id'  => $mediaId,
+            'url' => $url,
+        ]], $this->context);
+
+        $this->getContainer()->get('product_media.repository')->create([[
+            'id'        => Uuid::randomHex(),
+            'productId' => $productId,
+            'mediaId'   => $mediaId,
+            'position'  => 0,
+        ]], $this->context);
     }
 
     private function createStandaloneProduct(

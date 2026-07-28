@@ -117,6 +117,118 @@ class ProductFixtureFactory
                 true,
             ],
 
+            'product with multiple media items uses cover not first image' => [
+                // The cover is set on the entity directly — other media items are not on getCover().
+                // Both feed and sync must use getCover(), not the first item in a media collection.
+                self::createProduct([
+                    'number'      => 'PROD-MULTI-MEDIA',
+                    'name'        => 'Product Multi Media',
+                    'stock'       => 3,
+                    'brand'       => 'Brand M',
+                    'price'       => 39.99,
+                    'seoPath'     => 'product/product-multi-media',
+                    'originalUrl' => 'https://assets.example.com/cover-not-first.jpg',
+                    'thumbnails'  => [],
+                ]),
+                null,
+                [
+                    'Name'      => 'Product Multi Media',
+                    'Price'     => 39.99,
+                    'Stock'     => 3,
+                    'Brand'     => 'Brand M',
+                    'Image'     => 'https://assets.example.com/cover-not-first.jpg',
+                    'GroupCode' => 'PROD-MULTI-MEDIA',
+                    'Url'       => self::DOMAIN_URL . '/product/product-multi-media',
+                ],
+                true,
+            ],
+
+            'product without cover image has no image in output' => [
+                self::createProduct([
+                    'number'  => 'PROD-NO-COVER',
+                    'name'    => 'Product No Cover',
+                    'stock'   => 4,
+                    'brand'   => 'Brand N',
+                    'price'   => 9.99,
+                    'seoPath' => 'product/product-no-cover',
+                ]),
+                null,
+                [
+                    'Name'      => 'Product No Cover',
+                    'Price'     => 9.99,
+                    'Stock'     => 4,
+                    'Brand'     => 'Brand N',
+                    'Image'     => '',
+                    'GroupCode' => 'PROD-NO-COVER',
+                    'Url'       => self::DOMAIN_URL . '/product/product-no-cover',
+                ],
+                true,
+            ],
+
+            'variant with own cover image uses variant cover' => [
+                self::createProduct([
+                    'number'      => 'VARIANT-OWN-COVER',
+                    'name'        => 'Variant With Cover',
+                    'stock'       => 2,
+                    'brand'       => 'Brand V',
+                    'price'       => 19.99,
+                    'seoPath'     => 'product/variant-own-cover',
+                    'originalUrl' => 'https://assets.example.com/variant-cover.jpg',
+                    'thumbnails'  => [],
+                ]),
+                self::createProduct([
+                    'number'      => 'PARENT-OWN-COVER',
+                    'name'        => 'Parent With Cover',
+                    'stock'       => 0,
+                    'brand'       => 'Brand V',
+                    'price'       => 19.99,
+                    'seoPath'     => 'product/parent-own-cover',
+                    'originalUrl' => 'https://assets.example.com/parent-cover.jpg',
+                    'thumbnails'  => [],
+                ]),
+                [
+                    'Name'      => 'Variant With Cover',
+                    'Price'     => 19.99,
+                    'Stock'     => 2,
+                    'Brand'     => 'Brand V',
+                    'Image'     => 'https://assets.example.com/variant-cover.jpg',
+                    'GroupCode' => 'PARENT-OWN-COVER',
+                    'Url'       => self::DOMAIN_URL . '/product/variant-own-cover',
+                ],
+                true,
+            ],
+
+            'variant without cover does not inherit parent cover' => [
+                self::createProduct([
+                    'number'  => 'VARIANT-NO-COVER',
+                    'name'    => 'Variant No Cover',
+                    'stock'   => 6,
+                    'brand'   => 'Brand W',
+                    'price'   => 12.50,
+                    'seoPath' => 'product/variant-no-cover',
+                ]),
+                self::createProduct([
+                    'number'      => 'PARENT-HAS-COVER',
+                    'name'        => 'Parent Has Cover',
+                    'stock'       => 0,
+                    'brand'       => 'Brand W',
+                    'price'       => 12.50,
+                    'seoPath'     => 'product/parent-has-cover',
+                    'originalUrl' => 'https://assets.example.com/parent-only-cover.jpg',
+                    'thumbnails'  => [],
+                ]),
+                [
+                    'Name'      => 'Variant No Cover',
+                    'Price'     => 12.50,
+                    'Stock'     => 6,
+                    'Brand'     => 'Brand W',
+                    'Image'     => '',
+                    'GroupCode' => 'PARENT-HAS-COVER',
+                    'Url'       => self::DOMAIN_URL . '/product/variant-no-cover',
+                ],
+                true,
+            ],
+
             'standalone product, no cover image' => [
                 self::createProduct([
                     'number'  => 'PROD-004',
@@ -135,6 +247,34 @@ class ProductFixtureFactory
                     'Image'     => '',
                     'GroupCode' => 'PROD-004',
                     'Url'       => self::DOMAIN_URL . '/product/product-four',
+                ],
+                true,
+            ],
+
+            'product with multiple media items uses cover not first image' => [
+                // When a product has multiple media items, both the feed and the sync
+                // must use the designated cover — not the first item in the media collection.
+                // otherImage is added first (lower position) but must NOT appear in the output.
+                self::createProduct([
+                    'number'      => 'PROD-MULTI-MEDIA',
+                    'name'        => 'Product Multi Media',
+                    'stock'       => 3,
+                    'brand'       => 'Brand M',
+                    'price'       => 39.99,
+                    'seoPath'     => 'product/product-multi-media',
+                    'originalUrl' => 'https://assets.example.com/cover-not-first.jpg',
+                    'thumbnails'  => [],
+                    // otherImage is not on the cover entity so it must never appear
+                ]),
+                null,
+                [
+                    'Name'      => 'Product Multi Media',
+                    'Price'     => 39.99,
+                    'Stock'     => 3,
+                    'Brand'     => 'Brand M',
+                    'Image'     => 'https://assets.example.com/cover-not-first.jpg',
+                    'GroupCode' => 'PROD-MULTI-MEDIA',
+                    'Url'       => self::DOMAIN_URL . '/product/product-multi-media',
                 ],
                 true,
             ],
@@ -690,6 +830,47 @@ class ProductFixtureFactory
                 ['number' => 'PROD-002', 'name' => 'Product Two', 'stock' => 2, 'price' => 14.99, 'seoPath' => 'product/product-two'],
                 null,
                 ['Name' => 'Product Two', 'Price' => 14.99, 'Stock' => 2, 'Brand' => '', 'GroupCode' => 'PROD-002', 'Url' => 'product/product-two'],
+                true,
+            ],
+
+            'product with cover image uses cover url' => [
+                // image: the cover media URL to insert directly in the DB.
+                // The feed renders product.cover.media.url; the sync uses getCover()->getMedia()->getUrl().
+                // No thumbnails are created — both fall back to the original media URL.
+                ['number' => 'PROD-COVER', 'name' => 'Product With Cover', 'stock' => 5, 'brand' => 'Brand C', 'price' => 29.99, 'seoPath' => 'product/product-cover', 'image' => 'https://assets.example.com/cover.jpg'],
+                null,
+                ['Name' => 'Product With Cover', 'Price' => 29.99, 'Stock' => 5, 'Brand' => 'Brand C', 'GroupCode' => 'PROD-COVER', 'Url' => 'product/product-cover', 'Image' => 'https://assets.example.com/cover.jpg'],
+                true,
+            ],
+
+            'product with multiple media items uses cover not first image' => [
+                // When a product has multiple media items, the image must come from the
+                // designated cover — not the first media item in the collection.
+                // cover: the cover media URL; otherImage: a non-cover media URL that must NOT appear.
+                ['number' => 'PROD-MULTI-MEDIA', 'name' => 'Product Multi Media', 'stock' => 3, 'brand' => 'Brand M', 'price' => 39.99, 'seoPath' => 'product/product-multi-media', 'image' => 'https://assets.example.com/cover-not-first.jpg', 'otherImage' => 'https://assets.example.com/other-image.jpg'],
+                null,
+                ['Name' => 'Product Multi Media', 'Price' => 39.99, 'Stock' => 3, 'Brand' => 'Brand M', 'GroupCode' => 'PROD-MULTI-MEDIA', 'Url' => 'product/product-multi-media', 'Image' => 'https://assets.example.com/cover-not-first.jpg'],
+                true,
+            ],
+
+            'product without cover image has no image in output' => [
+                ['number' => 'PROD-NO-COVER', 'name' => 'Product No Cover', 'stock' => 4, 'brand' => 'Brand N', 'price' => 9.99, 'seoPath' => 'product/product-no-cover'],
+                null,
+                ['Name' => 'Product No Cover', 'Price' => 9.99, 'Stock' => 4, 'Brand' => 'Brand N', 'GroupCode' => 'PROD-NO-COVER', 'Url' => 'product/product-no-cover', 'Image' => ''],
+                true,
+            ],
+
+            'variant with own cover image uses variant cover' => [
+                ['number' => 'VARIANT-OWN-COVER', 'name' => 'Variant With Cover', 'stock' => 2, 'brand' => 'Brand V', 'price' => 19.99, 'seoPath' => 'product/variant-own-cover', 'image' => 'https://assets.example.com/variant-cover.jpg'],
+                ['number' => 'PARENT-OWN-COVER', 'name' => 'Parent With Cover', 'stock' => 0, 'brand' => 'Brand V', 'price' => 19.99, 'seoPath' => 'product/parent-own-cover', 'image' => 'https://assets.example.com/parent-cover.jpg'],
+                ['Name' => 'Variant With Cover', 'Price' => 19.99, 'Stock' => 2, 'Brand' => 'Brand V', 'GroupCode' => 'PARENT-OWN-COVER', 'Url' => 'product/variant-own-cover', 'Image' => 'https://assets.example.com/variant-cover.jpg'],
+                true,
+            ],
+
+            'variant without cover does not inherit parent cover' => [
+                ['number' => 'VARIANT-NO-COVER', 'name' => 'Variant No Cover', 'stock' => 6, 'brand' => 'Brand W', 'price' => 12.50, 'seoPath' => 'product/variant-no-cover'],
+                ['number' => 'PARENT-HAS-COVER', 'name' => 'Parent Has Cover', 'stock' => 0, 'brand' => 'Brand W', 'price' => 12.50, 'seoPath' => 'product/parent-has-cover', 'image' => 'https://assets.example.com/parent-only-cover.jpg'],
+                ['Name' => 'Variant No Cover', 'Price' => 12.50, 'Stock' => 6, 'Brand' => 'Brand W', 'GroupCode' => 'PARENT-HAS-COVER', 'Url' => 'product/variant-no-cover', 'Image' => ''],
                 true,
             ],
 

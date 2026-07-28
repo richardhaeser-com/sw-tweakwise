@@ -260,6 +260,53 @@ class BackendApiTest extends TestCase
         $this->assertEquals('https://example.com/original.jpg', $this->getPostedData($history)['Image']);
     }
 
+    /**
+     * When a product has multiple media items, the image must come from the
+     * designated cover — not from the first media item in the collection.
+     * A shop can have many product images but only one is set as the cover.
+     */
+    public function testImageUsesCoverEvenWhenNotFirstMediaItem(): void
+    {
+        $history = [];
+
+        // First media item — NOT the cover
+        $firstMedia = new MediaEntity();
+        $firstMedia->setId(Uuid::randomHex());
+        $firstMedia->setUrl('https://example.com/first-image.jpg');
+        $firstMedia->setThumbnails(new MediaThumbnailCollection());
+        $firstProductMedia = new ProductMediaEntity();
+        $firstProductMedia->setId(Uuid::randomHex());
+        $firstProductMedia->setMedia($firstMedia);
+        $firstProductMedia->setPosition(1);
+
+        // Second media item — this IS the cover
+        $coverThumbnail = new MediaThumbnailEntity();
+        $coverThumbnail->setId(Uuid::randomHex());
+        $coverThumbnail->setWidth(600);
+        $coverThumbnail->setUrl('https://example.com/cover-thumb.jpg');
+
+        $coverMedia = new MediaEntity();
+        $coverMedia->setId(Uuid::randomHex());
+        $coverMedia->setUrl('https://example.com/cover-original.jpg');
+        $coverMedia->setThumbnails(new MediaThumbnailCollection([$coverThumbnail]));
+        $coverProductMedia = new ProductMediaEntity();
+        $coverProductMedia->setId(Uuid::randomHex());
+        $coverProductMedia->setMedia($coverMedia);
+        $coverProductMedia->setPosition(2);
+
+        $product = $this->createBaseProduct();
+        $product->setCover($coverProductMedia);
+
+        $this->createApi($this->createCapturingClient($history))
+            ->syncProductData($product, $this->createFrontend(), null, []);
+
+        $this->assertSame(
+            'https://example.com/cover-thumb.jpg',
+            $this->getPostedData($history)['Image'],
+            'Image must be the cover thumbnail, not the first media item in the collection.'
+        );
+    }
+
     public function testGroupCodeUsesParentProductNumber(): void
     {
         $history = [];
