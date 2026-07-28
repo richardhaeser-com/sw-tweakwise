@@ -43,9 +43,13 @@ class FeedLoadTest extends TestCase
 
         $this->assertNotNull($taxId, 'A tax record must exist in the test database.');
 
+        $seedStart = microtime(true);
         $this->seedProducts($taxId);
+        $seedSeconds = microtime(true) - $seedStart;
 
-        $xml = $this->generateFeed();
+        $feedStart = microtime(true);
+        $xml       = $this->generateFeed();
+        $feedSeconds = microtime(true) - $feedStart;
 
         $items = $xml->xpath('//item');
         $this->assertCount(
@@ -53,6 +57,32 @@ class FeedLoadTest extends TestCase
             $items,
             sprintf('Feed must contain all %d products.', self::PRODUCT_COUNT)
         );
+
+        $this->writeSummary($seedSeconds, $feedSeconds, count($items));
+    }
+
+    private function writeSummary(float $seedSeconds, float $feedSeconds, int $itemCount): void
+    {
+        $summaryFile = $_SERVER['GITHUB_STEP_SUMMARY'] ?? null;
+        if ($summaryFile === null) {
+            return;
+        }
+
+        $throughput = $feedSeconds > 0 ? round($itemCount / $feedSeconds) : 'n/a';
+
+        $summary = implode("\n", [
+            '## Feed load test results',
+            '',
+            '| Metric | Value |',
+            '|--------|-------|',
+            sprintf('| Products seeded    | %s |', number_format($itemCount)),
+            sprintf('| Seed time          | %.2f s |', $seedSeconds),
+            sprintf('| Feed generate time | %.2f s |', $feedSeconds),
+            sprintf('| Throughput         | %s products/s |', number_format((int) $throughput)),
+            '',
+        ]);
+
+        file_put_contents($summaryFile, $summary, FILE_APPEND);
     }
 
     private function seedProducts(string $taxId): void
