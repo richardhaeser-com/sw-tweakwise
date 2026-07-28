@@ -110,6 +110,8 @@ jobs:
           path: custom/plugins/RhaeTweakwise
 
       - name: Install Shopware 6 Tweakwise module
+        env:
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
         run: |
           composer config repositories.tweakwise.shopware6 "path" "custom/plugins/RhaeTweakwise"
           composer config allow-plugins.php-http/discovery false
