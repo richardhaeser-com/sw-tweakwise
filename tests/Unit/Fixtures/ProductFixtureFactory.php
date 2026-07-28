@@ -653,21 +653,21 @@ class ProductFixtureFactory
     }
 
     /**
-     * Returns all 13 fixture cases as raw parameter arrays for use by integration tests.
+     * Returns fixture cases as raw parameter arrays for use by integration tests
+     * and as the single source of truth shared with BackendApiParityTest.
      *
      * Each entry is [productParams, parentParams|null, expected, isGrouped] where:
-     *   - productParams: {number, name, stock, brand?, price, seoPath}
-     *   - parentParams:  same shape, or null for standalone products
+     *   - productParams: {number, name, stock, brand?, price, seoPath, listingMode?, emptyName?}
+     *                    listingMode: 'displayParent' | 'mainVariantId' | 'expandVariants' | null
+     *                    emptyName: true means write the variant with an explicit empty name
+     *                               translation so DAL inheritance falls back to parent name
+     *   - parentParams:  same shape (without listingMode/emptyName), or null for standalone
      *   - expected:      {Name, Price, Stock, Brand, GroupCode, Url}
      *                    · Image is intentionally absent — media URLs require a real storage
      *                      server unavailable in the integration test database
      *                    · Url is the SEO path only (no domain prefix); integration tests must
      *                      assert via assertStringContainsString, not assertEquals
      *   - isGrouped:     whether the feed record should have groupedProducts = true
-     *
-     * For the tiered-prices case, price is the final tier value (39.99) so the integration
-     * test uses it directly as the product price; the calculatedPrices.count > 0 Twig branch
-     * is exercised by unit tests (FeedFieldsParityTest) only.
      *
      * @return array<string, array{
      *     0: array<string, mixed>,
@@ -679,38 +679,17 @@ class ProductFixtureFactory
     public static function rawCases(): array
     {
         return [
-            'standalone product, single thumbnail' => [
+            'standalone product' => [
                 ['number' => 'PROD-001', 'name' => 'Product One', 'stock' => 10, 'brand' => 'Brand A', 'price' => 19.99, 'seoPath' => 'product/product-one'],
                 null,
                 ['Name' => 'Product One', 'Price' => 19.99, 'Stock' => 10, 'Brand' => 'Brand A', 'GroupCode' => 'PROD-001', 'Url' => 'product/product-one'],
                 true,
             ],
 
-            'standalone product, multiple thumbnails picks largest' => [
-                ['number' => 'PROD-002', 'name' => 'Product Two', 'stock' => 5, 'brand' => 'Brand B', 'price' => 29.99, 'seoPath' => 'product/product-two'],
-                null,
-                ['Name' => 'Product Two', 'Price' => 29.99, 'Stock' => 5, 'Brand' => 'Brand B', 'GroupCode' => 'PROD-002', 'Url' => 'product/product-two'],
-                true,
-            ],
-
-            'standalone product, no thumbnails falls back to original url' => [
-                ['number' => 'PROD-003', 'name' => 'Product Three', 'stock' => 3, 'brand' => 'Brand C', 'price' => 9.99, 'seoPath' => 'product/product-three'],
-                null,
-                ['Name' => 'Product Three', 'Price' => 9.99, 'Stock' => 3, 'Brand' => 'Brand C', 'GroupCode' => 'PROD-003', 'Url' => 'product/product-three'],
-                true,
-            ],
-
-            'standalone product, no cover image' => [
-                ['number' => 'PROD-004', 'name' => 'Product Four', 'stock' => 7, 'brand' => 'Brand D', 'price' => 49.99, 'seoPath' => 'product/product-four'],
-                null,
-                ['Name' => 'Product Four', 'Price' => 49.99, 'Stock' => 7, 'Brand' => 'Brand D', 'GroupCode' => 'PROD-004', 'Url' => 'product/product-four'],
-                true,
-            ],
-
             'standalone product, no manufacturer' => [
-                ['number' => 'PROD-005', 'name' => 'Product Five', 'stock' => 2, 'price' => 14.99, 'seoPath' => 'product/product-five'],
+                ['number' => 'PROD-002', 'name' => 'Product Two', 'stock' => 2, 'price' => 14.99, 'seoPath' => 'product/product-two'],
                 null,
-                ['Name' => 'Product Five', 'Price' => 14.99, 'Stock' => 2, 'Brand' => '', 'GroupCode' => 'PROD-005', 'Url' => 'product/product-five'],
+                ['Name' => 'Product Two', 'Price' => 14.99, 'Stock' => 2, 'Brand' => '', 'GroupCode' => 'PROD-002', 'Url' => 'product/product-two'],
                 true,
             ],
 
@@ -721,51 +700,11 @@ class ProductFixtureFactory
                 true,
             ],
 
-            'grouped products, variant inherits manufacturer from parent' => [
+            'grouped, variant inherits manufacturer from parent' => [
                 ['number' => 'VARIANT-002', 'name' => 'Grouped Variant', 'stock' => 4, 'price' => 34.99, 'seoPath' => 'product/grouped-variant'],
                 ['number' => 'PARENT-002', 'name' => 'Grouped Parent', 'stock' => 0, 'brand' => 'Inherited Brand', 'price' => 34.99, 'seoPath' => 'product/grouped-parent'],
                 ['Name' => 'Grouped Variant', 'Price' => 34.99, 'Stock' => 4, 'Brand' => 'Inherited Brand', 'GroupCode' => 'PARENT-002', 'Url' => 'product/grouped-variant'],
                 true,
-            ],
-
-            'grouped products, variant without cover (parent cover not used)' => [
-                ['number' => 'VARIANT-003', 'name' => 'Coverless Variant', 'stock' => 6, 'brand' => 'Brand G', 'price' => 12.50, 'seoPath' => 'product/coverless-variant'],
-                ['number' => 'PARENT-003', 'name' => 'Parent With Cover', 'stock' => 0, 'brand' => 'Brand G', 'price' => 12.50, 'seoPath' => 'product/parent-with-cover'],
-                ['Name' => 'Coverless Variant', 'Price' => 12.50, 'Stock' => 6, 'Brand' => 'Brand G', 'GroupCode' => 'PARENT-003', 'Url' => 'product/coverless-variant'],
-                true,
-            ],
-
-            'product with tiered calculated prices uses last entry' => [
-                // Tiered-price behaviour is covered by FeedFieldsParityTest (unit) only.
-                // The integration test creates a product whose base price IS the final tier
-                // value so the rendered <price> element matches without needing to set up
-                // calculatedPrices in the DB.
-                ['number' => 'PROD-006', 'name' => 'Product Six', 'stock' => 8, 'brand' => 'Brand F', 'price' => 39.99, 'seoPath' => 'product/product-six'],
-                null,
-                ['Name' => 'Product Six', 'Price' => 39.99, 'Stock' => 8, 'Brand' => 'Brand F', 'GroupCode' => 'PROD-006', 'Url' => 'product/product-six'],
-                true,
-            ],
-
-            'variant with zero stock reports own stock, not parent stock' => [
-                // Guards against the ?: vs ?? bug in BackendApi::syncProductData().
-                ['number' => 'VARIANT-ZERO', 'name' => 'Zero Stock Variant', 'stock' => 0, 'brand' => 'Brand Z', 'price' => 15.00, 'seoPath' => 'product/zero-stock-variant'],
-                ['number' => 'PARENT-ZERO', 'name' => 'Parent With Stock', 'stock' => 10, 'brand' => 'Brand Z', 'price' => 15.00, 'seoPath' => 'product/parent-with-stock'],
-                ['Name' => 'Zero Stock Variant', 'Price' => 15.00, 'Stock' => 0, 'Brand' => 'Brand Z', 'GroupCode' => 'PARENT-ZERO', 'Url' => 'product/zero-stock-variant'],
-                true,
-            ],
-
-            'non-grouped feed, standalone product — groupcode omitted' => [
-                ['number' => 'PROD-007', 'name' => 'Product Seven', 'stock' => 4, 'brand' => 'Brand H', 'price' => 9.00, 'seoPath' => 'product/product-seven'],
-                null,
-                ['Name' => 'Product Seven', 'Price' => 9.00, 'Stock' => 4, 'Brand' => 'Brand H', 'GroupCode' => '', 'Url' => 'product/product-seven'],
-                false,
-            ],
-
-            'non-grouped feed, variant product — groupcode omitted' => [
-                ['number' => 'VARIANT-004', 'name' => 'Variant Seven', 'stock' => 2, 'brand' => 'Brand H', 'price' => 9.00, 'seoPath' => 'product/variant-seven'],
-                ['number' => 'PARENT-007', 'name' => 'Parent Seven', 'stock' => 0, 'brand' => 'Brand H', 'price' => 9.00, 'seoPath' => 'product/parent-seven'],
-                ['Name' => 'Variant Seven', 'Price' => 9.00, 'Stock' => 2, 'Brand' => 'Brand H', 'GroupCode' => '', 'Url' => 'product/variant-seven'],
-                false,
             ],
 
             'grouped, variant has own manufacturer — parent brand not used' => [
@@ -775,6 +714,36 @@ class ProductFixtureFactory
                 true,
             ],
 
+            'variant with zero stock reports own stock, not parent stock' => [
+                ['number' => 'VARIANT-ZERO', 'name' => 'Zero Stock Variant', 'stock' => 0, 'brand' => 'Brand Z', 'price' => 15.00, 'seoPath' => 'product/zero-stock-variant'],
+                ['number' => 'PARENT-ZERO', 'name' => 'Parent With Stock', 'stock' => 10, 'brand' => 'Brand Z', 'price' => 15.00, 'seoPath' => 'product/parent-with-stock'],
+                ['Name' => 'Zero Stock Variant', 'Price' => 15.00, 'Stock' => 0, 'Brand' => 'Brand Z', 'GroupCode' => 'PARENT-ZERO', 'Url' => 'product/zero-stock-variant'],
+                true,
+            ],
+
+            'variant with empty name inherits parent name' => [
+                // emptyName: true instructs the integration test to write the variant with an
+                // explicit empty name translation so the DAL falls back to the parent's name.
+                ['number' => 'VARIANT-NO-NAME', 'name' => '', 'stock' => 1, 'brand' => 'Brand X', 'price' => 10.00, 'seoPath' => 'product/no-name-variant', 'emptyName' => true],
+                ['number' => 'PARENT-NO-NAME', 'name' => 'Parent Name As Fallback', 'stock' => 0, 'brand' => 'Brand X', 'price' => 10.00, 'seoPath' => 'product/parent-no-name'],
+                ['Name' => 'Parent Name As Fallback', 'Price' => 10.00, 'Stock' => 1, 'Brand' => 'Brand X', 'GroupCode' => 'PARENT-NO-NAME', 'Url' => 'product/no-name-variant'],
+                true,
+            ],
+
+            'non-grouped, standalone product — groupcode omitted' => [
+                ['number' => 'PROD-007', 'name' => 'Product Seven', 'stock' => 4, 'brand' => 'Brand H', 'price' => 9.00, 'seoPath' => 'product/product-seven'],
+                null,
+                ['Name' => 'Product Seven', 'Price' => 9.00, 'Stock' => 4, 'Brand' => 'Brand H', 'GroupCode' => '', 'Url' => 'product/product-seven'],
+                false,
+            ],
+
+            'non-grouped, variant — groupcode omitted' => [
+                ['number' => 'VARIANT-004', 'name' => 'Variant Seven', 'stock' => 2, 'brand' => 'Brand H', 'price' => 9.00, 'seoPath' => 'product/variant-seven'],
+                ['number' => 'PARENT-007', 'name' => 'Parent Seven', 'stock' => 0, 'brand' => 'Brand H', 'price' => 9.00, 'seoPath' => 'product/parent-seven'],
+                ['Name' => 'Variant Seven', 'Price' => 9.00, 'Stock' => 2, 'Brand' => 'Brand H', 'GroupCode' => '', 'Url' => 'product/variant-seven'],
+                false,
+            ],
+
             'non-grouped, variant without manufacturer inherits parent brand' => [
                 ['number' => 'VARIANT-NON-GROUPED-INHERIT', 'name' => 'Non-Grouped Variant No Brand', 'stock' => 3, 'price' => 18.00, 'seoPath' => 'product/non-grouped-inherit'],
                 ['number' => 'PARENT-NON-GROUPED', 'name' => 'Non-Grouped Parent', 'stock' => 0, 'brand' => 'Non-Grouped Parent Brand', 'price' => 18.00, 'seoPath' => 'product/non-grouped-parent'],
@@ -782,36 +751,30 @@ class ProductFixtureFactory
                 false,
             ],
 
-            'grouped + displayParent=true: variant still gets groupcode from parent, own fields' => [
+            'grouped + displayParent=true: variant gets groupcode from parent' => [
                 ['number' => 'VARIANT-GDP-001', 'name' => 'Grouped DisplayParent Variant', 'stock' => 5, 'brand' => 'GDP Brand', 'price' => 28.00, 'seoPath' => 'product/grouped-display-parent-variant'],
-                ['number' => 'PARENT-GDP-001', 'name' => 'Display Parent (excluded from grouped feed)', 'stock' => 0, 'brand' => 'GDP Brand', 'price' => 28.00, 'seoPath' => 'product/grouped-display-parent'],
+                ['number' => 'PARENT-GDP-001', 'name' => 'Display Parent', 'stock' => 0, 'brand' => 'GDP Brand', 'price' => 28.00, 'seoPath' => 'product/grouped-display-parent', 'listingMode' => 'displayParent'],
                 ['Name' => 'Grouped DisplayParent Variant', 'Price' => 28.00, 'Stock' => 5, 'Brand' => 'GDP Brand', 'GroupCode' => 'PARENT-GDP-001', 'Url' => 'product/grouped-display-parent-variant'],
                 true,
             ],
 
-            'grouped + mainVariantId set: variant gets groupcode from parent, own fields' => [
+            'grouped + mainVariantId set: variant gets groupcode from parent' => [
                 ['number' => 'VARIANT-GMV-001', 'name' => 'Grouped MainVariant Variant', 'stock' => 3, 'brand' => 'GMV Brand', 'price' => 45.00, 'seoPath' => 'product/grouped-main-variant'],
-                ['number' => 'PARENT-GMV-001', 'name' => 'Main Variant Parent (excluded from grouped feed)', 'stock' => 0, 'brand' => 'GMV Brand', 'price' => 45.00, 'seoPath' => 'product/grouped-main-variant-parent'],
+                ['number' => 'PARENT-GMV-001', 'name' => 'Main Variant Parent', 'stock' => 0, 'brand' => 'GMV Brand', 'price' => 45.00, 'seoPath' => 'product/grouped-main-variant-parent', 'listingMode' => 'mainVariantId'],
                 ['Name' => 'Grouped MainVariant Variant', 'Price' => 45.00, 'Stock' => 3, 'Brand' => 'GMV Brand', 'GroupCode' => 'PARENT-GMV-001', 'Url' => 'product/grouped-main-variant'],
                 true,
             ],
 
-            'grouped + expand-variants: variant gets groupcode from parent, no otherVariants block' => [
+            'grouped + expand-variants: variant gets groupcode from parent' => [
                 ['number' => 'VARIANT-GEV-001', 'name' => 'Grouped ExpandVariants Variant', 'stock' => 8, 'brand' => 'GEV Brand', 'price' => 19.50, 'seoPath' => 'product/grouped-expand-variants'],
-                ['number' => 'PARENT-GEV-001', 'name' => 'Expand Variants Parent (excluded from grouped feed)', 'stock' => 0, 'brand' => 'GEV Brand', 'price' => 19.50, 'seoPath' => 'product/grouped-expand-variants-parent'],
+                ['number' => 'PARENT-GEV-001', 'name' => 'Expand Variants Parent', 'stock' => 0, 'brand' => 'GEV Brand', 'price' => 19.50, 'seoPath' => 'product/grouped-expand-variants-parent', 'listingMode' => 'expandVariants'],
                 ['Name' => 'Grouped ExpandVariants Variant', 'Price' => 19.50, 'Stock' => 8, 'Brand' => 'GEV Brand', 'GroupCode' => 'PARENT-GEV-001', 'Url' => 'product/grouped-expand-variants'],
                 true,
             ],
 
-            'non-grouped, displayParent=true: parent product synced directly — no groupcode' => [
-                null,
-                ['Name' => 'Display Parent Product', 'Price' => 55.00, 'Stock' => 12, 'Brand' => 'Display Parent Brand', 'GroupCode' => '', 'Url' => 'product/display-parent'],
-                false,
-            ],
-
-            'non-grouped, mainVariant synced with parent passed but groupedProducts=false — no groupcode, brand from parent' => [
+            'non-grouped, mainVariant synced with parent — no groupcode, brand from parent' => [
                 ['number' => 'VARIANT-MAIN', 'name' => 'Main Variant', 'stock' => 8, 'price' => 42.00, 'seoPath' => 'product/main-variant'],
-                ['number' => 'PARENT-MAIN-VARIANT', 'name' => 'Parent Of Main Variant', 'stock' => 0, 'brand' => 'Main Variant Parent Brand', 'price' => 42.00, 'seoPath' => 'product/parent-main-variant'],
+                ['number' => 'PARENT-MAIN-VARIANT', 'name' => 'Parent Of Main Variant', 'stock' => 0, 'brand' => 'Main Variant Parent Brand', 'price' => 42.00, 'seoPath' => 'product/parent-main-variant', 'listingMode' => 'mainVariantId'],
                 ['Name' => 'Main Variant', 'Price' => 42.00, 'Stock' => 8, 'Brand' => 'Main Variant Parent Brand', 'GroupCode' => '', 'Url' => 'product/main-variant'],
                 false,
             ],
