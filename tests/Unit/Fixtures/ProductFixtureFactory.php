@@ -42,7 +42,7 @@ class ProductFixtureFactory
     {
         return [
             'standalone product, single thumbnail' => [
-                self::create([
+                self::createProduct([
                     'number'      => 'PROD-001',
                     'name'        => 'Product One',
                     'stock'       => 10,
@@ -66,7 +66,7 @@ class ProductFixtureFactory
             ],
 
             'standalone product, multiple thumbnails picks largest' => [
-                self::create([
+                self::createProduct([
                     'number'      => 'PROD-002',
                     'name'        => 'Product Two',
                     'stock'       => 5,
@@ -94,7 +94,7 @@ class ProductFixtureFactory
             ],
 
             'standalone product, no thumbnails falls back to original url' => [
-                self::create([
+                self::createProduct([
                     'number'      => 'PROD-003',
                     'name'        => 'Product Three',
                     'stock'       => 3,
@@ -118,7 +118,7 @@ class ProductFixtureFactory
             ],
 
             'standalone product, no cover image' => [
-                self::create([
+                self::createProduct([
                     'number'  => 'PROD-004',
                     'name'    => 'Product Four',
                     'stock'   => 7,
@@ -140,7 +140,7 @@ class ProductFixtureFactory
             ],
 
             'standalone product, no manufacturer' => [
-                self::create([
+                self::createProduct([
                     'number'      => 'PROD-005',
                     'name'        => 'Product Five',
                     'stock'       => 2,
@@ -163,7 +163,7 @@ class ProductFixtureFactory
             ],
 
             'variant product, groupcode uses parent product number' => [
-                self::create([
+                self::createProduct([
                     'number'      => 'VARIANT-001',
                     'name'        => 'Variant Name',
                     'stock'       => 3,
@@ -173,7 +173,7 @@ class ProductFixtureFactory
                     'thumbnails'  => ['https://cdn.example.com/vthumb.jpg' => 600],
                     'seoPath'     => 'product/variant-one',
                 ]),
-                self::create([
+                self::createProduct([
                     'number'  => 'PARENT-001',
                     'name'    => 'Parent Name',
                     'stock'   => 0,
@@ -194,7 +194,7 @@ class ProductFixtureFactory
             ],
 
             'grouped products, variant inherits manufacturer from parent' => [
-                self::create([
+                self::createProduct([
                     'number'      => 'VARIANT-002',
                     'name'        => 'Grouped Variant',
                     'stock'       => 4,
@@ -203,7 +203,7 @@ class ProductFixtureFactory
                     'thumbnails'  => ['https://cdn.example.com/gv-thumb.jpg' => 500],
                     'seoPath'     => 'product/grouped-variant',
                 ]),
-                self::create([
+                self::createProduct([
                     'number'  => 'PARENT-002',
                     'name'    => 'Grouped Parent',
                     'stock'   => 0,
@@ -224,7 +224,7 @@ class ProductFixtureFactory
             ],
 
             'grouped products, variant without cover (parent cover not used)' => [
-                self::create([
+                self::createProduct([
                     'number'  => 'VARIANT-003',
                     'name'    => 'Coverless Variant',
                     'stock'   => 6,
@@ -232,7 +232,7 @@ class ProductFixtureFactory
                     'price'   => 12.50,
                     'seoPath' => 'product/coverless-variant',
                 ]),
-                self::create([
+                self::createProduct([
                     'number'      => 'PARENT-003',
                     'name'        => 'Parent With Cover',
                     'stock'       => 0,
@@ -255,7 +255,7 @@ class ProductFixtureFactory
             ],
 
             'product with tiered calculated prices uses last entry' => [
-                self::create([
+                self::createProduct([
                     'number'        => 'PROD-006',
                     'name'          => 'Product Six',
                     'stock'         => 8,
@@ -283,7 +283,7 @@ class ProductFixtureFactory
                 // This case guards against the ?: vs ?? bug in BackendApi::syncProductData().
                 // A variant that is out of stock (availableStock = 0) must report 0, NOT the
                 // parent's stock. Using ?: would treat 0 as falsy and fall back to the parent.
-                self::create([
+                self::createProduct([
                     'number'      => 'VARIANT-ZERO',
                     'name'        => 'Zero Stock Variant',
                     'stock'       => 0,
@@ -293,7 +293,7 @@ class ProductFixtureFactory
                     'thumbnails'  => [],
                     'seoPath'     => 'product/zero-stock-variant',
                 ]),
-                self::create([
+                self::createProduct([
                     'number'  => 'PARENT-ZERO',
                     'name'    => 'Parent With Stock',
                     'stock'   => 10,
@@ -314,7 +314,7 @@ class ProductFixtureFactory
             ],
 
             'non-grouped feed, standalone product — groupcode omitted' => [
-                self::create([
+                self::createProduct([
                     'number'      => 'PROD-007',
                     'name'        => 'Product Seven',
                     'stock'       => 4,
@@ -338,7 +338,7 @@ class ProductFixtureFactory
             ],
 
             'non-grouped feed, variant product — groupcode omitted' => [
-                self::create([
+                self::createProduct([
                     'number'      => 'VARIANT-004',
                     'name'        => 'Variant Seven',
                     'stock'       => 2,
@@ -348,7 +348,7 @@ class ProductFixtureFactory
                     'thumbnails'  => [],
                     'seoPath'     => 'product/variant-seven',
                 ]),
-                self::create([
+                self::createProduct([
                     'number'  => 'PARENT-007',
                     'name'    => 'Parent Seven',
                     'stock'   => 0,
@@ -366,41 +366,6 @@ class ProductFixtureFactory
                     'Url'       => self::DOMAIN_URL . '/product/variant-seven',
                 ],
                 false,
-            ],
-
-            'variant with empty name — parent name is NOT used (feed parity)' => [
-                // Guards against re-introducing the parent-name fallback in BackendApi.
-                // The XML feed template uses {{ product.translated.name }} with no parent
-                // fallback. If BackendApi were to fall back to the parent name, the sync
-                // would diverge from the feed. Both must emit an empty Name here.
-                // In production this case is unreachable because Shopware's DAL always
-                // populates translated.name through its translation inheritance mechanism.
-                self::create([
-                    'number'  => 'VARIANT-NO-NAME',
-                    'name'    => '',
-                    'stock'   => 1,
-                    'brand'   => 'Brand X',
-                    'price'   => 10.00,
-                    'seoPath' => 'product/no-name-variant',
-                ]),
-                self::create([
-                    'number'  => 'PARENT-NO-NAME',
-                    'name'    => 'Parent Name Must Not Appear',
-                    'stock'   => 0,
-                    'brand'   => 'Brand X',
-                    'price'   => 10.00,
-                    'seoPath' => 'product/parent-no-name',
-                ]),
-                [
-                    'Name'      => '',
-                    'Price'     => 10.00,
-                    'Stock'     => 1,
-                    'Brand'     => 'Brand X',
-                    'Image'     => '',
-                    'GroupCode' => 'PARENT-NO-NAME',
-                    'Url'       => self::DOMAIN_URL . '/product/no-name-variant',
-                ],
-                true,
             ],
 
             // -----------------------------------------------------------------------
@@ -425,7 +390,7 @@ class ProductFixtureFactory
                 //   $product->getManufacturer()?->getTranslation('name')
                 //   ?: $parent?->getManufacturer()?->getTranslation('name') ?: ''
                 // which also only falls back when the variant's own value is falsy.
-                self::create([
+                self::createProduct([
                     'number'      => 'VARIANT-OWN-BRAND',
                     'name'        => 'Variant With Own Brand',
                     'stock'       => 5,
@@ -435,7 +400,7 @@ class ProductFixtureFactory
                     'thumbnails'  => ['https://cdn.example.com/vob-thumb.jpg' => 450],
                     'seoPath'     => 'product/variant-own-brand',
                 ]),
-                self::create([
+                self::createProduct([
                     'number'  => 'PARENT-OWN-BRAND',
                     'name'    => 'Parent With Different Brand',
                     'stock'   => 0,
@@ -465,7 +430,7 @@ class ProductFixtureFactory
                 // the variant entity before rendering, so the template always has a value.
                 // Sync: BackendApi applies the ?: fallback to the parent manufacturer.
                 // Both mechanisms must produce the same Brand value.
-                self::create([
+                self::createProduct([
                     'number'      => 'VARIANT-NON-GROUPED-INHERIT',
                     'name'        => 'Non-Grouped Variant No Brand',
                     'stock'       => 3,
@@ -474,7 +439,7 @@ class ProductFixtureFactory
                     'thumbnails'  => ['https://cdn.example.com/ngi-thumb.jpg' => 300],
                     'seoPath'     => 'product/non-grouped-inherit',
                 ]),
-                self::create([
+                self::createProduct([
                     'number'  => 'PARENT-NON-GROUPED',
                     'name'    => 'Non-Grouped Parent',
                     'stock'   => 0,
@@ -510,7 +475,7 @@ class ProductFixtureFactory
                 // In grouped mode the parent is excluded by the filter; variants appear
                 // individually. renderProducts() receives the variant with isGroupedProducts()=true.
                 // Expected: GroupCode = parent number, all other fields from the variant.
-                self::create([
+                self::createProduct([
                     'number'      => 'VARIANT-GDP-001',
                     'name'        => 'Grouped DisplayParent Variant',
                     'stock'       => 5,
@@ -520,7 +485,7 @@ class ProductFixtureFactory
                     'thumbnails'  => ['https://cdn.example.com/gdp-thumb.jpg' => 500],
                     'seoPath'     => 'product/grouped-display-parent-variant',
                 ]),
-                self::create([
+                self::createProduct([
                     'number'  => 'PARENT-GDP-001',
                     'name'    => 'Display Parent (excluded from grouped feed)',
                     'stock'   => 0,
@@ -546,7 +511,7 @@ class ProductFixtureFactory
                 // In grouped mode all variants appear individually (the parent is excluded).
                 // renderProducts() receives each variant with isGroupedProducts()=true.
                 // Expected: GroupCode = parent number, all other fields from the variant.
-                self::create([
+                self::createProduct([
                     'number'      => 'VARIANT-GMV-001',
                     'name'        => 'Grouped MainVariant Variant',
                     'stock'       => 3,
@@ -556,7 +521,7 @@ class ProductFixtureFactory
                     'thumbnails'  => ['https://cdn.example.com/gmv-thumb.jpg' => 600],
                     'seoPath'     => 'product/grouped-main-variant',
                 ]),
-                self::create([
+                self::createProduct([
                     'number'  => 'PARENT-GMV-001',
                     'name'    => 'Main Variant Parent (excluded from grouped feed)',
                     'stock'   => 0,
@@ -586,7 +551,7 @@ class ProductFixtureFactory
                 //
                 // Parity assertion: the feed must produce GroupCode=parent and no otherVariants
                 // XML; the sync must produce the same payload as any other grouped variant.
-                self::create([
+                self::createProduct([
                     'number'      => 'VARIANT-GEV-001',
                     'name'        => 'Grouped ExpandVariants Variant',
                     'stock'       => 8,
@@ -596,7 +561,7 @@ class ProductFixtureFactory
                     'thumbnails'  => ['https://cdn.example.com/gev-thumb.jpg' => 400],
                     'seoPath'     => 'product/grouped-expand-variants',
                 ]),
-                self::create([
+                self::createProduct([
                     'number'  => 'PARENT-GEV-001',
                     'name'    => 'Expand Variants Parent (excluded from grouped feed)',
                     'stock'   => 0,
@@ -624,7 +589,7 @@ class ProductFixtureFactory
                 //
                 // Expected result: no GroupCode in payload (non-grouped), all fields from
                 // the parent entity itself (name, price, stock, brand, image, url).
-                self::create([
+                self::createProduct([
                     'number'      => 'PARENT-DISPLAY',
                     'name'        => 'Display Parent Product',
                     'stock'       => 12,
@@ -656,7 +621,7 @@ class ProductFixtureFactory
                 //
                 // This verifies the exact parameter combination the controller uses for
                 // the mainVariant sync path (AdminController line 318).
-                self::create([
+                self::createProduct([
                     'number'      => 'VARIANT-MAIN',
                     'name'        => 'Main Variant',
                     'stock'       => 8,
@@ -665,7 +630,7 @@ class ProductFixtureFactory
                     'thumbnails'  => ['https://cdn.example.com/mv-thumb.jpg' => 600],
                     'seoPath'     => 'product/main-variant',
                 ]),
-                self::create([
+                self::createProduct([
                     'number'  => 'PARENT-MAIN-VARIANT',
                     'name'    => 'Parent Of Main Variant',
                     'stock'   => 0,
@@ -803,15 +768,6 @@ class ProductFixtureFactory
                 false,
             ],
 
-            'variant with empty name — parent name is NOT used (feed parity)' => [
-                // Guards against re-introducing the parent-name fallback.
-                // Both feed and sync must emit an empty Name here; see BackendApiTest.
-                ['number' => 'VARIANT-NO-NAME', 'name' => '', 'stock' => 1, 'brand' => 'Brand X', 'price' => 10.00, 'seoPath' => 'product/no-name-variant'],
-                ['number' => 'PARENT-NO-NAME', 'name' => 'Parent Name Must Not Appear', 'stock' => 0, 'brand' => 'Brand X', 'price' => 10.00, 'seoPath' => 'product/parent-no-name'],
-                ['Name' => '', 'Price' => 10.00, 'Stock' => 1, 'Brand' => 'Brand X', 'GroupCode' => 'PARENT-NO-NAME', 'Url' => 'product/no-name-variant'],
-                true,
-            ],
-
             'grouped, variant has own manufacturer — parent brand not used' => [
                 ['number' => 'VARIANT-OWN-BRAND', 'name' => 'Variant With Own Brand', 'stock' => 5, 'brand' => 'Variant Brand', 'price' => 22.00, 'seoPath' => 'product/variant-own-brand'],
                 ['number' => 'PARENT-OWN-BRAND', 'name' => 'Parent With Different Brand', 'stock' => 0, 'brand' => 'Parent Brand', 'price' => 22.00, 'seoPath' => 'product/parent-own-brand'],
@@ -888,7 +844,7 @@ class ProductFixtureFactory
         return $frontend;
     }
 
-    private static function create(array $opts): SalesChannelProductEntity
+    public static function createProduct(array $opts): SalesChannelProductEntity
     {
         $product = new SalesChannelProductEntity();
         $product->setId(Uuid::randomHex());

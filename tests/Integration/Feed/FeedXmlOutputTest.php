@@ -607,6 +607,51 @@ class FeedXmlOutputTest extends TestCase
     }
 
     // =========================================================================
+    // Name inheritance: variant without own translation uses parent name
+    // =========================================================================
+
+    /**
+     * A variant with no own name translation must render the parent's name in
+     * the feed XML. Shopware's DAL resolves translation inheritance when loading
+     * products, so product.translated.name on the variant entity will contain the
+     * parent's name when the variant has no own translation record.
+     *
+     * This is the "truth" test for name inheritance: it generates real XML via
+     * FeedService::generateFeed() and asserts the rendered <name> element.
+     */
+    public function testGroupedVariantWithoutOwnNameUsesParentNameInXml(): void
+    {
+        $variantId = $this->ids->create('variant-no-name');
+
+        (new ProductBuilder($this->ids, 'parent-no-name'))
+            ->name('Parent Name As Fallback')
+            ->price(10.00)
+            ->stock(0)
+            ->manufacturer('Brand X')
+            ->write($this->getContainer());
+
+        // No ->name() call: the variant has no own name translation.
+        // Shopware's DAL will resolve translated.name to the parent's value.
+        (new ProductBuilder($this->ids, 'variant-no-name'))
+            ->price(10.00)
+            ->stock(1)
+            ->parent('parent-no-name')
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
+            ->write($this->getContainer());
+
+        $this->createSeoUrl($variantId, 'product/variant-no-name');
+
+        $xml = $this->generateFeed(grouped: true);
+        $item = $this->findItem($xml, 'variant-no-name');
+
+        $this->assertSame(
+            'Parent Name As Fallback',
+            (string) $item->name,
+            '<name> must be inherited from parent when variant has no own name translation.'
+        );
+    }
+
+    // =========================================================================
     // GroupCode parity: grouped mode always uses parent number
     // =========================================================================
 
@@ -654,6 +699,183 @@ class FeedXmlOutputTest extends TestCase
         $groupCode = (string) $item->groupcode;
         $this->assertNotEmpty($groupCode, '<groupcode> must be present in grouped mode.');
         $this->assertNotSame('variant-gc', $groupCode, 'GroupCode must not be the variant\'s own number.');
+    }
+
+    /**
+     * In non-grouped mode, no <groupcode> element must appear for a variant.
+     */
+    public function testNonGroupedVariantHasNoGroupCode(): void
+    {
+        $variantId = $this->ids->create('variant-ngc');
+
+        (new ProductBuilder($this->ids, 'parent-ngc'))
+            ->name('Non-Grouped Parent')
+            ->price(15.00)
+            ->stock(0)
+            ->variantListingConfig(['displayParent' => false])
+            ->write($this->getContainer());
+
+        (new ProductBuilder($this->ids, 'variant-ngc'))
+            ->name('Non-Grouped Variant')
+            ->price(15.00)
+            ->stock(2)
+            ->parent('parent-ngc')
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
+            ->write($this->getContainer());
+
+        $this->createSeoUrl($variantId, 'product/non-grouped-variant');
+        $this->updateVariantListing([$this->ids->get('parent-ngc')]);
+
+        $xml = $this->generateFeed(grouped: false);
+        $item = $this->findItem($xml, 'variant-ngc');
+
+        $this->assertEmpty((string) $item->groupcode, '<groupcode> must be absent in non-grouped mode.');
+    }
+
+    /**
+     * A standalone product without a manufacturer must not emit a <brand> element.
+     */
+    public function testStandaloneProductWithoutManufacturerHasNoBrandElement(): void
+    {
+        $this->createStandaloneProductWithoutManufacturer('PROD-NO-BRAND', 'No Brand Product', 5, 14.99, 'product/no-brand');
+
+        $xml = $this->generateFeed(grouped: false);
+        $item = $this->findItem($xml, 'PROD-NO-BRAND');
+
+        $this->assertEmpty((string) $item->brand, '<brand> must be absent when product has no manufacturer.');
+    }
+
+    /**
+     * When a variant has its own manufacturer, the parent's manufacturer must not
+     * override it — even in grouped mode.
+     */
+    public function testGroupedVariantWithOwnManufacturerDoesNotInheritParentBrand(): void
+    {
+        $variantId = $this->ids->create('variant-own-brand');
+
+        (new ProductBuilder($this->ids, 'parent-own-brand'))
+            ->name('Parent With Different Brand')
+            ->price(22.00)
+            ->stock(0)
+            ->manufacturer('Parent Brand')
+            ->write($this->getContainer());
+
+        (new ProductBuilder($this->ids, 'variant-own-brand'))
+            ->name('Variant With Own Brand')
+            ->price(22.00)
+            ->stock(5)
+            ->manufacturer('Variant Brand')
+            ->parent('parent-own-brand')
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
+            ->write($this->getContainer());
+
+        $this->createSeoUrl($variantId, 'product/variant-own-brand');
+
+        $xml = $this->generateFeed(grouped: true);
+        $item = $this->findItem($xml, 'variant-own-brand');
+
+        $this->assertSame(
+            'Variant Brand',
+            (string) $item->brand,
+            '<brand> must be the variant\'s own manufacturer, not the parent\'s.'
+        );
+    }
+
+    /**
+     * A variant with zero available stock must report 0 in the feed — not fall
+     * back to the parent's stock.
+     */
+    public function testGroupedVariantWithZeroStockReportsZeroNotParentStock(): void
+    {
+        $variantId = $this->ids->create('variant-zero-stock');
+
+        (new ProductBuilder($this->ids, 'parent-zero-stock'))
+            ->name('Parent With Stock')
+            ->price(15.00)
+            ->stock(10)
+            ->write($this->getContainer());
+
+        (new ProductBuilder($this->ids, 'variant-zero-stock'))
+            ->name('Zero Stock Variant')
+            ->price(15.00)
+            ->stock(0)
+            ->parent('parent-zero-stock')
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
+            ->write($this->getContainer());
+
+        $this->createSeoUrl($variantId, 'product/zero-stock-variant');
+
+        $xml = $this->generateFeed(grouped: true);
+        $item = $this->findItem($xml, 'variant-zero-stock');
+
+        $this->assertSame('0', (string) $item->stock, '<stock> must be 0 for an out-of-stock variant, not the parent\'s stock.');
+    }
+
+    /**
+     * When a variant has no cover image and the parent does, the feed must not
+     * inherit the parent's image — <image> must be absent for that variant.
+     */
+    public function testGroupedVariantWithoutCoverDoesNotInheritParentImage(): void
+    {
+        $variantId = $this->ids->create('variant-no-cover');
+
+        (new ProductBuilder($this->ids, 'parent-no-cover'))
+            ->name('Parent With Cover')
+            ->price(12.50)
+            ->stock(0)
+            ->write($this->getContainer());
+
+        // No cover set on the variant — ProductBuilder does not assign a cover by default.
+        (new ProductBuilder($this->ids, 'variant-no-cover'))
+            ->name('Coverless Variant')
+            ->price(12.50)
+            ->stock(6)
+            ->parent('parent-no-cover')
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
+            ->write($this->getContainer());
+
+        $this->createSeoUrl($variantId, 'product/coverless-variant');
+
+        $xml = $this->generateFeed(grouped: true);
+        $item = $this->findItem($xml, 'variant-no-cover');
+
+        $this->assertEmpty((string) $item->image, '<image> must be absent when variant has no cover.');
+    }
+
+    /**
+     * In grouped mode, variant visibility is read from the variant's own visibility
+     * record — not inherited from the parent. A variant with VISIBILITY_LINK (10)
+     * whose parent has VISIBILITY_ALL (30) must appear in the feed with visibility=1.
+     */
+    public function testGroupedVariantVisibilityIsIndependentOfParentVisibility(): void
+    {
+        $variantId = $this->ids->create('variant-link-vis');
+
+        (new ProductBuilder($this->ids, 'parent-link-vis'))
+            ->name('Parent All Visible')
+            ->price(20.00)
+            ->stock(0)
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
+            ->write($this->getContainer());
+
+        (new ProductBuilder($this->ids, 'variant-link-vis'))
+            ->name('Variant Link Only')
+            ->price(20.00)
+            ->stock(3)
+            ->parent('parent-link-vis')
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_LINK)
+            ->write($this->getContainer());
+
+        $this->createSeoUrl($variantId, 'product/variant-link-vis');
+
+        $xml = $this->generateFeed(grouped: true);
+        $item = $this->findItem($xml, 'variant-link-vis');
+
+        $this->assertSame(
+            FeedService::PRODUCT_NOT_VISIBLE,
+            $this->extractVisibility($item),
+            'Variant with VISIBILITY_LINK must have visibility=1, independent of parent visibility.'
+        );
     }
 
     // =========================================================================
@@ -820,6 +1042,27 @@ class FeedXmlOutputTest extends TestCase
             ->price($price)
             ->stock($stock)
             ->manufacturer($brand)
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
+            ->write($this->getContainer());
+
+        $this->createSeoUrl($productId, $seoPath);
+
+        return $productId;
+    }
+
+    private function createStandaloneProductWithoutManufacturer(
+        string $number,
+        string $name,
+        int $stock,
+        float $price,
+        string $seoPath
+    ): string {
+        $productId = $this->ids->create($number);
+
+        (new ProductBuilder($this->ids, $number))
+            ->name($name)
+            ->price($price)
+            ->stock($stock)
             ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
             ->write($this->getContainer());
 

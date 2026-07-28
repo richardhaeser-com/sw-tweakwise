@@ -52,6 +52,49 @@ class BackendApiParityTest extends TestCase
         }
     }
 
+    /**
+     * When a variant's own translated name is empty, the backend sync must fall
+     * back to the parent's translated name.
+     *
+     * This differs from the feed: the XML feed template has no explicit fallback
+     * because Shopware's DAL resolves translation inheritance before the template
+     * renders (the integration test FeedXmlOutputTest::testGroupedVariantWithoutOwnNameUsesParentNameInXml
+     * is the authoritative truth for the feed). The backend sync receives the
+     * entity directly from the admin controller where DAL inheritance may not
+     * have been resolved, so it must apply the fallback explicitly.
+     */
+    public function testSyncUsesParentNameWhenVariantNameIsEmpty(): void
+    {
+        $variant = ProductFixtureFactory::createProduct([
+            'number'  => 'VARIANT-NO-NAME',
+            'name'    => '',
+            'stock'   => 1,
+            'brand'   => 'Brand X',
+            'price'   => 10.00,
+            'seoPath' => 'product/no-name-variant',
+        ]);
+        $parent = ProductFixtureFactory::createProduct([
+            'number'  => 'PARENT-NO-NAME',
+            'name'    => 'Parent Name As Fallback',
+            'stock'   => 0,
+            'brand'   => 'Brand X',
+            'price'   => 10.00,
+            'seoPath' => 'product/parent-no-name',
+        ]);
+
+        $history = [];
+        $this->createApi($this->createCapturingClient($history))
+            ->syncProductData($variant, ProductFixtureFactory::createFrontend(), $parent, [], true);
+
+        $posted = json_decode((string) $history[0]['request']->getBody(), true);
+
+        $this->assertSame(
+            'Parent Name As Fallback',
+            $posted['Name'],
+            'Sync must use parent name as fallback when variant translated.name is empty.'
+        );
+    }
+
     private function createCapturingClient(array &$history): Client
     {
         $mock = new MockHandler([new Response(200, [], '{}')]);
