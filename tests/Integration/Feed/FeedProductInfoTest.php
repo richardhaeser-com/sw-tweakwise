@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use RH\Tweakwise\Service\FeedService;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
+use Shopware\Core\Content\Product\DataAbstractionLayer\VariantListingUpdater;
 use Shopware\Core\Content\Test\Product\ProductBuilder;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -160,6 +161,7 @@ class FeedProductInfoTest extends TestCase
             ->write($this->getContainer());
 
         $this->createSeoUrl($variantId, 'product/variant-ean');
+        $this->getContainer()->get(VariantListingUpdater::class)->update([$parentId], $this->context);
 
         $xml  = $this->generateFeed();
         $item = $this->findItem($xml, 'VARIANT-EAN');
@@ -239,6 +241,7 @@ class FeedProductInfoTest extends TestCase
             ->write($this->getContainer());
 
         $this->createSeoUrl($variantId, 'product/variant-mpn');
+        $this->getContainer()->get(VariantListingUpdater::class)->update([$parentId], $this->context);
 
         $xml  = $this->generateFeed();
         $item = $this->findItem($xml, 'VARIANT-MPN');
@@ -352,6 +355,7 @@ class FeedProductInfoTest extends TestCase
             ->write($this->getContainer());
 
         $this->createSeoUrl($variantId, 'product/variant-desc');
+        $this->getContainer()->get(VariantListingUpdater::class)->update([$this->ids->get('PARENT-DESC')], $this->context);
 
         $xml  = $this->generateFeed();
         $item = $this->findItem($xml, 'VARIANT-DESC');
@@ -501,6 +505,7 @@ class FeedProductInfoTest extends TestCase
             ->write($this->getContainer());
 
         $this->createSeoUrl($variantId, 'product/variant-dt');
+        $this->getContainer()->get(VariantListingUpdater::class)->update([$parentId], $this->context);
 
         $xml  = $this->generateFeed();
         $item = $this->findItem($xml, 'VARIANT-DT');
@@ -523,11 +528,12 @@ class FeedProductInfoTest extends TestCase
             ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
             ->write($this->getContainer());
 
-        // ratingAverage is write-protected — set via raw DB update
+        // ratingAverage is WriteProtected — requires system scope context to update
+        $systemContext = Context::createDefaultContext(new \Shopware\Core\Framework\Context\SystemSource());
         $this->getContainer()->get('product.repository')->update([[
             'id'            => $productId,
             'ratingAverage' => 4.5,
-        ]], $this->context);
+        ]], $systemContext);
 
         $this->createSeoUrl($productId, 'product/prod-rating');
 
