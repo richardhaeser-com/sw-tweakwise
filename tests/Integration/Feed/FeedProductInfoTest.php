@@ -528,12 +528,11 @@ class FeedProductInfoTest extends TestCase
             ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
             ->write($this->getContainer());
 
-        // ratingAverage is WriteProtected — requires system scope context to update
-        $systemContext = Context::createDefaultContext(new \Shopware\Core\Framework\Api\Context\SystemSource());
-        $this->getContainer()->get('product.repository')->update([[
-            'id'            => $productId,
-            'ratingAverage' => 4.5,
-        ]], $systemContext);
+        // ratingAverage is WriteProtected even in system scope — set via raw SQL
+        $this->getContainer()->get('Doctrine\DBAL\Connection')->executeStatement(
+            'UPDATE product SET rating_average = :rating WHERE id = :id',
+            ['rating' => 4.5, 'id' => hex2bin($productId)]
+        );
 
         $this->createSeoUrl($productId, 'product/prod-rating');
 
