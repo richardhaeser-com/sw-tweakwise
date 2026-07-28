@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ['ubuntu-latest']
-        php: ['8.2', '8.3']
+        php: ['8.2', '8.3', '8.4']
         experimental: [false]
         dependencies: ['lowest', 'highest']
 
@@ -58,8 +58,13 @@ jobs:
 
   unit:
     needs: static
-    name: Unit tests
+    name: Unit tests (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4']
 
     steps:
       - name: Checkout
@@ -68,7 +73,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: ${{ matrix.php }}
           extensions: mbstring, intl
           coverage: pcov
 
@@ -81,18 +86,23 @@ jobs:
 
   integration:
     needs: static
-    name: Integration tests
+    name: Integration tests (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4']
 
     steps:
       - name: Setup Shopware
         uses: shopware/setup-shopware@main
         with:
           shopware-version: 'v6.7.12.2'
-          php-version: 8.3
+          php-version: ${{ matrix.php }}
           env: test
           php-extensions: pcov
-          install: false
+          install: true
 
       - name: Checkout Tweakwise module
         uses: actions/checkout@v3
