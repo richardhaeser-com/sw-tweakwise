@@ -529,7 +529,7 @@ class FeedProductInfoTest extends TestCase
             ->write($this->getContainer());
 
         // ratingAverage is WriteProtected — requires system scope context to update
-        $systemContext = Context::createDefaultContext(new \Shopware\Core\Framework\Context\SystemSource());
+        $systemContext = Context::createDefaultContext(new \Shopware\Core\Framework\Api\Context\SystemSource());
         $this->getContainer()->get('product.repository')->update([[
             'id'            => $productId,
             'ratingAverage' => 4.5,
