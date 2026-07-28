@@ -290,6 +290,45 @@ class BackendApiTest extends TestCase
     }
 
     /**
+     * When a parent product number is changed, the next sync must send the updated
+     * groupcode. The groupcode is read from the entity at sync time — not cached —
+     * so changing productNumber and triggering a sync always produces the correct value.
+     *
+     * This documents the fix for the report: "when I change the product number, the
+     * url changes but the groupcode doesn't" — which was caused by groupcode not being
+     * included in the sync payload at all before it was added.
+     */
+    public function testGroupCodeReflectsCurrentProductNumberAfterChange(): void
+    {
+        $history = [];
+
+        $product = $this->createBaseProduct();
+        $product->setProductNumber('VARIANT-001');
+
+        $parent = $this->createBaseProduct();
+        $parent->setProductNumber('PARENT-001');
+
+        // First sync — original product number
+        $this->createApi($this->createCapturingClient($history))
+            ->syncProductData($product, $this->createFrontend(), $parent, []);
+
+        $this->assertSame('PARENT-001', $this->getPostedData($history)['GroupCode']);
+
+        // Product number changes
+        $parent->setProductNumber('PARENT-001-NEW');
+
+        $history = [];
+        $this->createApi($this->createCapturingClient($history))
+            ->syncProductData($product, $this->createFrontend(), $parent, []);
+
+        $this->assertSame(
+            'PARENT-001-NEW',
+            $this->getPostedData($history)['GroupCode'],
+            'GroupCode must reflect the current product number after it has been changed.'
+        );
+    }
+
+    /**
      * The XML feed exports a 'visibility' attribute (1 / 3 / 4) so that Tweakwise can
      * differentiate link-only, search-only, and fully visible products.
      *
