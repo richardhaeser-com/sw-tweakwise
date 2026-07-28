@@ -342,6 +342,48 @@ class BackendApi
                 'Values' => [$label],
             ];
 
+            // Product info attributes — mirrors product.xml.twig
+            $attributes[] = [
+                'Key'    => 'sw-id',
+                'Values' => [$product->getId()],
+            ];
+            $attributes[] = [
+                'Key'    => 'sw-product-number',
+                'Values' => [$product->getProductNumber()],
+            ];
+            $attributes[] = [
+                'Key'    => 'sw-ean',
+                'Values' => [$product->getEan() ?? $parent?->getEan() ?? ''],
+            ];
+            $attributes[] = [
+                'Key'    => 'sw-manufacturer-productnumber',
+                'Values' => [$product->getManufacturerNumber() ?? $parent?->getManufacturerNumber() ?? ''],
+            ];
+            $attributes[] = [
+                'Key'    => 'sw-release-date',
+                'Values' => [$product->getReleaseDate()?->format('Y-m-d') ?? ''],
+            ];
+            $description = $product->getTranslation('description') ?? $parent?->getTranslation('description') ?? '';
+            $attributes[] = [
+                'Key'    => 'sw-description',
+                'Values' => [mb_substr(strip_tags((string) $description), 0, 400)],
+            ];
+            $keywords = $product->getCustomSearchKeywords() ?? $parent?->getCustomSearchKeywords() ?? [];
+            $attributes[] = [
+                'Key'    => 'sw-keywords',
+                'Values' => [implode(', ', $keywords)],
+            ];
+            $deliveryTime = $product->getDeliveryTime() ?? $parent?->getDeliveryTime();
+            $attributes[] = [
+                'Key'    => 'sw-delivery-time',
+                'Values' => [$deliveryTime?->getTranslation('name') ?? ''],
+            ];
+            $ratingAverage = $product->getRatingAverage();
+            $attributes[] = [
+                'Key'    => 'sw-avg-rating',
+                'Values' => [$ratingAverage !== null ? (string) $ratingAverage : ''],
+            ];
+
             $data['Attributes'] = $attributes;
             $data['Type'] = 'product';
 
