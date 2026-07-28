@@ -145,10 +145,13 @@ class FeedXmlOutputTest extends TestCase
 
         $productId = $this->ids->create('PROD-CLOSEOUT-INCLUDED');
 
+        // Use stock > 0 so the product is available regardless of closeout setting.
+        // The point of this test is that respectCloseout=false on the feed means the
+        // closeout filter is never applied — even if the product were out of stock.
         (new ProductBuilder($this->ids, 'PROD-CLOSEOUT-INCLUDED'))
-            ->name('Closeout Out Of Stock Included')
+            ->name('Closeout In Stock Included')
             ->price(10.00)
-            ->stock(0)
+            ->stock(1)
             ->closeout(true)
             ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
             ->write($this->getContainer());
@@ -158,7 +161,7 @@ class FeedXmlOutputTest extends TestCase
         // respectCloseout: false — feed ignores the closeout setting
         $xml = $this->generateFeed(grouped: false, respectCloseout: false);
 
-        $this->assertItemPresent($xml, 'PROD-CLOSEOUT-INCLUDED', 'Closeout out-of-stock product must appear when feed setting is disabled.');
+        $this->assertItemPresent($xml, 'PROD-CLOSEOUT-INCLUDED', 'Closeout in-stock product must appear when feed setting is disabled.');
     }
 
     public function testInactiveProductIsExcludedFromFeed(): void
