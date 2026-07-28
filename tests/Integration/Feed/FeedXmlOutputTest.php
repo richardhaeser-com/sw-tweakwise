@@ -630,14 +630,17 @@ class FeedXmlOutputTest extends TestCase
             ->manufacturer('Brand X')
             ->write($this->getContainer());
 
-        // No ->name() call: the variant has no own name translation.
-        // Shopware's DAL will resolve translated.name to the parent's value.
+        // ProductBuilder always sets the name to the product number key by default.
+        // We write the variant first, then delete its translation record so the DAL
+        // falls back to the parent's translation — which is the real production scenario.
         (new ProductBuilder($this->ids, 'variant-no-name'))
             ->price(10.00)
             ->stock(1)
             ->parent('parent-no-name')
             ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
             ->write($this->getContainer());
+
+        $this->deleteProductTranslation($variantId);
 
         $this->createSeoUrl($variantId, 'product/variant-no-name');
 
@@ -1026,6 +1029,14 @@ class FeedXmlOutputTest extends TestCase
     }
 
     // =========================================================================
+
+    private function deleteProductTranslation(string $productId): void
+    {
+        $this->getContainer()->get('product_translation.repository')->delete([[
+            'productId'  => $productId,
+            'languageId' => Defaults::LANGUAGE_SYSTEM,
+        ]], $this->context);
+    }
 
     private function createStandaloneProduct(
         string $number,
