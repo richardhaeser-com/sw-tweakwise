@@ -83,7 +83,7 @@ class FeedXmlOutputTest extends TestCase
         foreach ($expected as $field => $expectedValue) {
             match ($field) {
                 'Name'      => $this->assertSame((string) $expectedValue, (string) $item->name, '<name> mismatch for field Name'),
-                'Price'     => $this->assertSame(rtrim(rtrim(number_format((float) $expectedValue, 2, '.', ''), '0'), '.'), rtrim(rtrim((string) $item->price, '0'), '.'), '<price> mismatch'),
+                'Price'     => $this->assertSame((string) (float) $expectedValue, (string) (float) $item->price, '<price> mismatch'),
                 'Stock'     => $this->assertSame((string) $expectedValue, (string) $item->stock, '<stock> mismatch'),
                 'Brand'     => $expectedValue === ''
                     ? $this->assertEmpty((string) $item->brand, '<brand> must be absent')
