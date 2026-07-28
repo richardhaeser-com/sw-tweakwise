@@ -152,13 +152,13 @@ class BackendApi
         $productId = ProductDataService::getTweakwiseProductId($product, $domainId);
         try {
             $productData = $this->getProductData($product, $domainId);
-            foreach ($product->getCategories() as $category) {
+            foreach ($product->getCategories() ?? [] as $category) {
                 $catData = $this->getCategoryData($category, $domainId);
                 if (array_key_exists('CategoryId', $catData) && (int)$catData['CategoryId']) {
                     $categories[] = $catData['CategoryId'];
                 }
             }
-            foreach ($product->getStreams() as $pStream) {
+            foreach ($product->getStreams() ?? [] as $pStream) {
                 foreach ($pStream->getCategories() as $sCategory) {
                     if ($sCategory->getProductAssignmentType() === 'product_stream') {
                         $catData = $this->getCategoryData($sCategory, $domainId);
@@ -183,11 +183,6 @@ class BackendApi
                 switch ($propertyToSync) {
                     case 'name':
                         $property = 'Name';
-                        // Use the product's own translated name only — no parent fallback.
-                        // The XML feed (product.xml.twig) uses {{ product.translated.name }} without
-                        // any parent fallback, so the sync must behave identically.
-                        // Shopware's DAL always populates translated.name for active products via
-                        // translation inheritance, so a missing name is not a production scenario.
                         $value = $product->getTranslation('name') ?: $parent?->getTranslation('name') ?? '';
                         break;
                     case 'unitPrice':

@@ -16,6 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Test\Stub\Framework\IdsCollection;
 use Shopware\Core\Test\TestDefaults;
 
@@ -101,6 +102,60 @@ class FeedXmlOutputTest extends TestCase
     // =========================================================================
     // Feed-only: product exclusion
     // =========================================================================
+
+    /**
+     * A closeout product with zero stock must be excluded from the feed when
+     * respectHideCloseoutProductsWhenOutOfStock is enabled on both the feed
+     * and the core system config.
+     */
+    public function testCloseoutOutOfStockProductExcludedWhenSettingEnabled(): void
+    {
+        $this->getContainer()->get(SystemConfigService::class)
+            ->set('core.listing.hideCloseoutProductsWhenOutOfStock', true);
+
+        $productId = $this->ids->create('PROD-CLOSEOUT-EXCLUDED');
+
+        (new ProductBuilder($this->ids, 'PROD-CLOSEOUT-EXCLUDED'))
+            ->name('Closeout Out Of Stock')
+            ->price(10.00)
+            ->stock(0)
+            ->closeout(true)
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
+            ->write($this->getContainer());
+
+        $this->createSeoUrl($productId, 'product/closeout-excluded');
+
+        $xml = $this->generateFeed(grouped: false, respectCloseout: true);
+
+        $this->assertItemAbsent($xml, 'PROD-CLOSEOUT-EXCLUDED', 'Closeout out-of-stock product must be excluded when setting is enabled.');
+    }
+
+    /**
+     * A closeout product with zero stock must appear in the feed when
+     * respectHideCloseoutProductsWhenOutOfStock is disabled on the feed.
+     */
+    public function testCloseoutOutOfStockProductIncludedWhenSettingDisabled(): void
+    {
+        $this->getContainer()->get(SystemConfigService::class)
+            ->set('core.listing.hideCloseoutProductsWhenOutOfStock', true);
+
+        $productId = $this->ids->create('PROD-CLOSEOUT-INCLUDED');
+
+        (new ProductBuilder($this->ids, 'PROD-CLOSEOUT-INCLUDED'))
+            ->name('Closeout Out Of Stock Included')
+            ->price(10.00)
+            ->stock(0)
+            ->closeout(true)
+            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
+            ->write($this->getContainer());
+
+        $this->createSeoUrl($productId, 'product/closeout-included');
+
+        // respectCloseout: false — feed ignores the closeout setting
+        $xml = $this->generateFeed(grouped: false, respectCloseout: false);
+
+        $this->assertItemPresent($xml, 'PROD-CLOSEOUT-INCLUDED', 'Closeout out-of-stock product must appear when feed setting is disabled.');
+    }
 
     public function testInactiveProductIsExcludedFromFeed(): void
     {
@@ -411,7 +466,7 @@ class FeedXmlOutputTest extends TestCase
         $this->getContainer()->get(VariantListingUpdater::class)->update($parentIds, $this->context);
     }
 
-    private function generateFeed(bool $grouped, bool $excludeChildren = false): \SimpleXMLElement
+    private function generateFeed(bool $grouped, bool $excludeChildren = false, bool $respectCloseout = false): \SimpleXMLElement
     {
         $domainCriteria = new Criteria();
         $domainCriteria->addFilter(new EqualsFilter('salesChannelId', TestDefaults::SALES_CHANNEL));
@@ -426,15 +481,16 @@ class FeedXmlOutputTest extends TestCase
 
         $feedId = Uuid::randomHex();
         $this->getContainer()->get('s_plugin_rhae_tweakwise_feed.repository')->create([[
-            'id'                  => $feedId,
-            'name'                => 'Test Feed',
-            'status'              => FeedEntity::STATUS_QUEUED,
-            'interval'            => '0 3 * * *',
-            'type'                => 'full',
-            'limit'               => '500',
-            'groupedProducts'     => $grouped,
-            'excludeChildren'     => $excludeChildren,
-            'salesChannelDomains' => [['id' => $domain->getId()]],
+            'id'                                          => $feedId,
+            'name'                                        => 'Test Feed',
+            'status'                                      => FeedEntity::STATUS_QUEUED,
+            'interval'                                    => '0 3 * * *',
+            'type'                                        => 'full',
+            'limit'                                       => '500',
+            'groupedProducts'                             => $grouped,
+            'excludeChildren'                             => $excludeChildren,
+            'respectHideCloseoutProductsWhenOutOfStock'   => $respectCloseout,
+            'salesChannelDomains'                         => [['id' => $domain->getId()]],
         ]], $this->context);
 
         $feedCriteria = new Criteria([$feedId]);

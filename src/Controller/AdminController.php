@@ -8,9 +8,12 @@ use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
 use RH\Tweakwise\Service\ProductDataService;
 use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
+use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\AbstractProductCloseoutFilterFactory;
 use Shopware\Core\Content\Product\SalesChannel\Price\AbstractProductPriceCalculator;
+use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -23,6 +26,7 @@ use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetEnti
 use Shopware\Core\System\CustomField\CustomFieldEntity;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -42,6 +46,8 @@ class AdminController extends AbstractController
         private RouterInterface $router,
         private readonly RequestStack $requestStack,
         private EntityRepository $feedRepository,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory,
     ) {
     }
     #[Route('/api/_action/rhae-tweakwise/check-possibilities/{token}', name: 'rhae.tweakwise.check_possibilities', methods: ['GET'])]
@@ -174,6 +180,7 @@ class AdminController extends AbstractController
 
         $shouldSyncVariants = false;
         $shouldSyncMainVariantId = null;
+        $salesChannelId = $frontend->getSalesChannelDomains()->first()->getSalesChannel()->getId();
         if ($feed instanceof FeedEntity) {
             if ($feed->isGroupedProducts() && $product->getChildCount() > 0) {
                 $syncVariants = $this->requestStack->getCurrentRequest()->query->getBoolean('syncVariants');
@@ -184,6 +191,12 @@ class AdminController extends AbstractController
             }
             if ($feed->isExcludeChildren() && $product->getParentId()) {
                 return new JsonResponse(['error' => true, 'code' => 'CHILD_EXCLUDED_FROM_FEED']);
+            }
+            // The feed uses ProductAvailableFilter which requires active=true and a visibility
+            // record for the sales channel. Syncing a product that is excluded from the feed
+            // would create a ghost product in Tweakwise. Use the same filter to check eligibility.
+            if (!$shouldSyncVariants && !$this->isProductInFeed($product->getId(), $salesChannelId, $context)) {
+                return new JsonResponse(['error' => true, 'code' => 'PRODUCT_NOT_IN_FEED']);
             }
             if (!$feed->isGroupedProducts() && $product->getChildCount() > 0) {
                 $listingConfig = $product->getVariantListingConfig();
@@ -255,6 +268,9 @@ class AdminController extends AbstractController
         if ($shouldSyncVariants) {
             $variantCriteria = new Criteria();
             $variantCriteria->addFilter(new EqualsFilter('parentId', $product->getId()));
+            // Only sync variants that would appear in the feed — same filter as FeedService.
+            // Use inheritance-aware context so variants correctly inherit active/visibility from parent.
+            $variantCriteria->addFilter(new ProductAvailableFilter($salesChannelId, ProductVisibilityDefinition::VISIBILITY_LINK));
             $variantCriteria->addAssociation('manufacturer');
             $variantCriteria->addAssociation('options');
             $variantCriteria->addAssociation('properties');
@@ -266,7 +282,17 @@ class AdminController extends AbstractController
             $variantCriteria->addAssociation('categories');
             $variantCriteria->addAssociation('streams');
             $variantCriteria->addAssociation('streams.categories');
-            $variants = $this->productRepository->search($variantCriteria, $context);
+
+            if ($feed instanceof FeedEntity
+                && $feed->isRespectHideCloseoutProductsWhenOutOfStock()
+                && $this->systemConfigService->getBool('core.listing.hideCloseoutProductsWhenOutOfStock', $salesChannelContext->getSalesChannelId())
+            ) {
+                $variantCriteria->addFilter($this->productCloseoutFilterFactory->create($salesChannelContext));
+            }
+
+            $inheritanceContext = clone $context;
+            $inheritanceContext->setConsiderInheritance(true);
+            $variants = $this->productRepository->search($variantCriteria, $inheritanceContext);
 
             $variantCollection = new ProductCollection($variants->getElements());
             foreach ($variantCollection as $variant) {
@@ -542,6 +568,22 @@ class AdminController extends AbstractController
         }
 
         return null;
+    }
+
+    /**
+     * Returns true if the product would appear in the feed for the given sales channel.
+     * Uses ProductAvailableFilter with inheritance-aware context so that variants
+     * correctly inherit active status and visibility from their parent.
+     */
+    private function isProductInFeed(string $productId, string $salesChannelId, Context $context): bool
+    {
+        $criteria = new Criteria([$productId]);
+        $criteria->addFilter(new ProductAvailableFilter($salesChannelId, ProductVisibilityDefinition::VISIBILITY_LINK));
+
+        $inheritanceContext = clone $context;
+        $inheritanceContext->setConsiderInheritance(true);
+
+        return $this->productRepository->searchIds($criteria, $inheritanceContext)->getTotal() > 0;
     }
 
     #[Route('/api/_action/rhae-tweakwise/builderTemplates', name: 'rhae.tweakwise.builder_templates', methods: ['GET'])]

@@ -65,6 +65,8 @@
             <argument type="service" id="router" />
             <argument type="service" id="request_stack" />
             <argument type="service" id="s_plugin_rhae_tweakwise_feed.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\ProductCloseoutFilterFactory"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
