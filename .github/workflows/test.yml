@@ -92,7 +92,7 @@ jobs:
           php-version: 8.3
           env: test
           php-extensions: pcov
-          install: true
+          install: false
 
       - name: Checkout Tweakwise module
         uses: actions/checkout@v3
