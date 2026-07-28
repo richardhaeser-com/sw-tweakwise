@@ -188,7 +188,7 @@ class BackendApi
                         // any parent fallback, so the sync must behave identically.
                         // Shopware's DAL always populates translated.name for active products via
                         // translation inheritance, so a missing name is not a production scenario.
-                        $value = $product->getTranslation('name') ?? '';
+                        $value = $product->getTranslation('name') ?: $parent?->getTranslation('name') ?? '';
                         break;
                     case 'unitPrice':
                         /** @var CalculatedPrice $price */
