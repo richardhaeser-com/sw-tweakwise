@@ -249,27 +249,50 @@ class FeedXmlOutputTest extends TestCase
             $this->createSeoUrl($parentId, $parentParams['seoPath']);
         }
 
-        $productId     = $this->ids->create($productParams['number']);
-        $productBuilder = (new ProductBuilder($this->ids, $productParams['number']))
-            ->price($productParams['price'])
-            ->stock($productParams['stock'])
-            ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL);
+        $productId = $this->ids->create($productParams['number']);
 
         if (!empty($productParams['emptyName'])) {
-            $productBuilder->translation(Defaults::LANGUAGE_SYSTEM, 'name', '');
+            // Write the variant directly via the repository without any translation record.
+            // This mirrors the real Shopware production scenario: variants created without
+            // their own name have no product_translation row, so COALESCE returns NULL for
+            // the variant's name and the DAL falls back to the parent's translation.
+            // Using ->translation(LANGUAGE_SYSTEM, 'name', '') would store an explicit empty
+            // string, which COALESCE does NOT treat as a fallback candidate.
+            $taxCriteria = new Criteria();
+            $taxCriteria->setLimit(1);
+            $taxId = $this->getContainer()->get('tax.repository')
+                ->searchIds($taxCriteria, $this->context)
+                ->firstId();
+
+            $this->getContainer()->get('product.repository')->create([[
+                'id'            => $productId,
+                'productNumber' => $productParams['number'],
+                'stock'         => $productParams['stock'],
+                'price'         => [['currencyId' => Defaults::CURRENCY, 'gross' => $productParams['price'], 'net' => $productParams['price'], 'linked' => false]],
+                'taxId'         => $taxId,
+                'parentId'      => $parentId,
+                'visibilities'  => [[
+                    'salesChannelId' => TestDefaults::SALES_CHANNEL,
+                    'visibility'     => ProductVisibilityDefinition::VISIBILITY_ALL,
+                ]],
+            ]], $this->context);
         } else {
-            $productBuilder->name($productParams['name']);
-        }
+            $productBuilder = (new ProductBuilder($this->ids, $productParams['number']))
+                ->name($productParams['name'])
+                ->price($productParams['price'])
+                ->stock($productParams['stock'])
+                ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL);
 
-        if (isset($productParams['brand'])) {
-            $productBuilder->manufacturer($productParams['brand']);
-        }
+            if (isset($productParams['brand'])) {
+                $productBuilder->manufacturer($productParams['brand']);
+            }
 
-        if ($parentId !== null) {
-            $productBuilder->parent($parentParams['number']);
-        }
+            if ($parentId !== null) {
+                $productBuilder->parent($parentParams['number']);
+            }
 
-        $productBuilder->write($this->getContainer());
+            $productBuilder->write($this->getContainer());
+        }
         $this->createSeoUrl($productId, $productParams['seoPath']);
 
         // For mainVariantId listing mode, update the parent config now that we have the variant ID
