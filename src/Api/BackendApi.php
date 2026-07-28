@@ -280,15 +280,68 @@ class BackendApi
 
             $attributes = [];
             $attributes[] = [
-                'Key' => 'item_type',
-                'Values' => ['product']
+                'Key'    => 'item_type',
+                'Values' => ['product'],
             ];
             foreach ($tmpAttributes as $groupName => $values) {
                 $attributes[] = [
-                    'Key' => $groupName,
-                    'Values' => $values
+                    'Key'    => $groupName,
+                    'Values' => $values,
                 ];
             }
+
+            // Boolean flag attributes — mirrors product.xml.twig
+            $attributes[] = [
+                'Key'    => 'sw-free-shipping',
+                'Values' => [$product->getShippingFree() ? 'true' : 'false'],
+            ];
+            $attributes[] = [
+                'Key'    => 'sw-is-topseller',
+                'Values' => [$product->getMarkAsTopseller() ? 'true' : 'false'],
+            ];
+            $attributes[] = [
+                'Key'    => 'sw-is-closeout',
+                'Values' => [$product->getIsCloseout() ? 'true' : 'false'],
+            ];
+
+            // sw-has-discount: list price exists and is higher than unit price
+            $syncPrice = $product->calculatedPrice;
+            if ((int) $product->calculatedPrices->count()) {
+                $syncPrice = $product->calculatedPrices->last();
+            }
+            $hasDiscount = $syncPrice?->getListPrice() !== null
+                && $syncPrice->getListPrice()->getPrice() > $syncPrice->getUnitPrice();
+            $attributes[] = [
+                'Key'    => 'sw-has-discount',
+                'Values' => [$hasDiscount ? 'true' : 'false'],
+            ];
+
+            // sw-new: available on SalesChannelProductEntity only
+            $isNew = $product instanceof \Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity
+                ? $product->isNew()
+                : false;
+            $attributes[] = [
+                'Key'    => 'sw-new',
+                'Values' => [$isNew ? 'true' : 'false'],
+            ];
+
+            // sw-label: mirrors the feed template priority (soldout > topseller > discount > new)
+            if ($product->getAvailableStock() < 1) {
+                $label = 'soldout';
+            } elseif ($product->getMarkAsTopseller()) {
+                $label = 'topseller';
+            } elseif ($hasDiscount) {
+                $label = 'discount';
+            } elseif ($isNew) {
+                $label = 'new';
+            } else {
+                $label = '';
+            }
+            $attributes[] = [
+                'Key'    => 'sw-label',
+                'Values' => [$label],
+            ];
+
             $data['Attributes'] = $attributes;
             $data['Type'] = 'product';
 

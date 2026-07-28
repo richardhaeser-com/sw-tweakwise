@@ -108,7 +108,7 @@ class BackendApiBooleanFlagsTest extends TestCase
     {
         $product = $this->createProduct();
 
-        $listPrice = ListPrice::createFromUnitPrice(25.00, 15.00);
+        $listPrice = ListPrice::createFromUnitPrice(15.00, 25.00);
         $price     = new CalculatedPrice(15.00, 15.00, new CalculatedTaxCollection(), new TaxRuleCollection(), 1, null, $listPrice);
         $product->setCalculatedPrice($price);
         $product->assign(['calculatedPrices' => new CalculatedPriceCollection()]);
