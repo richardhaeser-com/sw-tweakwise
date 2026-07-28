@@ -137,16 +137,13 @@ class BackendApiTest extends TestCase
     }
 
     /**
-     * When a product has no translated name the sync emits an empty string — it does NOT
-     * fall back to the parent's name. This matches the XML feed template behaviour
-     * ({{ product.translated.name }} with no parent fallback).
-     *
-     * In production this case is unreachable: Shopware's DAL populates translated.name
-     * for every loaded product through its translation-inheritance mechanism. The test
-     * guards against re-introducing the parent fallback, which would create a
-     * feed-vs-sync divergence.
+     * When a variant has no translated name the sync must fall back to the parent's
+     * translated name. This mirrors the real production behaviour: Shopware's DAL
+     * resolves translation inheritance so the feed template always receives the
+     * parent name via product.translated.name. The sync must apply the same fallback
+     * explicitly because the entity may arrive without DAL inheritance resolved.
      */
-    public function testNameWithNoTranslationEmitsEmptyStringNotParentName(): void
+    public function testNameFallsBackToParentWhenVariantNameIsEmpty(): void
     {
         $history = [];
         $product = $this->createBaseProduct();
@@ -159,9 +156,9 @@ class BackendApiTest extends TestCase
             ->syncProductData($product, $this->createFrontend(), $parent, []);
 
         $this->assertSame(
-            '',
+            'Parent Product',
             $this->getPostedData($history)['Name'],
-            'Sync must not fall back to parent name — the XML feed template has no parent fallback.'
+            'Sync must fall back to parent name when variant translated.name is empty.'
         );
     }
 

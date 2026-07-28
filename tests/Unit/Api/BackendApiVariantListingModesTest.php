@@ -683,22 +683,22 @@ class BackendApiVariantListingModesTest extends TestCase
     // =========================================================================
 
     /**
-     * Across ALL listing modes, a variant's name must come from its own translated
-     * fields — never from the parent. This is enforced by the XML feed template
-     * ({{ product.translated.name }}) and must hold in every sync path.
+     * Across ALL listing modes, when a variant has no own name the sync must fall
+     * back to the parent's name — matching what the feed produces via DAL translation
+     * inheritance (COALESCE(variant.name, parent.name) at query time).
      */
-    public function testNameNeverFallsBackToParentInAnyListingMode(): void
+    public function testNameFallsBackToParentInAllListingModes(): void
     {
-        $parent = $this->makeProduct('PARENT-NAME', 'Parent Name Must Never Appear', 0, 'Brand');
+        $parent = $this->makeProduct('PARENT-NAME', 'Parent Name As Fallback', 0, 'Brand');
         $variantWithEmptyName = $this->makeProduct('VARIANT-NAME', '', 1, 'Brand');
 
         // Grouped mode
         $postedGrouped = $this->sync($variantWithEmptyName, $parent, groupedProducts: true);
-        $this->assertSame('', $postedGrouped['Name'], 'Grouped: name must not fall back to parent.');
+        $this->assertSame('Parent Name As Fallback', $postedGrouped['Name'], 'Grouped: name must fall back to parent.');
 
-        // Non-grouped (syncVariants / mainVariant / expand paths)
+        // Non-grouped
         $postedNonGrouped = $this->sync($variantWithEmptyName, $parent, groupedProducts: false);
-        $this->assertSame('', $postedNonGrouped['Name'], 'Non-grouped: name must not fall back to parent.');
+        $this->assertSame('Parent Name As Fallback', $postedNonGrouped['Name'], 'Non-grouped: name must fall back to parent.');
     }
 
     /**
