@@ -64,6 +64,23 @@
             "images": "Images",
             "categories": "Categories",
             "groupcode": "Group code"
+          },
+          "swAttributes": {
+            "sw-free-shipping": "Free shipping",
+            "sw-is-topseller": "Is topseller",
+            "sw-is-closeout": "Is closeout",
+            "sw-has-discount": "Has discount",
+            "sw-new": "Is new",
+            "sw-label": "Label (soldout/topseller/discount/new)",
+            "sw-id": "Product ID",
+            "sw-product-number": "Product number",
+            "sw-ean": "EAN",
+            "sw-manufacturer-productnumber": "Manufacturer product number",
+            "sw-release-date": "Release date",
+            "sw-description": "Description",
+            "sw-keywords": "Search keywords",
+            "sw-delivery-time": "Delivery time",
+            "sw-avg-rating": "Average rating"
           }
         },
         "fullPathCid": "Show sibling categories in category filtering",

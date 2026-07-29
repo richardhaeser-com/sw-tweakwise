@@ -73,6 +73,23 @@ class AdminController extends AbstractController
     public function syncOptions(Context $context): JsonResponse
     {
         $main = ['name' => 'name', 'unitPrice' => 'unitPrice', 'availableStock' => 'availableStock', 'manufacturer' => 'manufacturer', 'url' => 'url', 'images' => 'images', 'categories' => 'categories', 'groupcode' => 'groupcode'];
+        $swAttributes = [
+            'sw-free-shipping'            => 'sw-free-shipping',
+            'sw-is-topseller'             => 'sw-is-topseller',
+            'sw-is-closeout'              => 'sw-is-closeout',
+            'sw-has-discount'             => 'sw-has-discount',
+            'sw-new'                      => 'sw-new',
+            'sw-label'                    => 'sw-label',
+            'sw-id'                       => 'sw-id',
+            'sw-product-number'           => 'sw-product-number',
+            'sw-ean'                      => 'sw-ean',
+            'sw-manufacturer-productnumber' => 'sw-manufacturer-productnumber',
+            'sw-release-date'             => 'sw-release-date',
+            'sw-description'              => 'sw-description',
+            'sw-keywords'                 => 'sw-keywords',
+            'sw-delivery-time'            => 'sw-delivery-time',
+            'sw-avg-rating'               => 'sw-avg-rating',
+        ];
         $properties = [];
         $propertyGroups = $this->propertyGroupRepository->search(new Criteria(), $context);
         /** @var PropertyGroupEntity $propertyGroup */
@@ -94,6 +111,7 @@ class AdminController extends AbstractController
         }
         return new JsonResponse([
             'main' => $main,
+            'swAttributes' => $swAttributes,
             'properties' => $properties,
             'customFields' => $customFields,
         ]);
