@@ -28,12 +28,11 @@ use Symfony\Component\Routing\RouterInterface;
  * Tests that every sw-* attribute can be individually toggled via the
  * backendSyncProperties['swAttributes'] settings key.
  *
- * Each attribute must be:
- *  - present in the sync payload when its config value is true (or absent from config)
- *  - absent from the sync payload when its config value is false
- *
- * Backwards-compatibility: when the 'swAttributes' key is missing entirely (existing
- * installs that haven't saved the new settings yet) all attributes must still be sent.
+ * These attributes are opt-in: an attribute is only sent when its config value
+ * is explicitly true. When the 'swAttributes' key is missing entirely or empty
+ * (e.g. installs that haven't saved the new settings yet), no sw-* attributes
+ * are sent — this feature never shipped without the toggle, so there is no
+ * prior behaviour to stay compatible with.
  */
 class BackendApiSwAttributesConfigTest extends TestCase
 {
@@ -65,26 +64,16 @@ class BackendApiSwAttributesConfigTest extends TestCase
     }
 
     // =========================================================================
-    // Backwards-compatibility: no 'swAttributes' key → all attributes present
+    // Opt-in default: no 'swAttributes' key → no sw-* attributes sent
     // =========================================================================
 
-    public function testAllSwAttributesSentWhenSwAttributesKeyMissing(): void
+    public function testNoSwAttributesSentWhenSwAttributesKeyMissing(): void
     {
         $frontend = $this->createFrontend([]);  // 'swAttributes' key absent
         $posted   = $this->sync($this->createProduct(), $frontend);
 
         foreach (self::ALL_SW_ATTRIBUTES as $key) {
-            $this->assertAttributePresent($key, $posted, "'{$key}' must be sent when swAttributes config is absent (backwards-compat).");
-        }
-    }
-
-    public function testAllSwAttributesSentWhenSwAttributesIsEmptyArray(): void
-    {
-        $frontend = $this->createFrontend([]);  // empty swAttributes array
-        $posted   = $this->sync($this->createProduct(), $frontend);
-
-        foreach (self::ALL_SW_ATTRIBUTES as $key) {
-            $this->assertAttributePresent($key, $posted, "'{$key}' must be sent when swAttributes config is an empty array (backwards-compat).");
+            $this->assertAttributeAbsent($key, $posted, "'{$key}' must NOT be sent when swAttributes config is absent (opt-in default).");
         }
     }
 

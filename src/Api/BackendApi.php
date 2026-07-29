@@ -292,12 +292,8 @@ class BackendApi
 
             $swAttributesConfig = $backendSyncProperties['swAttributes'] ?? [];
             $swEnabled = static function (string $key) use ($swAttributesConfig): bool {
-                // If the swAttributes group is not configured at all (e.g. existing installs),
-                // default to true so behaviour stays backwards-compatible.
-                if (empty($swAttributesConfig)) {
-                    return true;
-                }
-                return !isset($swAttributesConfig[$key]) || (bool) $swAttributesConfig[$key];
+                // Opt-in: an attribute is only synced when explicitly enabled in settings.
+                return (bool) ($swAttributesConfig[$key] ?? false);
             };
 
             // Boolean flag attributes — mirrors product.xml.twig
