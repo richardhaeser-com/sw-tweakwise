@@ -56,7 +56,7 @@ class FrontendDefinition extends EntityDefinition
             (new IntField('productsDesktop', 'productsDesktop'))->addFlags(new ApiAware()),
             (new IntField('productsTablet', 'productsTablet'))->addFlags(new ApiAware()),
             (new IntField('productsMobile', 'productsMobile'))->addFlags(new ApiAware()),
-            (new JsonField('backendSyncProperties', 'backendSyncProperties'))->addFlags(new ApiAware()),
+            (new JsonField('backendSyncProperties', 'backendSyncProperties', [], []))->addFlags(new ApiAware()),
             (new StringField('paginationType', 'paginationType'))->addFlags(new ApiAware()),
             (new StringField('checkoutSalesFeaturedProductsId', 'checkoutSalesFeaturedProductsId'))->addFlags(new ApiAware()),
             (new StringField('checkoutSalesRecommendationsGroupKey', 'checkoutSalesRecommendationsGroupKey'))->addFlags(new ApiAware()),
