@@ -359,14 +359,14 @@ class FeedBooleanFlagsTest extends TestCase
         $getExportPath = $ref->getMethod('getExportPath');
         $getExportPath->setAccessible(true);
         $finalPath = $getExportPath->invoke($feedService, $feed, false, true);
-        fwrite(STDERR, "[ZZDEBUG] path=" . var_export($pathProp->getValue($feedService), true) . " finalPath=$finalPath\n");
+        fwrite(STDERR, '[ZZDEBUG] path=' . var_export($pathProp->getValue($feedService), true) . " finalPath=$finalPath\n");
         try {
             $feedService->generateFeed($feed, $this->context);
             fwrite(STDERR, "[ZZDEBUG] generateFeed() completed without throwing.\n");
         } catch (\Throwable $e) {
-            fwrite(STDERR, "[ZZDEBUG] generateFeed() THREW: " . get_class($e) . ": " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n");
+            fwrite(STDERR, '[ZZDEBUG] generateFeed() THREW: ' . get_class($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n");
         }
-        fwrite(STDERR, "[ZZDEBUG] final path exists? " . (file_exists($finalPath) ? 'YES' : 'NO') . "\n");
+        fwrite(STDERR, '[ZZDEBUG] final path exists? ' . (file_exists($finalPath) ? 'YES' : 'NO') . "\n");
         // END TEMP DEBUG
 
         $xml = $feedService->readFeed($feed);
