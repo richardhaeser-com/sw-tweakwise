@@ -1,3 +1,8 @@
+# Unreleased
+
+**Fixed**
+- Prevented parent categories from showing up in the category filter on an Attribute Landing Page
+
 # 4.12.0
 
 **Added**
