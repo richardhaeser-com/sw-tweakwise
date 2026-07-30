@@ -161,6 +161,8 @@ jobs:
                       config:
                           root: "%kernel.project_dir%/files"
           YAML
+          rm -rf var/cache/test
+          APP_ENV=test bin/console cache:clear --env=test
 
       # TEMP DEBUG - remove once the empty-feed-file integration failures are confirmed fixed
       - name: Debug feed export path
