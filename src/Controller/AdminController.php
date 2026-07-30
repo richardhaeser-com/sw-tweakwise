@@ -158,6 +158,7 @@ class AdminController extends AbstractController
         $criteria->addAssociation('seoUrls');
         $criteria->addAssociation('cover');
         $criteria->addAssociation('cover.media');
+        $criteria->addAssociation('cover.media.thumbnails');
         $criteria->addAssociation('categories');
         $criteria->addAssociation('streams');
         $criteria->addAssociation('streams.categories');
@@ -295,6 +296,7 @@ class AdminController extends AbstractController
             $variantCriteria->addAssociation('seoUrls');
             $variantCriteria->addAssociation('cover');
             $variantCriteria->addAssociation('cover.media');
+            $variantCriteria->addAssociation('cover.media.thumbnails');
             $variantCriteria->addAssociation('categories');
             $variantCriteria->addAssociation('streams');
             $variantCriteria->addAssociation('streams.categories');
@@ -341,6 +343,7 @@ class AdminController extends AbstractController
             $mainVariantCriteria->addAssociation('seoUrls');
             $mainVariantCriteria->addAssociation('cover');
             $mainVariantCriteria->addAssociation('cover.media');
+            $mainVariantCriteria->addAssociation('cover.media.thumbnails');
             $mainVariantCriteria->addAssociation('categories');
             $mainVariantCriteria->addAssociation('streams');
             $mainVariantCriteria->addAssociation('streams.categories');

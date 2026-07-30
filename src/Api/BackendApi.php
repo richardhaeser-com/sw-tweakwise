@@ -152,13 +152,13 @@ class BackendApi
         $productId = ProductDataService::getTweakwiseProductId($product, $domainId);
         try {
             $productData = $this->getProductData($product, $domainId);
-            foreach ($product->getCategories() as $category) {
+            foreach ($product->getCategories() ?? [] as $category) {
                 $catData = $this->getCategoryData($category, $domainId);
                 if (array_key_exists('CategoryId', $catData) && (int)$catData['CategoryId']) {
                     $categories[] = $catData['CategoryId'];
                 }
             }
-            foreach ($product->getStreams() as $pStream) {
+            foreach ($product->getStreams() ?? [] as $pStream) {
                 foreach ($pStream->getCategories() as $sCategory) {
                     if ($sCategory->getProductAssignmentType() === 'product_stream') {
                         $catData = $this->getCategoryData($sCategory, $domainId);
@@ -217,6 +217,13 @@ class BackendApi
                         if ($product->getCover()?->getMedia()?->getUrl()) {
                             $property = 'Image';
                             $value = $product->getCover()->getMedia()->getUrl();
+                            $width = 0;
+                            foreach ($product->getCover()->getMedia()->getThumbnails() ?? [] as $thumbnail) {
+                                if ($thumbnail->getWidth() > $width) {
+                                    $value = $thumbnail->getUrl();
+                                    $width = $thumbnail->getWidth();
+                                }
+                            }
                             break;
                         }
                         $property = '';
