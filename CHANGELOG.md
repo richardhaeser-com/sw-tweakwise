@@ -1,3 +1,13 @@
+# Unreleased
+
+**Added**
+- Possibility to sync all properties of a product by the backend sync feature, including a groupcode property and a range of opt-in `sw-*` attributes (free shipping, topseller, closeout, discount, new, label, product info fields) mirroring what the XML feed already exports.
+
+**Fixed**
+- Backend sync no longer crashes when syncing a standalone product without a parent
+- Backend sync now refuses to sync products that would not appear in the feed (inactive, excluded, or excluded children), returning a specific error code so the admin UI can explain why
+- Backend sync image now selects the largest available thumbnail instead of the original image
+
 # 4.12.0
 
 **Added**
