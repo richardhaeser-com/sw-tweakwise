@@ -302,7 +302,7 @@ class FeedProductInfoTest extends TestCase
 
         (new ProductBuilder($this->ids, 'PROD-DESC'))
             ->name('Description Product')
-            ->description('This is a great product with many features.')
+            ->translation(Defaults::LANGUAGE_SYSTEM, 'description', 'This is a great product with many features.')
             ->price(10.00)
             ->stock(5)
             ->visibility(TestDefaults::SALES_CHANNEL, ProductVisibilityDefinition::VISIBILITY_ALL)
@@ -341,7 +341,7 @@ class FeedProductInfoTest extends TestCase
 
         (new ProductBuilder($this->ids, 'PARENT-DESC'))
             ->name('Parent Description')
-            ->description('Inherited description text.')
+            ->translation(Defaults::LANGUAGE_SYSTEM, 'description', 'Inherited description text.')
             ->price(10.00)
             ->stock(0)
             ->write($this->getContainer());
