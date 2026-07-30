@@ -191,25 +191,23 @@ class BackendApi
                         if ((int)$product->calculatedPrices->count()) {
                             $price = $product->calculatedPrices->last();
                         }
-
-                        if (!$price) {
-                            /** @var CalculatedPrice $price */
-                            $price = $parent->calculatedPrice;
-                            if ((int)$parent->calculatedPrices->count()) {
-                                $price = $parent->calculatedPrices->last();
-                            }
-
-                        }
+                        // No parent fallback for price — the XML feed template uses the product's
+                        // own calculatedPrice only (no parent fallback in product.xml.twig).
+                        // Shopware's price calculator always assigns a price to every loaded product,
+                        // so a missing calculated price is not a production scenario.
                         $property = 'Price';
                         $value = $price?->getUnitPrice() ?: 0;
                         break;
                     case 'availableStock':
                         $property = 'Stock';
-                        $value = $product->getAvailableStock() ?: $parent->getAvailableStock() ?: 0;
+                        // Use ?? (null-coalescing) not ?: so that stock=0 is kept as-is and not
+                        // treated as "no value", which would otherwise send the parent's stock for
+                        // out-of-stock variants — diverging from what the XML feed emits.
+                        $value = $product->getAvailableStock() ?? $parent?->getAvailableStock() ?? 0;
                         break;
                     case 'manufacturer':
                         $property = 'Brand';
-                        $value = $product->getManufacturer()?->getTranslation('name') ?: $parent->getManufacturer()?->getTranslation('name') ?: '';
+                        $value = $product->getManufacturer()?->getTranslation('name') ?: $parent?->getManufacturer()?->getTranslation('name') ?: '';
                         break;
                     case 'url':
                         $property = 'Url';
