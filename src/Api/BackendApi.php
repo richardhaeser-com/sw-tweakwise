@@ -142,7 +142,7 @@ class BackendApi
             }
         }
     }
-    public function syncProductData(ProductEntity $product, FrontendEntity $frontend, ?ProductEntity $parent, array $customFieldNames): array
+    public function syncProductData(ProductEntity $product, FrontendEntity $frontend, ?ProductEntity $parent, array $customFieldNames, bool $groupedProducts = true): array
     {
         $productData = null;
         $domain = $frontend->getSalesChannelDomains()->first();
@@ -223,12 +223,18 @@ class BackendApi
                         $value = '';
                         break;
                     case 'categories':
-                        if ($categories) {
-                            $property = 'Categories';
-                            $value = $categories;
+                        $property = 'Categories';
+                        $value = $categories;
+                        break;
+                    case 'groupcode':
+                        if (!$groupedProducts) {
+                            $property = '';
+                            $value = '';
                             break;
                         }
-                        // no break
+                        $property = 'GroupCode';
+                        $value = $parent?->getProductNumber() ?: $product->getProductNumber();
+                        break;
                     default:
                         $property = '';
                         $value = '';
