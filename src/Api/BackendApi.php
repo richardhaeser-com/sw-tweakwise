@@ -282,6 +282,137 @@ class BackendApi
                     'Values' => $values
                 ];
             }
+
+            $swAttributesConfig = $backendSyncProperties['swAttributes'] ?? [];
+            $swEnabled = static function (string $key) use ($swAttributesConfig): bool {
+                // Opt-in: an attribute is only synced when explicitly enabled in settings.
+                return (bool) ($swAttributesConfig[$key] ?? false);
+            };
+
+            // Boolean flag attributes — mirrors product.xml.twig
+            if ($swEnabled('sw-free-shipping')) {
+                $attributes[] = [
+                    'Key'    => 'sw-free-shipping',
+                    'Values' => [$product->getShippingFree() ? 'true' : 'false'],
+                ];
+            }
+            if ($swEnabled('sw-is-topseller')) {
+                $attributes[] = [
+                    'Key'    => 'sw-is-topseller',
+                    'Values' => [$product->getMarkAsTopseller() ? 'true' : 'false'],
+                ];
+            }
+            if ($swEnabled('sw-is-closeout')) {
+                $attributes[] = [
+                    'Key'    => 'sw-is-closeout',
+                    'Values' => [$product->getIsCloseout() ? 'true' : 'false'],
+                ];
+            }
+
+            // sw-has-discount: list price exists and is higher than unit price
+            $syncPrice = $product->calculatedPrice;
+            if ((int) $product->calculatedPrices->count()) {
+                $syncPrice = $product->calculatedPrices->last();
+            }
+            $hasDiscount = $syncPrice?->getListPrice() !== null
+                && $syncPrice->getListPrice()->getPrice() > $syncPrice->getUnitPrice();
+            if ($swEnabled('sw-has-discount')) {
+                $attributes[] = [
+                    'Key'    => 'sw-has-discount',
+                    'Values' => [$hasDiscount ? 'true' : 'false'],
+                ];
+            }
+
+            // sw-new: available on SalesChannelProductEntity only
+            $isNew = $product instanceof \Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity
+                ? $product->isNew()
+                : false;
+            if ($swEnabled('sw-new')) {
+                $attributes[] = [
+                    'Key'    => 'sw-new',
+                    'Values' => [$isNew ? 'true' : 'false'],
+                ];
+            }
+
+            // sw-label: mirrors the feed template priority (soldout > topseller > discount > new)
+            if ($swEnabled('sw-label')) {
+                if ($product->getAvailableStock() < 1) {
+                    $label = 'soldout';
+                } elseif ($product->getMarkAsTopseller()) {
+                    $label = 'topseller';
+                } elseif ($hasDiscount) {
+                    $label = 'discount';
+                } elseif ($isNew) {
+                    $label = 'new';
+                } else {
+                    $label = '';
+                }
+                $attributes[] = [
+                    'Key'    => 'sw-label',
+                    'Values' => [$label],
+                ];
+            }
+
+            // Product info attributes — mirrors product.xml.twig
+            if ($swEnabled('sw-id')) {
+                $attributes[] = [
+                    'Key'    => 'sw-id',
+                    'Values' => [$product->getId()],
+                ];
+            }
+            if ($swEnabled('sw-product-number')) {
+                $attributes[] = [
+                    'Key'    => 'sw-product-number',
+                    'Values' => [$product->getProductNumber()],
+                ];
+            }
+            if ($swEnabled('sw-ean')) {
+                $attributes[] = [
+                    'Key'    => 'sw-ean',
+                    'Values' => [$product->getEan() ?? $parent?->getEan() ?? ''],
+                ];
+            }
+            if ($swEnabled('sw-manufacturer-productnumber')) {
+                $attributes[] = [
+                    'Key'    => 'sw-manufacturer-productnumber',
+                    'Values' => [$product->getManufacturerNumber() ?? $parent?->getManufacturerNumber() ?? ''],
+                ];
+            }
+            if ($swEnabled('sw-release-date')) {
+                $attributes[] = [
+                    'Key'    => 'sw-release-date',
+                    'Values' => [$product->getReleaseDate()?->format('Y-m-d') ?? ''],
+                ];
+            }
+            if ($swEnabled('sw-description')) {
+                $description = $product->getTranslation('description') ?? $parent?->getTranslation('description') ?? '';
+                $attributes[] = [
+                    'Key'    => 'sw-description',
+                    'Values' => [mb_substr(strip_tags((string) $description), 0, 400)],
+                ];
+            }
+            if ($swEnabled('sw-keywords')) {
+                $keywords = $product->getCustomSearchKeywords() ?? $parent?->getCustomSearchKeywords() ?? [];
+                $attributes[] = [
+                    'Key'    => 'sw-keywords',
+                    'Values' => [implode(', ', $keywords)],
+                ];
+            }
+            if ($swEnabled('sw-delivery-time')) {
+                $deliveryTime = $product->getDeliveryTime() ?? $parent?->getDeliveryTime();
+                $attributes[] = [
+                    'Key'    => 'sw-delivery-time',
+                    'Values' => [$deliveryTime?->getTranslation('name') ?? ''],
+                ];
+            }
+            if ($swEnabled('sw-avg-rating')) {
+                $ratingAverage = $product->getRatingAverage();
+                $attributes[] = [
+                    'Key'    => 'sw-avg-rating',
+                    'Values' => [$ratingAverage !== null ? (string) $ratingAverage : ''],
+                ];
+            }
+
             $data['Attributes'] = $attributes;
             $data['Type'] = 'product';
 
