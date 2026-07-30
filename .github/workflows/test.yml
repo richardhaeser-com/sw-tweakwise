@@ -161,7 +161,7 @@ jobs:
                       config:
                           root: "%kernel.project_dir%/files"
           YAML
-          rm -rf var/cache/test
+          rm -rf var/cache/*
           APP_ENV=test bin/console cache:clear --env=test
 
       # TEMP DEBUG - remove once the empty-feed-file integration failures are confirmed fixed
@@ -169,6 +169,59 @@ jobs:
         if: matrix.php == '8.3'
         run: |
           bin/console debug:container --parameter=shopware.filesystem.private.config.root || true
+          ls -la var/cache/ || true
+          cat > /tmp/debug_feed.php <<'PHP'
+          <?php declare(strict_types=1);
+          use RH\Tweakwise\Core\Content\Feed\FeedEntity;
+          use RH\Tweakwise\Service\FeedService;
+          use Shopware\Core\Framework\Context;
+          use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+          use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+          use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
+          use Shopware\Core\Framework\Uuid\Uuid;
+          use Shopware\Core\Test\TestDefaults;
+          require getenv('GITHUB_WORKSPACE') . '/vendor/autoload.php';
+          require getenv('GITHUB_WORKSPACE') . '/custom/plugins/RhaeTweakwise/tests/TestBootstrap.php';
+          $kernel = KernelLifecycleManager::bootKernel();
+          $container = $kernel->getContainer();
+          $context = Context::createDefaultContext();
+          $domain = $container->get('sales_channel_domain.repository')
+              ->search((new Criteria())->addFilter(new EqualsFilter('salesChannelId', TestDefaults::SALES_CHANNEL))->setLimit(1), $context)
+              ->first();
+          echo "Domain: " . ($domain ? $domain->getUrl() : 'NONE') . "\n";
+          $feedId = Uuid::randomHex();
+          $container->get('s_plugin_rhae_tweakwise_feed.repository')->create([[
+              'id' => $feedId, 'name' => 'Debug Feed', 'status' => FeedEntity::STATUS_QUEUED,
+              'interval' => '0 3 * * *', 'type' => 'full', 'limit' => '500',
+              'groupedProducts' => false, 'excludeChildren' => false,
+              'salesChannelDomains' => [['id' => $domain->getId()]],
+          ]], $context);
+          $feedCriteria = new Criteria([$feedId]);
+          $feedCriteria->addAssociation('salesChannelDomains');
+          $feedCriteria->addAssociation('salesChannelDomains.salesChannel');
+          $feedCriteria->addAssociation('salesChannelDomains.language');
+          $feedCriteria->addAssociation('salesChannelDomains.language.translationCode');
+          $feed = $container->get('s_plugin_rhae_tweakwise_feed.repository')->search($feedCriteria, $context)->first();
+          $feedService = $container->get(FeedService::class);
+          $ref = new ReflectionClass($feedService);
+          $pathProp = $ref->getProperty('path');
+          $pathProp->setAccessible(true);
+          echo "FeedService->path = " . var_export($pathProp->getValue($feedService), true) . "\n";
+          $getExportPath = $ref->getMethod('getExportPath');
+          $getExportPath->setAccessible(true);
+          $finalPath = $getExportPath->invoke($feedService, $feed, false, true);
+          echo "Computed final path: $finalPath\n";
+          try {
+              $feedService->generateFeed($feed, $context);
+              echo "generateFeed() completed without throwing.\n";
+          } catch (\Throwable $e) {
+              echo "generateFeed() THREW: " . get_class($e) . ": " . $e->getMessage() . "\n";
+          }
+          echo "final path exists? " . (file_exists($finalPath) ? 'YES' : 'NO') . "\n";
+          $xml = $feedService->readFeed($feed);
+          echo "readFeed() returned: " . ($xml === null ? 'NULL' : (strlen($xml) . ' bytes')) . "\n";
+          PHP
+          KERNEL_CLASS='Shopware\Core\Kernel' php /tmp/debug_feed.php || true
 
       - name: Run integration tests
         run: |
