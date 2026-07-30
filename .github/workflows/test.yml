@@ -150,10 +150,27 @@ jobs:
           bin/console plugin:refresh
           bin/console plugin:install -c -a RhaeTweakwise
 
+      # TEMP DEBUG - remove once the empty-feed-file integration failures are diagnosed
+      - name: Debug feed export path
+        if: matrix.php == '8.3'
+        run: |
+          bin/console debug:container --parameter=shopware.filesystem.private.config.root || true
+          bin/console debug:container --parameter=kernel.project_dir || true
+
       - name: Run integration tests
         run: |
           cd custom/plugins/RhaeTweakwise/
           php -d pcov.enabled=1 ../../../vendor/bin/phpunit --configuration phpunit.integration.xml --log-junit junit-integration.xml
+
+      # TEMP DEBUG - remove once the empty-feed-file integration failures are diagnosed
+      - name: Debug one failing test verbosely
+        if: matrix.php == '8.3'
+        run: |
+          cd custom/plugins/RhaeTweakwise/
+          php ../../../vendor/bin/phpunit --configuration phpunit.integration.xml --filter FeedBooleanFlagsTest::testSwFreeShippingTrueWhenProductHasFreeShipping --debug || true
+          echo "--- looking for any generated feed files under files/ ---"
+          find ../../../files -iname "*tweakwise*" 2>/dev/null || true
+          find ../../../var -iname "*tweakwise*" 2>/dev/null || true
 
       - name: Write job summary
         if: always()
