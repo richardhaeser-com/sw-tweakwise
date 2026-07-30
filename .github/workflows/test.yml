@@ -150,27 +150,34 @@ jobs:
           bin/console plugin:refresh
           bin/console plugin:install -c -a RhaeTweakwise
 
-      # TEMP DEBUG - remove once the empty-feed-file integration failures are diagnosed
+      - name: Restore a real private filesystem root for the test environment
+        run: |
+          mkdir -p config/packages/test
+          cat > config/packages/test/zz_rhae_tweakwise_filesystem.yaml <<'YAML'
+          shopware:
+              filesystem:
+                  private:
+                      type: "local"
+                      config:
+                          root: "%kernel.project_dir%/files"
+          YAML
+
+      # TEMP DEBUG - remove once the empty-feed-file integration failures are confirmed fixed
       - name: Debug feed export path
         if: matrix.php == '8.3'
         run: |
           bin/console debug:container --parameter=shopware.filesystem.private.config.root || true
-          bin/console debug:container --parameter=kernel.project_dir || true
 
       - name: Run integration tests
         run: |
           cd custom/plugins/RhaeTweakwise/
           php -d pcov.enabled=1 ../../../vendor/bin/phpunit --configuration phpunit.integration.xml --log-junit junit-integration.xml
 
-      # TEMP DEBUG - remove once the empty-feed-file integration failures are diagnosed
-      - name: Debug one failing test verbosely
-        if: matrix.php == '8.3'
+      # TEMP DEBUG - remove once the empty-feed-file integration failures are confirmed fixed
+      - name: Debug leftover feed files
+        if: always() && matrix.php == '8.3'
         run: |
-          cd custom/plugins/RhaeTweakwise/
-          php ../../../vendor/bin/phpunit --configuration phpunit.integration.xml --filter FeedBooleanFlagsTest::testSwFreeShippingTrueWhenProductHasFreeShipping --debug || true
-          echo "--- looking for any generated feed files under files/ ---"
-          find ../../../files -iname "*tweakwise*" 2>/dev/null || true
-          find ../../../var -iname "*tweakwise*" 2>/dev/null || true
+          find files -iname "*tweakwise*" 2>/dev/null || true
 
       - name: Write job summary
         if: always()
