@@ -17,9 +17,9 @@ class BackendApi
     private readonly Client $client;
     public $apiUrl = 'https://navigator-api.tweakwise.com';
     public $frontendApiUrl = 'https://gateway.tweakwisenavigator.com';
-    public function __construct(private readonly string $instanceKey, private readonly string $accessToken, private RouterInterface $router)
+    public function __construct(private readonly string $instanceKey, private readonly string $accessToken, private RouterInterface $router, ?Client $client = null)
     {
-        $this->client = new Client();
+        $this->client = $client ?? new Client();
     }
 
     public function getProductData(ProductEntity $product, string $domainId): array
