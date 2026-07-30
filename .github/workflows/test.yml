@@ -87,6 +87,13 @@ jobs:
           extensions: mbstring, intl
           coverage: pcov
 
+      # 6.5.x has no newer patch than 6.5.8.19, and that pin (plus its
+      # dependencies) is now flagged by several security advisories that
+      # Composer refuses to install by default. Disposable CI runner, not a
+      # production install, so disable the block for this job.
+      - name: Allow installing packages with security advisories
+        run: composer config --global policy.advisories.block false
+
       - name: Pin Shopware packages to ${{ matrix.shopware-version }}
         run: |
           composer require --no-update --no-interaction \
@@ -152,6 +159,14 @@ jobs:
             shopware-version: '6.6.10.21'
 
     steps:
+      # Older Shopware tags (e.g. 6.5.x, which has no newer patch than 6.5.8.19)
+      # can pin dependencies now flagged by security advisories (e.g. dompdf 2.0.4),
+      # which Composer refuses to install by default. This is a disposable CI
+      # runner, not a production install, so disable the block globally before
+      # Setup Shopware's internal `composer install` runs.
+      - name: Allow installing packages with security advisories
+        run: composer config --global policy.advisories.block false
+
       - name: Setup Shopware
         uses: shopware/setup-shopware@main
         with:
