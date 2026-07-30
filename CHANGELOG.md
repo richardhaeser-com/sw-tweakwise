@@ -3,6 +3,9 @@
 **Added**
 - Possibility to sync all properties of a product by the backend sync feature
 
+**Fixed**
+- Prevented parent categories from showing up in the category filter on an Attribute Landing Page
+
 # 5.8.0
 
 **Added**
