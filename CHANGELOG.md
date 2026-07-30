@@ -1,4 +1,4 @@
-# Unreleased
+# 5.9.0
 
 **Added**
 - Possibility to sync all properties of a product by the backend sync feature
