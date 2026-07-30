@@ -351,23 +351,7 @@ class FeedBooleanFlagsTest extends TestCase
 
         /** @var FeedService $feedService */
         $feedService = $this->getContainer()->get(FeedService::class);
-
-        // TEMP DEBUG - remove once diagnosed
-        $ref = new \ReflectionClass($feedService);
-        $pathProp = $ref->getProperty('path');
-        $pathProp->setAccessible(true);
-        $getExportPath = $ref->getMethod('getExportPath');
-        $getExportPath->setAccessible(true);
-        $finalPath = $getExportPath->invoke($feedService, $feed, false, true);
-        fwrite(STDERR, '[ZZDEBUG] path=' . var_export($pathProp->getValue($feedService), true) . " finalPath=$finalPath\n");
-        try {
-            $feedService->generateFeed($feed, $this->context);
-            fwrite(STDERR, "[ZZDEBUG] generateFeed() completed without throwing.\n");
-        } catch (\Throwable $e) {
-            fwrite(STDERR, '[ZZDEBUG] generateFeed() THREW: ' . get_class($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n");
-        }
-        fwrite(STDERR, '[ZZDEBUG] final path exists? ' . (file_exists($finalPath) ? 'YES' : 'NO') . "\n");
-        // END TEMP DEBUG
+        $feedService->generateFeed($feed, $this->context);
 
         $xml = $feedService->readFeed($feed);
         $this->assertNotEmpty($xml, 'Generated feed XML must not be empty.');

@@ -169,12 +169,6 @@ jobs:
           cd custom/plugins/RhaeTweakwise/
           php -d pcov.enabled=1 ../../../vendor/bin/phpunit --configuration phpunit.integration.xml --log-junit junit-integration.xml
 
-      # TEMP DEBUG - remove once the empty-feed-file integration failures are confirmed fixed
-      - name: Debug leftover feed files
-        if: always() && matrix.php == '8.3'
-        run: |
-          find files -iname "*tweakwise*" 2>/dev/null || true
-
       - name: Write job summary
         if: always()
         run: |
