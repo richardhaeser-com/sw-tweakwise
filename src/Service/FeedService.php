@@ -89,7 +89,7 @@ class FeedService
         private readonly EntityRepository $productRepository,
         private readonly string $shopwareVersion,
         private readonly AbstractRuleLoader $ruleLoader,
-        private readonly string $path,
+        private readonly ?string $path,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly LocaleSwitcher $localeSwitcher,
         private readonly RouterInterface $router,
@@ -349,14 +349,7 @@ class FeedService
         }
 
         if ($grouped) {
-            $criteria->addFilter(
-                new MultiFilter(MultiFilter::CONNECTION_OR, [
-                    new NotFilter(NotFilter::CONNECTION_AND, [
-                        new EqualsFilter('parentId', null),
-                    ]),
-                    new EqualsFilter('childCount', 0),
-                ])
-            );
+            $criteria->addFilter(self::buildGroupedProductsFilter());
             $criteria->addAssociation('prices');
             $entities = $this->salesChannelRepository->search($criteria, $salesChannelContext);
             $this->calculator->calculate($entities, $salesChannelContext);
@@ -522,9 +515,15 @@ class FeedService
                 if ($product->getParentId()) {
                     $criteria = new Criteria([$product->getParentId()]);
                     $criteria->addAssociation('children');
+                    $criteria->addAssociation('manufacturer');
 
                     /** @var ProductEntity $parent */
                     $parent = $this->productRepository->search($criteria, $salesChannelContext->getContext())->first();
+
+                    if (!$product->getManufacturer() && $parent->getManufacturer()) {
+                        $product->setManufacturer($parent->getManufacturer());
+                    }
+
                     if ($parent->getChildCount() > 0) {
                         $configurationGroupConfigArray = [];
                         $listingConfig = $parent->getVariantListingConfig();
@@ -632,7 +631,6 @@ class FeedService
                 $groupCode = '';
                 if ($feed->isGroupedProducts()) {
                     $groupCode = $product->getProductNumber();
-
                     if (isset($parent) && $parent instanceof ProductEntity) {
                         $groupCode = $parent->getProductNumber();
                     }
@@ -661,7 +659,21 @@ class FeedService
         $this->writeContent($content, $feed);
     }
 
-    private function getVisibility(ProductEntity $product): int
+    /**
+     * Builds the DAL filter that, in grouped mode, includes only variants (parentId IS NOT NULL)
+     * and standalone products (childCount = 0), thereby excluding parent products.
+     */
+    public static function buildGroupedProductsFilter(): MultiFilter
+    {
+        return new MultiFilter(MultiFilter::CONNECTION_OR, [
+            new NotFilter(NotFilter::CONNECTION_AND, [
+                new EqualsFilter('parentId', null),
+            ]),
+            new EqualsFilter('childCount', 0),
+        ]);
+    }
+
+    protected function getVisibility(ProductEntity $product): int
     {
         if ($product->getVisibilities()->count() === 0) {
             return self::PRODUCT_VISIBILITY_CATALOG_SEARCH;
@@ -675,7 +687,7 @@ class FeedService
         };
     }
 
-    private function getLowestAndHighestPrice(ProductEntity $product, SalesChannelContext $salesChannelContext): array
+    protected function getLowestAndHighestPrice(ProductEntity $product, SalesChannelContext $salesChannelContext): array
     {
         $prices = $product->getPrices();
         if (count($prices) < 2) {
@@ -827,7 +839,8 @@ class FeedService
     {
         $pathPrefix = '';
         if ($absolute) {
-            $pathPrefix = rtrim($this->path, '/') . '/';
+            $basePath = ($this->path !== null && $this->path !== '') ? $this->path : sys_get_temp_dir();
+            $pathPrefix = rtrim($basePath, '/') . '/';
         }
 
         if ($temporarily) {

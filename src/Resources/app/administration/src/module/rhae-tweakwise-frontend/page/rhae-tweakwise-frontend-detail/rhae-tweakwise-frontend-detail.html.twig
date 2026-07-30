@@ -174,15 +174,19 @@
                                         columns="2fr 2fr 2fr"
                                         gap="0px 30px"
                                 >
-                                    <div v-if="!backendSyncOptions['main'] || backendSyncOptions['main'].length === 0">
-                                        Geen opties
-                                    </div>
                                     <sw-checkbox-field
                                                 v-for="(label, option) in backendSyncOptions['main']"
                                             :name="option"
                                             :checked="isChecked('main', option)"
                                             @update:value="setSelectedProperty($event, option, 'main')"
                                             :label="$tc('rhae-tweakwise-frontend.detail.label.backendSyncOptions.main.' + label)"
+                                        />
+                                    <sw-checkbox-field
+                                                v-for="(label, option) in backendSyncOptions['swAttributes']"
+                                            :name="option"
+                                            :checked="isChecked('swAttributes', option)"
+                                            @update:value="setSelectedProperty($event, option, 'swAttributes')"
+                                            :label="$tc('rhae-tweakwise-frontend.detail.label.backendSyncOptions.swAttributes.' + label)"
                                         />
                                 </sw-container>
                                 <h4>{{ $t('rhae-tweakwise-frontend.detail.section.backendSyncProperties') }}</h4>

@@ -1,4 +1,21 @@
 <div :isLoading="isLoading" class="tweakwise-sync">
+
+    <sw-modal
+        v-if="showVariantSyncConfirm"
+        :title="$tc(variantSyncConfirmTitleKey)"
+        @modal-close="onCancelVariantSync"
+    >
+        <p>{{ $tc(variantSyncConfirmMessageKey) }}</p>
+        <template #modal-footer>
+            <mt-button variant="ghost" @click="onCancelVariantSync">
+                {{ $tc('sw-product.detail.tab.syncVariantsCancelButton') }}
+            </mt-button>
+            <mt-button variant="primary" :isLoading="syncingFeedId !== null" @click="onConfirmVariantSync">
+                {{ $tc(variantSyncConfirmButtonKey) }}
+            </mt-button>
+        </template>
+    </sw-modal>
+
     <sw-container v-if="product && product.childCount">
         <mt-banner
                 variant="attention"
@@ -6,9 +23,7 @@
         >
             {{ $tc('sw-product.detail.tab.variants') }}
         </mt-banner>
-
     </sw-container>
-
 
     <template v-for="frontend in frontends">
         <sw-card :title="frontend.name" v-if="frontend.accessToken && frontend.backendSyncEnabled">
@@ -38,19 +53,31 @@
                             :date-time-format="{ month: '2-digit', day: '2-digit' }"
                     />
                 </div>
-                <div>
-                    <mt-button
-                            :isLoading="isLoading"
-                            size="small"
-                            variant="primary"
-                            @click="onSync(frontend.id, productId[frontend.id])"
-                    >
-                        {{ $tc('sw-product.detail.tab.sync') }}
-                    </mt-button>
-                </div>
             </sw-container>
 
+            <template v-if="feedsPerFrontend[frontend.id] && feedsPerFrontend[frontend.id].length > 0">
+                <div class="tweakwise-feeds__title">
+                    {{ $tc('sw-product.detail.tab.feedsTitle') }}
+                </div>
+                <div
+                    v-for="feed in feedsPerFrontend[frontend.id]"
+                    :key="feed.id"
+                    class="tweakwise-feeds__row"
+                >
+                    <span>{{ feed.name }}</span>
+                    <mt-button
+                        size="small"
+                        variant="primary"
+                        :isLoading="syncingFeedId === feed.id"
+                        :disabled="syncingFeedId !== null && syncingFeedId !== feed.id"
+                        @click="onSyncForFeed(frontend.id, feed.id, feed.groupedProducts)"
+                    >
+                        {{ $tc('sw-product.detail.tab.syncForFeed') }}
+                    </mt-button>
+                </div>
+            </template>
         </sw-card>
+
         <sw-card :title="frontend.name" v-if="!frontend.accessToken">
             <mt-banner
                     variant="attention"
