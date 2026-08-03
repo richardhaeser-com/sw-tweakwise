@@ -297,8 +297,20 @@ class FeedBooleanFlagsTest extends TestCase
 
     private function createSeoUrl(string $productId, string $seoPath): void
     {
-        $this->getContainer()->get('seo_url.repository')->create([[
-            'id'             => Uuid::randomHex(),
+        // Some Shopware core versions auto-generate a canonical SEO URL when
+        // the product is written; reuse its ID (if any) instead of always
+        // inserting, to avoid a uniq.seo_url.foreign_key collision.
+        $existing = $this->getContainer()->get('seo_url.repository')->search(
+            (new Criteria())
+                ->addFilter(new EqualsFilter('foreignKey', $productId))
+                ->addFilter(new EqualsFilter('salesChannelId', TestDefaults::SALES_CHANNEL))
+                ->addFilter(new EqualsFilter('languageId', Defaults::LANGUAGE_SYSTEM))
+                ->addFilter(new EqualsFilter('isCanonical', true)),
+            $this->context
+        )->first();
+
+        $this->getContainer()->get('seo_url.repository')->upsert([[
+            'id'             => $existing?->getId() ?? Uuid::randomHex(),
             'salesChannelId' => TestDefaults::SALES_CHANNEL,
             'languageId'     => Defaults::LANGUAGE_SYSTEM,
             'foreignKey'     => $productId,
