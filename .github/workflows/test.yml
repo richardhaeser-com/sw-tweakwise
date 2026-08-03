@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ['ubuntu-latest']
-        php: ['8.2', '8.3']
+        php: ['8.2', '8.3', '8.4']
         experimental: [false]
         dependencies: ['lowest', 'highest']
 
@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up PHP Version
         uses: shivammathur/setup-php@v2
@@ -58,32 +58,186 @@ jobs:
 
   unit:
     needs: static
-    name: Unit testing
+    name: Unit tests (PHP ${{ matrix.php }}, SW ${{ matrix.shopware-version }})
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.2'
+            shopware-version: '6.5.8.19'
+          - php: '8.3'
+            shopware-version: '6.5.8.19'
+          - php: '8.2'
+            shopware-version: '6.6.10.21'
+          - php: '8.3'
+            shopware-version: '6.6.10.21'
+          - php: '8.4'
+            shopware-version: '6.6.10.21'
+
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl
+          coverage: pcov
+
+      # 6.5.x has no newer patch than 6.5.8.19, and that pin (plus its
+      # dependencies) is now flagged by several security advisories that
+      # Composer refuses to install by default. Disposable CI runner, not a
+      # production install, so disable the block for this job.
+      - name: Allow installing packages with security advisories
+        run: composer config --global policy.advisories.block false
+
+      - name: Pin Shopware packages to ${{ matrix.shopware-version }}
+        run: |
+          composer require --no-update --no-interaction \
+            "shopware/core:${{ matrix.shopware-version }}" \
+            "shopware/administration:${{ matrix.shopware-version }}" \
+            "shopware/storefront:${{ matrix.shopware-version }}"
+
+      - name: Install dependencies
+        run: composer update --no-ansi --no-interaction --no-progress
+
+      - name: Run unit tests
+        run: |
+          php -d pcov.enabled=1 vendor/bin/phpunit --configuration phpunit.unit.xml --log-junit junit-unit.xml
+
+      - name: Write job summary
+        if: always()
+        run: |
+          php -r "
+            \$xml = simplexml_load_file('junit-unit.xml');
+            \$suite = \$xml->testsuite;
+            \$tests = (int)\$suite['tests'];
+            \$failures = (int)\$suite['failures'];
+            \$errors = (int)\$suite['errors'];
+            \$skipped = (int)(\$suite['skipped'] ?? 0);
+            \$passed = \$tests - \$failures - \$errors - \$skipped;
+            \$status = (\$failures + \$errors) === 0 ? '✅ Passed' : '❌ Failed';
+            \$time = round((float)\$suite['time'], 2);
+            \$lines = [
+              '## Unit test results — PHP \${{ matrix.php }}, SW \${{ matrix.shopware-version }}',
+              '',
+              '| | |',
+              '|---|---|',
+              '| Result | ' . \$status . ' |',
+              '| Tests | ' . \$tests . ' |',
+              '| Passed | ' . \$passed . ' |',
+              '| Failures | ' . \$failures . ' |',
+              '| Errors | ' . \$errors . ' |',
+              '| Skipped | ' . \$skipped . ' |',
+              '| Time | ' . \$time . ' s |',
+              '',
+            ];
+            file_put_contents(getenv('GITHUB_STEP_SUMMARY'), implode(\"\n\", \$lines), FILE_APPEND);
+          "
+
+  integration:
+    needs: static
+    name: Integration tests (PHP ${{ matrix.php }}, SW ${{ matrix.shopware-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.2'
+            shopware-version: '6.5.8.19'
+          - php: '8.3'
+            shopware-version: '6.5.8.19'
+          - php: '8.2'
+            shopware-version: '6.6.10.21'
+          - php: '8.3'
+            shopware-version: '6.6.10.21'
+          - php: '8.4'
+            shopware-version: '6.6.10.21'
+
+    steps:
+      # Older Shopware tags (e.g. 6.5.x, which has no newer patch than 6.5.8.19)
+      # can pin dependencies now flagged by security advisories (e.g. dompdf 2.0.4),
+      # which Composer refuses to install by default. This is a disposable CI
+      # runner, not a production install, so disable the block globally before
+      # Setup Shopware's internal `composer install` runs.
+      - name: Allow installing packages with security advisories
+        run: composer config --global policy.advisories.block false
+
       - name: Setup Shopware
         uses: shopware/setup-shopware@main
         with:
-          shopware-version: 'v6.6.10.21'
-          php-version: 8.2
+          shopware-version: 'v${{ matrix.shopware-version }}'
+          php-version: ${{ matrix.php }}
           env: test
           php-extensions: pcov
           install: true
 
       - name: Checkout Tweakwise module
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           path: custom/plugins/RhaeTweakwise
 
       - name: Install Shopware 6 Tweakwise module
+        env:
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ secrets.GITHUB_TOKEN }}"}}'
         run: |
           composer config repositories.tweakwise.shopware6 "path" "custom/plugins/RhaeTweakwise"
           composer config allow-plugins.php-http/discovery false
-          composer require richardhaeser/sw-tweakwise
+          composer config minimum-stability dev
+          composer require richardhaeser/sw-tweakwise --no-audit
           bin/console plugin:refresh
           bin/console plugin:install -c -a RhaeTweakwise
 
-      - name: Run Tests
+      - name: Restore a real private filesystem root for the test environment
+        run: |
+          mkdir -p config/packages/test
+          cat > config/packages/test/zz_rhae_tweakwise_filesystem.yaml <<'YAML'
+          shopware:
+              filesystem:
+                  private:
+                      type: "local"
+                      config:
+                          root: "%kernel.project_dir%/files"
+          YAML
+          rm -rf var/cache/*
+          APP_ENV=test bin/console cache:clear --env=test
+
+      - name: Run integration tests
         run: |
           cd custom/plugins/RhaeTweakwise/
-          php -d pcov.enabled=1 ../../../vendor/bin/phpunit
+          php -d pcov.enabled=1 ../../../vendor/bin/phpunit --configuration phpunit.integration.xml --log-junit junit-integration.xml
+
+      - name: Write job summary
+        if: always()
+        run: |
+          php -r "
+            \$file = 'custom/plugins/RhaeTweakwise/junit-integration.xml';
+            \$xml = simplexml_load_file(\$file);
+            \$suite = \$xml->testsuite;
+            \$tests = (int)\$suite['tests'];
+            \$failures = (int)\$suite['failures'];
+            \$errors = (int)\$suite['errors'];
+            \$skipped = (int)(\$suite['skipped'] ?? 0);
+            \$passed = \$tests - \$failures - \$errors - \$skipped;
+            \$status = (\$failures + \$errors) === 0 ? '✅ Passed' : '❌ Failed';
+            \$time = round((float)\$suite['time'], 2);
+            \$lines = [
+              '## Integration test results — PHP \${{ matrix.php }}, SW \${{ matrix.shopware-version }}',
+              '',
+              '| | |',
+              '|---|---|',
+              '| Result | ' . \$status . ' |',
+              '| Tests | ' . \$tests . ' |',
+              '| Passed | ' . \$passed . ' |',
+              '| Failures | ' . \$failures . ' |',
+              '| Errors | ' . \$errors . ' |',
+              '| Skipped | ' . \$skipped . ' |',
+              '| Time | ' . \$time . ' s |',
+              '',
+            ];
+            file_put_contents(getenv('GITHUB_STEP_SUMMARY'), implode(\"\n\", \$lines), FILE_APPEND);
+          "
