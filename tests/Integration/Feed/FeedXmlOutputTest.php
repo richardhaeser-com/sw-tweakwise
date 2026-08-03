@@ -68,6 +68,8 @@ class FeedXmlOutputTest extends TestCase
      * @param array<string, mixed>      $productParams
      * @param array<string, mixed>|null $parentParams
      * @param array<string, mixed>      $expected
+     *
+     * @dataProvider rawCases
      */
     #[DataProvider('rawCases')]
     public function testFeedXmlMatchesExpected(
