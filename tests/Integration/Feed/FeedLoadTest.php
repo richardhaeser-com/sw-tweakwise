@@ -19,6 +19,8 @@ use Shopware\Core\Test\TestDefaults;
  * Load test: seeds 50,000 products and verifies the feed generates completely
  * without errors. Run via the weekly CI schedule or manually — excluded from
  * the regular test run by the 'load' group.
+ *
+ * @group load
  */
 #[Group('load')]
 class FeedLoadTest extends TestCase
