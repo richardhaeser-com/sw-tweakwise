@@ -103,7 +103,7 @@
     <script>
         window.addEventListener('twn.starter.ready', function () {
             const config = {
-                cid: "{{ element.config.category.value }}",
+                cid: "{{ element.config.category.value|split('-')|last }}",
                 output: "#tweakwise-alp",
                 {% if element.config.filterTemplate.value %}filterTemplateId: {{ element.config.filterTemplate.value }},{% endif %}
                 {% if element.config.sortTemplate.value %}sortingTemplateId: {{ element.config.sortTemplate.value }},{% endif %}
