@@ -5,7 +5,7 @@
         if (NS.profileKey) return Promise.resolve(NS.profileKey);
 
         if (!NS.profileKeyPromise) {
-            NS.profileKeyPromise = fetch('/tweakwise/profile-key', {
+            NS.profileKeyPromise = fetch(window.tweakwiseConfig.profileKeyUrl, {
                 credentials: 'same-origin',
                 headers: { 'Accept': 'application/json' },
             })

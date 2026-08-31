@@ -39,7 +39,7 @@
                         const cached = window.sessionStorage.getItem('tweakwise_profile_key');
                         if (cached) return Promise.resolve(cached);
 
-                        return fetch('/tweakwise/profile-key', {
+                        return fetch('{{ path('frontend.tweakwise.profile_key') }}', {
                             credentials: 'same-origin',
                             headers: { 'Accept': 'application/json' }
                         })
@@ -60,6 +60,7 @@
                 let tweakwiseProductId;
                 window.tweakwiseConfig = window.tweakwiseConfig || {};
                 window.tweakwiseConfig.instanceKey = '{{ instanceKey }}';
+                window.tweakwiseConfig.profileKeyUrl = '{{ path('frontend.tweakwise.profile_key') }}';
             </script>
         {% endif %}
     {% endblock %}
