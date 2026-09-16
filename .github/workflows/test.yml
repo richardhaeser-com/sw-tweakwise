@@ -128,7 +128,7 @@ jobs:
       - name: Setup Shopware
         uses: shopware/setup-shopware@main
         with:
-          shopware-version: 'v6.7.12.2'
+          shopware-version: 'v6.7.14.1'
           php-version: ${{ matrix.php }}
           env: test
           php-extensions: pcov
