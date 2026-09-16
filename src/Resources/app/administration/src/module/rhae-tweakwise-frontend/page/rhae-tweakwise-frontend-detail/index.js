@@ -214,7 +214,7 @@ Component.register('rhae-tweakwise-frontend-detail', {
                     }
 
                     // Zorg dat de groepen objecten zijn
-                    const groups = ['main', 'properties', 'customFields'];
+                    const groups = ['main', 'swAttributes', 'properties', 'customFields'];
                     groups.forEach((g) => {
                         if (!this.item.backendSyncProperties[g] || Array.isArray(this.item.backendSyncProperties[g])) {
                             this.item.backendSyncProperties[g] = {};
@@ -239,7 +239,7 @@ Component.register('rhae-tweakwise-frontend-detail', {
             this.$emit('change-value', fieldName, value);
         },
         ensureOptionKeysExist() {
-            const groups = ['main', 'properties', 'customFields'];
+            const groups = ['main', 'swAttributes', 'properties', 'customFields'];
             groups.forEach(g => {
                 if (!this.item.backendSyncProperties[g]) this.$set(this.item.backendSyncProperties, g, {});
                 const list = this.backendSyncOptions?.[g] || [];

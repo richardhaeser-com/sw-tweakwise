@@ -387,14 +387,7 @@ class FeedService
         }
 
         if ($grouped) {
-            $criteria->addFilter(
-                new MultiFilter(MultiFilter::CONNECTION_OR, [
-                    new NotFilter(NotFilter::CONNECTION_AND, [
-                        new EqualsFilter('parentId', null),
-                    ]),
-                    new EqualsFilter('childCount', 0),
-                ])
-            );
+            $criteria->addFilter(self::buildGroupedProductsFilter());
             $criteria->addAssociation('prices');
             $entities = $this->productRepository->search($criteria, $salesChannelContext->getContext());
             foreach ($entities as $entity) {
@@ -707,6 +700,20 @@ class FeedService
         }
 
         $this->writeContent($content, $feed);
+    }
+
+    /**
+     * Builds the DAL filter that, in grouped mode, includes only variants (parentId IS NOT NULL)
+     * and standalone products (childCount = 0), thereby excluding parent products.
+     */
+    public static function buildGroupedProductsFilter(): MultiFilter
+    {
+        return new MultiFilter(MultiFilter::CONNECTION_OR, [
+            new NotFilter(NotFilter::CONNECTION_AND, [
+                new EqualsFilter('parentId', null),
+            ]),
+            new EqualsFilter('childCount', 0),
+        ]);
     }
 
     private function getVisibility(ProductEntity $product): int

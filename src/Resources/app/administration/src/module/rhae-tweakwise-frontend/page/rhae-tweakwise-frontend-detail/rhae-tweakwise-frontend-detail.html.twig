@@ -160,6 +160,17 @@
                                             @change="setSelectedProperty($event, option, 'main')"
                                             :label="$tc('rhae-tweakwise-frontend.detail.label.backendSyncOptions.main.' + label)"
                                     />
+                                    <sw-checkbox-field
+                                            v-for="(label, option) in backendSyncOptions['swAttributes']"
+                                            :name="option"
+                                            :value="isChecked('swAttributes', option)"
+                                            {% if VUE3 %}
+                                                @update:value="setSelectedProperty($event, option, 'swAttributes')"
+                                            {% else %}
+                                                @change="setSelectedProperty($event, option, 'swAttributes')"
+                                            {% endif %}
+                                            :label="$tc('rhae-tweakwise-frontend.detail.label.backendSyncOptions.swAttributes.' + label)"
+                                    />
                                 </sw-container>
                                 <h4>{{ $t('rhae-tweakwise-frontend.detail.section.backendSyncProperties') }}</h4>
                                 <sw-container

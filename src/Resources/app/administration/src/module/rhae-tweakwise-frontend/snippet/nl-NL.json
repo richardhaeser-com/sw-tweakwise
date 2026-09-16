@@ -62,7 +62,25 @@
             "manufacturer": "Fabrikant",
             "url": "Url",
             "images": "Afbeeldingen",
-            "categories": "Categorieën"
+            "categories": "Categorieën",
+            "groupcode": "Groepscode"
+          },
+          "swAttributes": {
+            "sw-free-shipping": "Gratis verzending",
+            "sw-is-topseller": "Is topseller",
+            "sw-is-closeout": "Is uitverkoop",
+            "sw-has-discount": "Heeft korting",
+            "sw-new": "Is nieuw",
+            "sw-label": "Label (uitverkocht/topseller/korting/nieuw)",
+            "sw-id": "Product ID",
+            "sw-product-number": "Productnummer",
+            "sw-ean": "EAN",
+            "sw-manufacturer-productnumber": "Fabrikant productnummer",
+            "sw-release-date": "Releasedatum",
+            "sw-description": "Omschrijving",
+            "sw-keywords": "Zoekwoorden",
+            "sw-delivery-time": "Levertijd",
+            "sw-avg-rating": "Gemiddelde beoordeling"
           }
         },
         "fullPathCid": "Laat categorieën met dezelfde bovenliggende categorie zien bij categorie filters",
