@@ -31,6 +31,13 @@
 
         {% if instanceKey %}
             <script>
+                let tweakwiseProductId;
+                window.tweakwiseConfig = window.tweakwiseConfig || {};
+                window.tweakwiseConfig.instanceKey = '{{ instanceKey }}';
+                window.tweakwiseConfig.profileKeyUrl = '{{ path('frontend.tweakwise.profile_key') }}';
+            </script>
+
+            <script>
                 (function () {
                     window.tweakwise = window.tweakwise || {};
                     if (typeof window.tweakwise.getProfileKey === 'function') return;
@@ -39,7 +46,7 @@
                         const cached = window.sessionStorage.getItem('tweakwise_profile_key');
                         if (cached) return Promise.resolve(cached);
 
-                        return fetch('/tweakwise/profile-key', {
+                        return fetch(window.tweakwiseConfig.profileKeyUrl, {
                             credentials: 'same-origin',
                             headers: { 'Accept': 'application/json' }
                         })
@@ -56,11 +63,6 @@
             </script>
 
 
-            <script>
-                let tweakwiseProductId;
-                window.tweakwiseConfig = window.tweakwiseConfig || {};
-                window.tweakwiseConfig.instanceKey = '{{ instanceKey }}';
-            </script>
         {% endif %}
     {% endblock %}
 {% endblock %}

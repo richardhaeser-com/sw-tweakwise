@@ -1,3 +1,8 @@
+# Unreleased
+
+**Fixed**
+- Resolved profile-key requests for sales channels configured with a URL path prefix
+
 # 5.9.0
 
 **Added**
