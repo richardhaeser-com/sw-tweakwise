@@ -3,12 +3,68 @@ name: Release to store
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   release:
-    uses: shopware/github-actions/.github/workflows/store-release.yml@main
-    with:
-      extensionName: RhaeTweakwise
-    secrets:
-      accountUser: ${{ secrets.SHOPWARE_ACCOUNT_USER }}
-      accountPassword: ${{ secrets.SHOPWARE_ACCOUNT_PASSWORD }}
-      ghToken: ${{ secrets.GH_TOKEN }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+
+      - name: Install shopware-cli
+        uses: shopware/shopware-cli-action@v3
+        with:
+          version: latest
+
+      - name: Build and create zip
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
+        run: |
+          shopware-cli extension zip --git-commit "${{ github.sha }}" . --release
+          mv "RhaeTweakwise-${{ github.sha }}.zip" RhaeTweakwise.zip
+
+      - name: Get version
+        run: echo "EXTENSION_VERSION=$(shopware-cli extension get-version .)" >> "$GITHUB_ENV"
+
+      - name: Check tag existence
+        uses: mukunku/tag-exists-action@5c39604fe8aef7e65acb6fbcf96ec580f7680313
+        id: check-tag
+        with:
+          tag: ${{ env.EXTENSION_VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Validate zip
+        run: shopware-cli extension validate "$PWD/RhaeTweakwise.zip" --only sw-cli
+
+      - name: Upload to Shopware Store
+        run: shopware-cli account producer extension upload "$PWD/RhaeTweakwise.zip"
+        env:
+          SHOPWARE_CLI_ACCOUNT_CLIENT_ID: ${{ secrets.SHOPWARE_CLI_ACCOUNT_CLIENT_ID }}
+          SHOPWARE_CLI_ACCOUNT_CLIENT_SECRET: ${{ secrets.SHOPWARE_CLI_ACCOUNT_CLIENT_SECRET }}
+
+      - name: Extract changelog
+        if: steps.check-tag.outputs.exists != 'true'
+        run: shopware-cli extension get-changelog "$PWD/RhaeTweakwise.zip" > /tmp/changelog.txt
+
+      - name: Create tag
+        if: steps.check-tag.outputs.exists != 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git tag "${EXTENSION_VERSION}"
+          git push origin "${EXTENSION_VERSION}"
+
+      - name: Create GitHub release
+        if: steps.check-tag.outputs.exists != 'true'
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd
+        with:
+          artifacts: RhaeTweakwise.zip
+          tag: ${{ env.EXTENSION_VERSION }}
+          name: ${{ env.EXTENSION_VERSION }}
+          bodyFile: /tmp/changelog.txt
