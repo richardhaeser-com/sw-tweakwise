@@ -1,5 +1,8 @@
 # Unreleased
 
+**Added**
+- Added an identifier strategy setting that keeps Tweakwise product and category IDs stable when a sales channel domain changes. New installations use the sales channel, language, and currency context; existing configurations retain the legacy domain-based IDs until explicitly changed.
+
 **Fixed**
 - Resolved profile-key requests for sales channels configured with a URL path prefix
 
