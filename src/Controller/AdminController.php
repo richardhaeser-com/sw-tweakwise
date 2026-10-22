@@ -6,6 +6,7 @@ use RH\Tweakwise\Api\BackendApi;
 use RH\Tweakwise\Api\FrontendApi;
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
+use RH\Tweakwise\Service\IdentifierScopeService;
 use RH\Tweakwise\Service\ProductDataService;
 use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
@@ -48,6 +49,7 @@ class AdminController extends AbstractController
         private EntityRepository $feedRepository,
         private readonly SystemConfigService $systemConfigService,
         private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory,
+        private readonly IdentifierScopeService $identifierScopeService,
     ) {
     }
     #[Route('/api/_action/rhae-tweakwise/check-possibilities/{token}', name: 'rhae.tweakwise.check_possibilities', methods: ['GET'])]
@@ -134,13 +136,14 @@ class AdminController extends AbstractController
             return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productId, 'product' => $product, 'error' => true, 'message' => 'Frontend not found.']);
         }
 
-        $productIdHash = ProductDataService::getTweakwiseProductId($product, $frontend->getSalesChannelDomains()->first()->getId());
+        $identifierScope = $this->identifierScopeService->getScopeForDomain($frontend->getSalesChannelDomains()->first());
+        $productIdHash = ProductDataService::getTweakwiseProductId($product, $identifierScope);
         if (!$frontend->getAccessToken()) {
             return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productIdHash, 'product' => $product, 'error' => true, 'message' => 'No access token.']);
         }
 
-        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
-        $productData = $backendApi->getProductData($product, $frontend->getSalesChannelDomains()->first()->getId());
+        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router, identifierScopeService: $this->identifierScopeService);
+        $productData = $backendApi->getProductData($product, $identifierScope);
 
         if (array_key_exists('error', $productData) && $productData['error']) {
             return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productIdHash, 'product' => $product, 'error' => true, 'code' => $productData['code'], 'message' => $productData['message']]);
@@ -177,7 +180,7 @@ class AdminController extends AbstractController
             return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productId, 'product' => $product, 'error' => true, 'message' => 'Frontend not found.']);
         }
 
-        $productIdHash = ProductDataService::getTweakwiseProductId($product, $frontend->getSalesChannelDomains()->first()->getId());
+        $productIdHash = ProductDataService::getTweakwiseProductId($product, $this->identifierScopeService->getScopeForDomain($frontend->getSalesChannelDomains()->first()));
         if (!$frontend->getAccessToken()) {
             return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productIdHash, 'product' => $product, 'error' => true, 'message' => 'No access token.']);
         }
@@ -243,7 +246,7 @@ class AdminController extends AbstractController
             $criteria->addAssociation('manufacturer');
             $parent = $this->productRepository->search($criteria, $context)->first();
         }
-        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router);
+        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router, identifierScopeService: $this->identifierScopeService);
 
         $salesChannelDomain = $frontend->getSalesChannelDomains()->first();
         $salesChannel = $salesChannelDomain->getSalesChannel();

@@ -6,6 +6,7 @@ use function array_key_exists;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
+use RH\Tweakwise\Service\IdentifierScopeService;
 use RH\Tweakwise\Service\ProductDataService;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -17,8 +18,13 @@ class BackendApi
     private readonly Client $client;
     public $apiUrl = 'https://navigator-api.tweakwise.com';
     public $frontendApiUrl = 'https://gateway.tweakwisenavigator.com';
-    public function __construct(private readonly string $instanceKey, private readonly string $accessToken, private RouterInterface $router, ?Client $client = null)
-    {
+    public function __construct(
+        private readonly string $instanceKey,
+        private readonly string $accessToken,
+        private RouterInterface $router,
+        ?Client $client = null,
+        private readonly ?IdentifierScopeService $identifierScopeService = null
+    ) {
         $this->client = $client ?? new Client();
     }
 
@@ -146,7 +152,7 @@ class BackendApi
     {
         $productData = null;
         $domain = $frontend->getSalesChannelDomains()->first();
-        $domainId = $domain->getId();
+        $domainId = $this->identifierScopeService?->getScopeForDomain($domain) ?? $domain->getId();
 
         $categories = [];
         $productId = ProductDataService::getTweakwiseProductId($product, $domainId);

@@ -421,17 +421,12 @@ class FeedXmlOutputTest extends TestCase
 
     private function generateFeed(bool $grouped, bool $excludeChildren = false, bool $respectCloseout = false): \SimpleXMLElement
     {
-        $domainCriteria = new Criteria();
-        $domainCriteria->addFilter(new EqualsFilter('salesChannelId', TestDefaults::SALES_CHANNEL));
-        $domainCriteria->setLimit(1);
+        return $this->generateFeedForDomains([$this->getDefaultSalesChannelDomain()->getId()], $grouped, $excludeChildren, $respectCloseout);
+    }
 
-        $domain = $this->getContainer()
-            ->get('sales_channel_domain.repository')
-            ->search($domainCriteria, $this->context)
-            ->first();
-
-        $this->assertNotNull($domain, 'Default sales channel must have at least one domain.');
-
+    /** @param string[] $domainIds */
+    private function generateFeedForDomains(array $domainIds, bool $grouped = false, bool $excludeChildren = false, bool $respectCloseout = false): \SimpleXMLElement
+    {
         $feedId = Uuid::randomHex();
         $this->getContainer()->get('s_plugin_rhae_tweakwise_feed.repository')->create([[
             'id'                                          => $feedId,
@@ -443,7 +438,7 @@ class FeedXmlOutputTest extends TestCase
             'groupedProducts'                             => $grouped,
             'excludeChildren'                             => $excludeChildren,
             'respectHideCloseoutProductsWhenOutOfStock'   => $respectCloseout,
-            'salesChannelDomains'                         => [['id' => $domain->getId()]],
+            'salesChannelDomains'                         => array_map(static fn (string $domainId): array => ['id' => $domainId], $domainIds),
         ]], $this->context);
 
         $feedCriteria = new Criteria([$feedId]);
@@ -466,6 +461,54 @@ class FeedXmlOutputTest extends TestCase
         $this->assertNotEmpty($xml, 'Generated feed XML must not be empty.');
 
         return new \SimpleXMLElement($xml);
+    }
+
+    private function getDefaultSalesChannelDomain(): \Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity
+    {
+        $domainCriteria = new Criteria();
+        $domainCriteria->addFilter(new EqualsFilter('salesChannelId', TestDefaults::SALES_CHANNEL));
+        $domainCriteria->setLimit(1);
+
+        $domain = $this->getContainer()
+            ->get('sales_channel_domain.repository')
+            ->search($domainCriteria, $this->context)
+            ->first();
+
+        $this->assertNotNull($domain, 'Default sales channel must have at least one domain.');
+
+        return $domain;
+    }
+
+    private function replaceDomain(\Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity $domain): string
+    {
+        $this->getContainer()->get('sales_channel_domain.repository')->delete([['id' => $domain->getId()]], $this->context);
+        $replacementDomainId = Uuid::randomHex();
+        $this->getContainer()->get('sales_channel_domain.repository')->create([[
+            'id' => $replacementDomainId,
+            'url' => 'https://production.example',
+            'salesChannelId' => $domain->getSalesChannelId(),
+            'languageId' => $domain->getLanguageId(),
+            'currencyId' => $domain->getCurrencyId(),
+            'snippetSetId' => $domain->getSnippetSetId(),
+        ]], $this->context);
+
+        return $replacementDomainId;
+    }
+
+    private function firstProductId(\SimpleXMLElement $xml): string
+    {
+        $products = $xml->xpath('//item/id');
+        $this->assertNotEmpty($products, 'The feed must contain a product.');
+
+        return (string) $products[0];
+    }
+
+    private function firstDomainCategoryId(\SimpleXMLElement $xml, string $salesChannelId): string
+    {
+        $categories = $xml->xpath('//category[parents/categoryid="' . md5($salesChannelId) . '"]/categoryid');
+        $this->assertNotEmpty($categories, 'The feed must contain a domain category.');
+
+        return (string) $categories[0];
     }
 
     private function findItem(\SimpleXMLElement $xml, string $number): \SimpleXMLElement

@@ -3,6 +3,7 @@
 namespace RH\Tweakwise\Subscriber;
 
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
+use RH\Tweakwise\Service\IdentifierScopeService;
 use RH\Tweakwise\Service\ProductDataService;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -21,7 +22,8 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
     public function __construct(
         private readonly EntityRepository $frontendRepository,
         private readonly ProductDataService $productDataService,
-        private readonly RequestStack $requestStack
+        private readonly RequestStack $requestStack,
+        private readonly IdentifierScopeService $identifierScopeService
     ) {
     }
 
@@ -46,6 +48,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         }
 
         $domainId = $event->getSalesChannelContext()->getDomainId();
+        $identifierScope = $this->identifierScopeService->getScopeForContext($event->getSalesChannelContext());
         $rootCategoryId = $event->getSalesChannelContext()->getSalesChannel()->getNavigationCategoryId();
 
         $request = $this->requestStack->getCurrentRequest();
@@ -63,7 +66,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         }
 
         $twConfiguration = [
-            'domainId' => $domainId,
+            'domainId' => $identifierScope,
             'profileKey' => $profileKey,
             'rootCategoryId' => $rootCategoryId,
             'instanceKey' => $result->getToken(),
@@ -89,7 +92,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
         if ($page instanceof ProductPage) {
             $product = $this->productDataService->getProductShownInListing($page->getProduct(), $event->getSalesChannelContext());
 
-            $twConfiguration['crossSellProductId'] = ProductDataService::getTweakwiseProductId($product, $domainId);
+            $twConfiguration['crossSellProductId'] = ProductDataService::getTweakwiseProductId($product, $identifierScope);
         }
         if ($page instanceof Page || $page instanceof ErrorTemplateStruct) {
             $page->addExtensions([
