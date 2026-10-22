@@ -2,6 +2,7 @@
 
 namespace RH\Tweakwise\Twig;
 
+use RH\Tweakwise\Service\IdentifierScopeService;
 use RH\Tweakwise\Service\ProductDataService;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -10,7 +11,7 @@ use Twig\TwigFunction;
 
 class ProductDataExtension extends AbstractExtension
 {
-    public function __construct(private readonly ProductDataService $productDataService)
+    public function __construct(private readonly ProductDataService $productDataService, private readonly IdentifierScopeService $identifierScopeService)
     {
     }
 
@@ -26,14 +27,14 @@ class ProductDataExtension extends AbstractExtension
 
     public function getCrossSellId(array $twigContext, ProductEntity $product, string $domainId): string
     {
-        return ProductDataService::getTweakwiseProductId($product, $domainId);
+        return ProductDataService::getTweakwiseProductId($product, $this->identifierScopeService->getScopeForContext($twigContext['context']));
     }
 
     public function getCrossSellIdByProductNumber(array $twigContext, string $productNumber, string $domainId): string
     {
         $product = $this->productDataService->getProductFromProductNumber($productNumber, $twigContext['context']->getContext());
         if ($product instanceof ProductEntity) {
-            return ProductDataService::getTweakwiseProductId($this->productDataService->getProductShownInListing($product, $twigContext['context']), $domainId);
+            return ProductDataService::getTweakwiseProductId($this->productDataService->getProductShownInListing($product, $twigContext['context']), $this->identifierScopeService->getScopeForContext($twigContext['context']));
         }
         return '';
     }

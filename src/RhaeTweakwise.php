@@ -14,6 +14,9 @@ class RhaeTweakwise extends Plugin
 {
     public function install(InstallContext $installContext): void
     {
+        $this->container->get(Connection::class)->executeStatement(
+            'INSERT INTO `system_config` (`id`, `configuration_key`, `configuration_value`, `created_at`) VALUES (UNHEX(REPLACE(UUID(), \'-\', \'\')), \'RhaeTweakwise.config.useContextBasedIdentifiers\', \'{"_value": true}\', NOW(3)) ON DUPLICATE KEY UPDATE `configuration_value` = VALUES(`configuration_value`)'
+        );
     }
 
     public function update(UpdateContext $updateContext): void

@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use RH\Tweakwise\Controller\AdminController;
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
+use RH\Tweakwise\Service\IdentifierScopeService;
 use Shopware\Core\Content\Product\DataAbstractionLayer\VariantListingConfig;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\AbstractProductCloseoutFilterFactory;
@@ -55,6 +56,7 @@ class AdminControllerGroupedFeedTest extends TestCase
             $feedRepo,
             $systemConfig ?? $this->createMock(SystemConfigService::class),
             $closeoutFilterFactory ?? $this->createMock(AbstractProductCloseoutFilterFactory::class),
+            new IdentifierScopeService($systemConfig ?? $this->createMock(SystemConfigService::class)),
         );
     }
 
