@@ -201,7 +201,7 @@ class FeedXmlOutputTest extends TestCase
     public function testDomainReplacementChangesLegacyIdentifiers(): void
     {
         $this->getContainer()->get(SystemConfigService::class)
-            ->set('RhaeTweakwise.config.useContextBasedIdentifiers', false);
+            ->set('RhaeTweakwise.config.useContextBasedIdentifiers', false, null, false);
 
         $this->createStandaloneProduct('PROD-DOMAIN-REPLACEMENT-LEGACY', 'Domain Replacement Product', 5, 'Brand', 10.00, 'product/domain-replacement-legacy');
         $domain = $this->getDefaultSalesChannelDomain();
@@ -216,7 +216,7 @@ class FeedXmlOutputTest extends TestCase
     public function testLegacyIdentifiersUseTheHistoricalDomainBasedFormulas(): void
     {
         $this->getContainer()->get(SystemConfigService::class)
-            ->set('RhaeTweakwise.config.useContextBasedIdentifiers', false);
+            ->set('RhaeTweakwise.config.useContextBasedIdentifiers', false, null, false);
 
         $productId = $this->createStandaloneProduct('PROD-LEGACY-IDENTIFIERS', 'Legacy Identifiers Product', 5, 'Brand', 10.00, 'product/legacy-identifiers');
         $domain = $this->getDefaultSalesChannelDomain();
@@ -235,7 +235,7 @@ class FeedXmlOutputTest extends TestCase
     public function testDomainReplacementKeepsContextBasedIdentifiers(): void
     {
         $this->getContainer()->get(SystemConfigService::class)
-            ->set('RhaeTweakwise.config.useContextBasedIdentifiers', true);
+            ->set('RhaeTweakwise.config.useContextBasedIdentifiers', true, null, false);
 
         $this->createStandaloneProduct('PROD-DOMAIN-REPLACEMENT-CONTEXT', 'Domain Replacement Product', 5, 'Brand', 10.00, 'product/domain-replacement-context');
         $domain = $this->getDefaultSalesChannelDomain();
