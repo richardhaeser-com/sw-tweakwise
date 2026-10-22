@@ -213,6 +213,25 @@ class FeedXmlOutputTest extends TestCase
         $this->assertNotSame($this->firstDomainCategoryId($before, $domain->getSalesChannelId()), $this->firstDomainCategoryId($after, $domain->getSalesChannelId()));
     }
 
+    public function testLegacyIdentifiersUseTheHistoricalDomainBasedFormulas(): void
+    {
+        $this->getContainer()->get(SystemConfigService::class)
+            ->set('RhaeTweakwise.config.useContextBasedIdentifiers', false);
+
+        $productId = $this->createStandaloneProduct('PROD-LEGACY-IDENTIFIERS', 'Legacy Identifiers Product', 5, 'Brand', 10.00, 'product/legacy-identifiers');
+        $domain = $this->getDefaultSalesChannelDomain();
+        $xml = $this->generateFeedForDomains([$domain->getId()]);
+        $salesChannel = $this->getContainer()->get('sales_channel.repository')->search(new Criteria([$domain->getSalesChannelId()]), $this->context)->first();
+        $this->assertNotNull($salesChannel);
+
+        $item = $this->findItem($xml, 'PROD-LEGACY-IDENTIFIERS');
+        $this->assertSame(sprintf('%x-%s', crc32($domain->getId()), $productId), (string) $item->id);
+        $this->assertSame(
+            md5($salesChannel->getNavigationCategoryId() . '_' . $domain->getId()),
+            $this->firstDomainCategoryId($xml, $domain->getSalesChannelId())
+        );
+    }
+
     public function testDomainReplacementKeepsContextBasedIdentifiers(): void
     {
         $this->getContainer()->get(SystemConfigService::class)
