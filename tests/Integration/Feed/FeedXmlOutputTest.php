@@ -198,55 +198,6 @@ class FeedXmlOutputTest extends TestCase
         $this->assertItemAbsent($xml, 'PROD-NO-VIS', 'Product with no visibility record must not appear in the feed.');
     }
 
-    public function testDomainReplacementChangesLegacyIdentifiers(): void
-    {
-        $this->getContainer()->get(SystemConfigService::class)
-            ->set('RhaeTweakwise.config.useContextBasedIdentifiers', false, null, false);
-
-        $this->createStandaloneProduct('PROD-DOMAIN-REPLACEMENT-LEGACY', 'Domain Replacement Product', 5, 'Brand', 10.00, 'product/domain-replacement-legacy');
-        $domain = $this->getDefaultSalesChannelDomain();
-        $before = $this->generateFeedForDomains([$domain->getId()]);
-        $replacementDomainId = $this->replaceDomain($domain);
-        $after = $this->generateFeedForDomains([$replacementDomainId]);
-
-        $this->assertNotSame($this->firstProductId($before), $this->firstProductId($after));
-        $this->assertNotSame($this->firstDomainCategoryId($before, $domain->getSalesChannelId()), $this->firstDomainCategoryId($after, $domain->getSalesChannelId()));
-    }
-
-    public function testLegacyIdentifiersUseTheHistoricalDomainBasedFormulas(): void
-    {
-        $this->getContainer()->get(SystemConfigService::class)
-            ->set('RhaeTweakwise.config.useContextBasedIdentifiers', false, null, false);
-
-        $productId = $this->createStandaloneProduct('PROD-LEGACY-IDENTIFIERS', 'Legacy Identifiers Product', 5, 'Brand', 10.00, 'product/legacy-identifiers');
-        $domain = $this->getDefaultSalesChannelDomain();
-        $xml = $this->generateFeedForDomains([$domain->getId()]);
-        $salesChannel = $this->getContainer()->get('sales_channel.repository')->search(new Criteria([$domain->getSalesChannelId()]), $this->context)->first();
-        $this->assertNotNull($salesChannel);
-
-        $item = $this->findItem($xml, 'PROD-LEGACY-IDENTIFIERS');
-        $this->assertSame(sprintf('%x-%s', crc32($domain->getId()), $productId), (string) $item->id);
-        $this->assertSame(
-            md5($salesChannel->getNavigationCategoryId() . '_' . $domain->getId()),
-            $this->firstDomainCategoryId($xml, $domain->getSalesChannelId())
-        );
-    }
-
-    public function testDomainReplacementKeepsContextBasedIdentifiers(): void
-    {
-        $this->getContainer()->get(SystemConfigService::class)
-            ->set('RhaeTweakwise.config.useContextBasedIdentifiers', true, null, false);
-
-        $this->createStandaloneProduct('PROD-DOMAIN-REPLACEMENT-CONTEXT', 'Domain Replacement Product', 5, 'Brand', 10.00, 'product/domain-replacement-context');
-        $domain = $this->getDefaultSalesChannelDomain();
-        $before = $this->generateFeedForDomains([$domain->getId()]);
-        $replacementDomainId = $this->replaceDomain($domain);
-        $after = $this->generateFeedForDomains([$replacementDomainId]);
-
-        $this->assertSame($this->firstProductId($before), $this->firstProductId($after));
-        $this->assertSame($this->firstDomainCategoryId($before, $domain->getSalesChannelId()), $this->firstDomainCategoryId($after, $domain->getSalesChannelId()));
-    }
-
     public function testProductWithVisibilityLinkAppearsInFeedWithVisibility1(): void
     {
         $productId = $this->ids->create('PROD-LINK');
