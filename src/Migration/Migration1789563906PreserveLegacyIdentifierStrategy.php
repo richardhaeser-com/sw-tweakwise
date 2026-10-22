@@ -20,7 +20,7 @@ class Migration1789563906PreserveLegacyIdentifierStrategy extends MigrationStep
 
         if ($hasExistingConfiguration) {
             $connection->executeStatement(
-                'INSERT INTO `system_config` (`id`, `configuration_key`, `configuration_value`, `created_at`) VALUES (UNHEX(REPLACE(UUID(), \'-\', \'\')), \'RhaeTweakwise.config.useContextBasedIdentifiers\', \'{"_value": false}\', NOW(3)) ON DUPLICATE KEY UPDATE `configuration_value` = VALUES(`configuration_value`)'
+                'INSERT IGNORE INTO `system_config` (`id`, `configuration_key`, `configuration_value`, `created_at`) VALUES (UNHEX(REPLACE(UUID(), \'-\', \'\')), \'RhaeTweakwise.config.useContextBasedIdentifiers\', \'{"_value": false}\', NOW(3))'
             );
         }
     }

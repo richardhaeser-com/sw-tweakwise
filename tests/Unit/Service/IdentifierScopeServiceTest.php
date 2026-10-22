@@ -25,12 +25,12 @@ class IdentifierScopeServiceTest extends TestCase
         $this->assertSame('sales-channel-id_language-id_currency-id', (new IdentifierScopeService($systemConfigService))->getScopeForDomain($this->domain()));
     }
 
-    public function testUsesContextStrategyWhenTheSettingHasNotBeenStoredYet(): void
+    public function testUsesDomainIdWhenTheSettingHasNotBeenStoredYet(): void
     {
         $systemConfigService = $this->createMock(SystemConfigService::class);
         $systemConfigService->method('get')->willReturn(null);
 
-        $this->assertSame('sales-channel-id_language-id_currency-id', (new IdentifierScopeService($systemConfigService))->getScopeForDomain($this->domain()));
+        $this->assertSame('domain-id', (new IdentifierScopeService($systemConfigService))->getScopeForDomain($this->domain()));
     }
 
     private function domain(): SalesChannelDomainEntity
