@@ -142,7 +142,7 @@ class AdminController extends AbstractController
             return new JsonResponse(['frontendId' => $frontendId, 'productId' => $productIdHash, 'product' => $product, 'error' => true, 'message' => 'No access token.']);
         }
 
-        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router, $this->identifierScopeService);
+        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router, identifierScopeService: $this->identifierScopeService);
         $productData = $backendApi->getProductData($product, $identifierScope);
 
         if (array_key_exists('error', $productData) && $productData['error']) {
@@ -246,7 +246,7 @@ class AdminController extends AbstractController
             $criteria->addAssociation('manufacturer');
             $parent = $this->productRepository->search($criteria, $context)->first();
         }
-        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router, $this->identifierScopeService);
+        $backendApi = new BackendApi($frontend->getToken(), $frontend->getAccessToken(), $this->router, identifierScopeService: $this->identifierScopeService);
 
         $salesChannelDomain = $frontend->getSalesChannelDomains()->first();
         $salesChannel = $salesChannelDomain->getSalesChannel();

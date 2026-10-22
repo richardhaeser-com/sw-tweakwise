@@ -18,8 +18,13 @@ class BackendApi
     private readonly Client $client;
     public $apiUrl = 'https://navigator-api.tweakwise.com';
     public $frontendApiUrl = 'https://gateway.tweakwisenavigator.com';
-    public function __construct(private readonly string $instanceKey, private readonly string $accessToken, private RouterInterface $router, private readonly IdentifierScopeService $identifierScopeService, ?Client $client = null)
-    {
+    public function __construct(
+        private readonly string $instanceKey,
+        private readonly string $accessToken,
+        private RouterInterface $router,
+        ?Client $client = null,
+        private readonly ?IdentifierScopeService $identifierScopeService = null
+    ) {
         $this->client = $client ?? new Client();
     }
 
@@ -147,7 +152,7 @@ class BackendApi
     {
         $productData = null;
         $domain = $frontend->getSalesChannelDomains()->first();
-        $domainId = $this->identifierScopeService->getScopeForDomain($domain);
+        $domainId = $this->identifierScopeService?->getScopeForDomain($domain) ?? $domain->getId();
 
         $categories = [];
         $productId = ProductDataService::getTweakwiseProductId($product, $domainId);

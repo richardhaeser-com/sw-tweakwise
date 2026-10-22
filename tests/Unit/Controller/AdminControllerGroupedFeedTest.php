@@ -43,6 +43,8 @@ class AdminControllerGroupedFeedTest extends TestCase
     ): AdminController {
         $requestStack = new RequestStack();
         $requestStack->push($request);
+        $systemConfig ??= $this->createMock(SystemConfigService::class);
+        $systemConfig->method('get')->willReturn(false);
 
         return new AdminController(
             $frontendRepo,
@@ -54,9 +56,9 @@ class AdminControllerGroupedFeedTest extends TestCase
             $this->createMock(RouterInterface::class),
             $requestStack,
             $feedRepo,
-            $systemConfig ?? $this->createMock(SystemConfigService::class),
+            $systemConfig,
             $closeoutFilterFactory ?? $this->createMock(AbstractProductCloseoutFilterFactory::class),
-            new IdentifierScopeService($systemConfig ?? $this->createMock(SystemConfigService::class)),
+            new IdentifierScopeService($systemConfig),
         );
     }
 

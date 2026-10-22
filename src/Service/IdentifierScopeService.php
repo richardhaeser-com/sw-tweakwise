@@ -34,7 +34,7 @@ class IdentifierScopeService
 
     private function usesContextBasedIdentifiers(): bool
     {
-        return $this->systemConfigService->get(self::CONFIG_KEY) === true;
+        return $this->systemConfigService->get(self::CONFIG_KEY) !== false;
     }
 
     private function getContextScope(string $salesChannelId, string $languageId, string $currencyId): string
