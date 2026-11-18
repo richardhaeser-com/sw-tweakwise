@@ -37,7 +37,9 @@ Storefront templates, including the search results page, can access the option v
 When enabled for Plugin Studio, automatic initialisation is disabled in the shared configuration.
 The search results page uses `tweakwiseListerPage()` with
 the `tn_q` query parameter, the shop's domain-specific root category ID, language and event handlers.
-When disabled, the existing search results initialisation is preserved.
+The Tweakwise product listing CMS component also uses function initialisation with its category CID
+(including the full category path when configured), language, listing visibility filter and shared event handlers.
+When disabled, the existing search results and product listing initialisation is preserved.
 
 ## Support
 If you have any question regarding the plugin or do you think you found a bug? Please contact Tweakwise. They will provide the first level of support. 
