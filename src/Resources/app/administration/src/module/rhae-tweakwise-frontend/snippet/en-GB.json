@@ -29,6 +29,7 @@
         "backendSyncCustomFields": "Custom fields"
       },
       "info": {
+        "functionsInitialisationEnabled": "For new installations, this option can be enabled by default. For existing installations, only enable this option if no customisations have modified the Tweakwise plugin's scripts. If in doubt, contact your implementation partner.",
         "backendSync": "If enabled, you get the possibility to sync a product with Tweakwise from the product page in the admin of Shopware. This way you can sync a specific product right away.",
         "backendSyncBeta": "<strong>Experimental feature:</strong> Please reach out to us in case you encounter unexpected behaviour."
       },
@@ -37,6 +38,7 @@
         "token": "Instance key",
         "accessToken": "Access token",
         "integration": "Way of integration",
+        "functionsInitialisationEnabled": "Enable functions initialization",
         "integrationOptions": {
           "no-integration": "No integration",
           "javascript": "JavaScript implementation",

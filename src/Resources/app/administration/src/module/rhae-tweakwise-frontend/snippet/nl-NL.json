@@ -29,6 +29,7 @@
         "backendSyncCustomFields": "Vrije tekstvelden"
       },
       "info": {
+        "functionsInitialisationEnabled": "Voor nieuwe installaties kan deze optie standaard aan staan. Schakel deze optie bij bestaande installaties alleen in als er geen maatwerk is gebruikt dat de scripts van de Tweakwise-plugin aanpast. Neem bij twijfel contact op met je implementatiepartij.",
         "backendSync": "Wanneer deze optie is geactiveerd, krijg je de mogelijkheid om een product direct te synchroniseren met Tweakwise op de product pagina in de Shopware admin",
         "backendSyncBeta": "<strong>Experimentele functie:</strong> Neem contact met ons op als je onverwachte fouten ervaart"
       },
@@ -37,6 +38,7 @@
         "token": "Instance key",
         "accessToken": "Access token",
         "integration": "Manier van integreren",
+        "functionsInitialisationEnabled": "Functie-initialisatie inschakelen",
         "integrationOptions": {
           "no-integration": "Geen integratie",
           "javascript": "JavaScript integratie",

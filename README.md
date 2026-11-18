@@ -29,6 +29,19 @@ Do you want an overview of all changes in the past versions? Just have a look at
 ## Documentation
 [Checkout the documentation](https://docs.tweakwise.com/reference/integrate-shopware)
 
+### Plugin Studio settings
+Frontend records include an **Enable functions initialization** option for the Plugin Studio integration.
+It is disabled for existing records and enabled by default for new records.
+Storefront templates, including the search results page, can access the option via
+`page.extensions.twConfiguration.functionsInitialisationEnabled`.
+When enabled for Plugin Studio, automatic initialization is disabled in the shared configuration.
+The search results page uses `tweakwiseListerPage()` with
+the `tn_q` query parameter, the shop's domain-specific root category ID, language and event handlers.
+The Tweakwise product listing CMS component also uses function initialization with its category CID
+(including the full category path when configured), language, listing visibility filter and shared event handlers.
+When disabled, the existing search results and product listing initialization is preserved.
+Attribute landing pages already use function initialization. Enabling this option also passes the
+active language and shared event handlers to their existing function call; when disabled, their existing behaviour is preserved.
 
 ## Support
 If you have any question regarding the plugin or do you think you found a bug? Please contact Tweakwise. They will provide the first level of support. 

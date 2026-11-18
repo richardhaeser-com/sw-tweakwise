@@ -52,10 +52,17 @@
                             :options="integrationTypes"
                     />
 
-                    <sw-checkbox-field
-                        v-model:value="item.eventTagEnabled"
+                    <mt-switch
+                        v-if="validToken && item.integration === 'pluginstudio'"
+                        v-model="item.functionsInitialisationEnabled"
+                        :label="$t('rhae-tweakwise-frontend.detail.label.functionsInitialisationEnabled')"
+                        :help-text="$t('rhae-tweakwise-frontend.detail.info.functionsInitialisationEnabled')"
+                    />
+
+                    <mt-switch
+                        v-model="item.eventTagEnabled"
                         :label="$t('rhae-tweakwise-frontend.detail.label.eventTagEnabled')"
-                        @update:value="onChangeToggle($event, 'eventTagEnabled')"
+                        @update:model-value="onChangeToggle($event, 'eventTagEnabled')"
                     />
                 </sw-card-section>
             </sw-card>

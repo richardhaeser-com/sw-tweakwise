@@ -17,6 +17,8 @@ class FrontendEntity extends Entity
 
     protected ?string $integration = 'pluginstudio';
 
+    protected bool $functionsInitialisationEnabled = true;
+
     protected ?string $wayOfSearch = null;
 
     protected ?string $checkoutSales = null;
@@ -102,6 +104,16 @@ class FrontendEntity extends Entity
     public function setIntegration(?string $integration): void
     {
         $this->integration = $integration;
+    }
+
+    public function isFunctionsInitialisationEnabled(): bool
+    {
+        return $this->functionsInitialisationEnabled;
+    }
+
+    public function setFunctionsInitialisationEnabled(bool $functionsInitialisationEnabled): void
+    {
+        $this->functionsInitialisationEnabled = $functionsInitialisationEnabled;
     }
 
     public function getWayOfSearch(): ?string
