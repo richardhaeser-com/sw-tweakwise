@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use RH\Tweakwise\Core\Content\Frontend\FrontendCollection;
 use RH\Tweakwise\Core\Content\Frontend\FrontendDefinition;
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
+use RH\Tweakwise\Service\IdentifierScopeService;
 use RH\Tweakwise\Service\ProductDataService;
 use RH\Tweakwise\Subscriber\StorefrontRenderSubscriber;
 use Shopware\Core\Framework\Context;
@@ -51,6 +52,9 @@ class StorefrontRenderSubscriberTest extends TestCase
         $salesChannelContext->method('getDomainId')->willReturn(Uuid::randomHex());
         $salesChannelContext->method('getSalesChannel')->willReturn($salesChannel);
 
+        $identifierScopeService = $this->createMock(IdentifierScopeService::class);
+        $identifierScopeService->method('getScopeForContext')->willReturn($salesChannelContext->getDomainId());
+
         $request = Request::create('/search-results');
         $request->attributes->set('_route', 'storefront.tweakwise.search');
         $request->setSession(new Session(new MockArraySessionStorage()));
@@ -61,7 +65,8 @@ class StorefrontRenderSubscriberTest extends TestCase
         $subscriber = new StorefrontRenderSubscriber(
             $repository,
             $this->createMock(ProductDataService::class),
-            $requestStack
+            $requestStack,
+            $identifierScopeService
         );
         $subscriber->getTweakwiseConfig(new StorefrontRenderEvent(
             '@Storefront/storefront/page/search.html.twig',
