@@ -11,7 +11,11 @@
         </service>
         <service id="RH\Tweakwise\Twig\ProductDataExtension">
             <argument type="service" id="RH\Tweakwise\Service\ProductDataService" />
+            <argument type="service" id="RH\Tweakwise\Service\IdentifierScopeService" />
             <tag name="twig.extension"/>
+        </service>
+        <service id="RH\Tweakwise\Service\IdentifierScopeService">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
         <service id="RH\Tweakwise\Twig\HashExtension">
             <tag name="twig.extension"/>
@@ -27,6 +31,7 @@
             <argument type="service" id="s_plugin_rhae_tweakwise_frontend.repository"/>
             <argument type="service" id="RH\Tweakwise\Service\ProductDataService" />
             <argument type="service" id="request_stack" />
+            <argument type="service" id="RH\Tweakwise\Service\IdentifierScopeService" />
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="RH\Tweakwise\Subscriber\CrossSellingSubscriber">
@@ -67,6 +72,7 @@
             <argument type="service" id="s_plugin_rhae_tweakwise_feed.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\ProductCloseoutFilterFactory"/>
+            <argument type="service" id="RH\Tweakwise\Service\IdentifierScopeService"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -96,6 +102,7 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\ProductCloseoutFilterFactory"/>
             <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="RH\Tweakwise\Service\IdentifierScopeService"/>
         </service>
 
         <service id="RH\Tweakwise\Service\ProductDataService" public="true">

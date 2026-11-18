@@ -6,9 +6,9 @@
 
         {% if (page.extensions.twConfiguration.integration == 'javascript' || page.extensions.twConfiguration.integration == 'pluginstudio' ) and page.extensions.twConfiguration.instanceKey|escape('js')%}
             {% if page.extensions.twConfiguration.fullPathCid and page.category %}
-                {% set cid = tw_convert_category_path(page.category.path ~ '', page.extensions.twConfiguration.rootCategoryId, page.navigationId, context.domainId) %}
+                {% set cid = tw_convert_category_path(page.category.path ~ '', page.extensions.twConfiguration.rootCategoryId, page.navigationId, page.extensions.twConfiguration.domainId) %}
             {% else %}
-                {% set cid = md5(page.navigationId ~ '_' ~ context.domainId) %}
+                {% set cid = md5(page.navigationId ~ '_' ~ page.extensions.twConfiguration.domainId) %}
             {% endif %}
 
             <script>

@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use RH\Tweakwise\Controller\AdminController;
 use RH\Tweakwise\Core\Content\Feed\FeedEntity;
 use RH\Tweakwise\Core\Content\Frontend\FrontendEntity;
+use RH\Tweakwise\Service\IdentifierScopeService;
 use Shopware\Core\Content\Product\DataAbstractionLayer\VariantListingConfig;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\AbstractProductCloseoutFilterFactory;
@@ -42,6 +43,8 @@ class AdminControllerGroupedFeedTest extends TestCase
     ): AdminController {
         $requestStack = new RequestStack();
         $requestStack->push($request);
+        $systemConfig ??= $this->createMock(SystemConfigService::class);
+        $systemConfig->method('get')->willReturn(false);
 
         return new AdminController(
             $frontendRepo,
@@ -53,8 +56,9 @@ class AdminControllerGroupedFeedTest extends TestCase
             $this->createMock(RouterInterface::class),
             $requestStack,
             $feedRepo,
-            $systemConfig ?? $this->createMock(SystemConfigService::class),
+            $systemConfig,
             $closeoutFilterFactory ?? $this->createMock(AbstractProductCloseoutFilterFactory::class),
+            new IdentifierScopeService($systemConfig),
         );
     }
 

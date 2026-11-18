@@ -96,7 +96,8 @@ class FeedService
         private readonly AbstractProductPriceCalculator $calculator,
         private readonly SystemConfigService $systemConfigService,
         private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory,
-        private readonly SalesChannelRepository $salesChannelRepository
+        private readonly SalesChannelRepository $salesChannelRepository,
+        private readonly IdentifierScopeService $identifierScopeService
     ) {
     }
 
@@ -429,7 +430,7 @@ class FeedService
             $salesChannelDomainCategory->setTranslated(['name' => $salesChannelDomain->getLanguage()->getTranslationCode()->getCode()]);
 
             $content .= $this->twig->render($this->resolveView('category.xml.twig', $feed), [
-                'elementId' => md5($salesChannelDomain->getSalesChannel()->getNavigationCategoryId() . '_' . $salesChannelDomain->getId()),
+                'elementId' => md5($salesChannelDomain->getSalesChannel()->getNavigationCategoryId() . '_' . $this->identifierScopeService->getScopeForDomain($salesChannelDomain)),
                 'category' => $salesChannelDomainCategory,
                 'parentElementId' => md5($salesChannelDomain->getSalesChannel()->getId()),
                 'rank' => $this->categoryRank,
@@ -454,7 +455,7 @@ class FeedService
     {
 
         $content = $this->twig->render($this->resolveView('category.xml.twig', $feed), [
-            'domainId' => $domain->getId(),
+            'domainId' => $this->identifierScopeService->getScopeForDomain($domain),
             'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
             'category' => $category,
             'rank' => $this->categoryRank,
@@ -507,7 +508,7 @@ class FeedService
         /** @var ProductEntity $product */
         foreach ($products as $product) {
             echo '.';
-            $productId = ProductDataService::getTweakwiseProductId($product, $domain->getId());
+            $productId = ProductDataService::getTweakwiseProductId($product, $this->identifierScopeService->getScopeForDomain($domain));
             if (!in_array($productId, $this->uniqueProductIds, true)) {
                 $childFilter = null;
                 $getVariants = false;
@@ -639,7 +640,7 @@ class FeedService
                 $content .= $this->twig->render($this->resolveView('product.xml.twig', $feed), [
                     'categoryIdsInFeed' => array_unique($this->uniqueCategoryIds),
                     'categories' => $categories,
-                    'domainId' => $domain->getId(),
+                    'domainId' => $this->identifierScopeService->getScopeForDomain($domain),
                     'domainUrl' => rtrim($domain->getUrl(), '/') . '/',
                     'product' => $product,
                     'visibility' => $this->getVisibility($product),
@@ -827,7 +828,7 @@ class FeedService
     {
         /** @var TreeItem $treeItem */
         foreach ($treeItems as $treeItem) {
-            $this->uniqueCategoryIds[] = $treeItem->getCategory()->getId() . '_' . $domainEntity->getId();
+            $this->uniqueCategoryIds[] = $treeItem->getCategory()->getId() . '_' . $this->identifierScopeService->getScopeForDomain($domainEntity);
             $this->renderCategory($treeItem->getCategory(), $domainEntity, $feed);
             $this->categoryRank++;
 

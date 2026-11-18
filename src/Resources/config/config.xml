@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <card>
+        <title>Tweakwise identifiers</title>
+        <input-field type="bool">
+            <name>useContextBasedIdentifiers</name>
+            <label>Keep identifiers stable when domains change</label>
+            <helpText>When enabled, domains with the same sales channel, language, and currency use the same Tweakwise product and category identifiers. Changing this setting changes all identifiers. Regenerate and import the feed after changing it.</helpText>
+            <defaultValue>true</defaultValue>
+        </input-field>
+    </card>
+</config>
