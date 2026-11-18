@@ -40,6 +40,8 @@ the `tn_q` query parameter, the shop's domain-specific root category ID, languag
 The Tweakwise product listing CMS component also uses function initialisation with its category CID
 (including the full category path when configured), language, listing visibility filter and shared event handlers.
 When disabled, the existing search results and product listing initialisation is preserved.
+Attribute landing pages already use function initialisation. Enabling this option also passes the
+active language and shared event handlers to their existing function call; when disabled, their existing behaviour is preserved.
 
 ## Support
 If you have any question regarding the plugin or do you think you found a bug? Please contact Tweakwise. They will provide the first level of support. 
