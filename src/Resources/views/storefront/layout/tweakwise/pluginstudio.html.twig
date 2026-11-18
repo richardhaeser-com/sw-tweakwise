@@ -27,67 +27,16 @@
 
     <script>
         {% block tweakwise_starter_config %}
-            window["twn-starter-config"].cid = "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}";
-            window["twn-starter-config"].lang = "{{ languageKey }}";
-            window["twn-starter-config"].on = {
-                "twn.add-to-cart": function (event) {
-                    {% block tweakwise_starter_config_on_twn_addtocart %}
-                        let addToCartEvent = new CustomEvent('twAddToCart', {
-                            detail: {
-                                addToCartAction: '{{ path('frontend.checkout.line-item.add') }}',
-                                data: event.data,
-                                quantity: event.quantity
-                            }
-                        });
-                        window.dispatchEvent(addToCartEvent);
-                    {% endblock %}
-                },
-                "twn.add-to-favorites": function (event) {
-                    {% block tweakwise_starter_config_on_twn_addtofavorites %}
-                        let addToFavoritesEvent = new CustomEvent('twAddToFavorites', {
-                            detail: {
-                                routerAddPath: '{{ path('frontend.wishlist.product.add', { productId: 'idPlaceholder' }) }}',
-                                routerAddAfterLoginPath: '{{ path('frontend.wishlist.add.after.login', { productId: 'idPlaceholder' }) }}',
-                                routerRemovePath: '{{ path('frontend.wishlist.product.remove', { productId: 'idPlaceholder' }) }}',
-                                data: event.data
-                            }
-                        });
-                        window.dispatchEvent(addToFavoritesEvent);
-                    {% endblock %}
-                },
-                "twn.request.navigation.success": function (event) {
-                    {% block tweakwise_starter_config_on_twn_request_navigation_success %}
-                        let navSuccessEvent = new CustomEvent('twNavigationSuccess', {
-                            detail: {
-                                data: event.data
-                            }
-                        });
-                    window.dispatchEvent(navSuccessEvent);
-                    {% endblock %}
-                },
-                "twn.request.success": function (event) {
-                    {% block tweakwise_starter_config_on_twn_request_success %}
-                        let successEvent = new CustomEvent('twSuccess', {
-                            detail: {
-                                data: event.data
-                            }
-                        });
-                        window.dispatchEvent(successEvent);
-                    {% endblock %}
-                },
-                "twn.container.close": function (event) {
-                    {% block tweakwise_starter_config_on_twn_container_close %}
-                        let navCloseEvent = new CustomEvent('twContainerClose', {
-                            detail: {
-                                data: event.data
-                            }
-                        });
-                    window.dispatchEvent(navCloseEvent);
-                    {% endblock %}
-                },
-                {% block tweakwise_starter_config_on_additional_handlers %}
-                {% endblock %}
-            };
+            {% if page.extensions.twConfiguration.functionsInitialisationEnabled %}
+                window["twn-starter-config"].auto = false;
+            {% else %}
+                window["twn-starter-config"].cid = "{{ md5(page.extensions.twConfiguration.rootCategoryId ~ '_' ~ page.extensions.twConfiguration.domainId) }}";
+                window["twn-starter-config"].lang = "{{ languageKey }}";
+
+                window["twn-starter-config"].on = {
+                    {% sw_include '@Storefront/storefront/layout/tweakwise/pluginstudio-events.html.twig' %}
+                };
+            {% endif %}
         {% endblock %}
 
         {% block tweakwise_whishlist_initialisation %}

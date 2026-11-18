@@ -68,6 +68,7 @@ class StorefrontRenderSubscriber implements EventSubscriberInterface
             'rootCategoryId' => $rootCategoryId,
             'instanceKey' => $result->getToken(),
             'integration' => $result->getIntegration(),
+            'functionsInitialisationEnabled' => $result->isFunctionsInitialisationEnabled(),
             'wayOfSearch' => $result->getWayOfSearch(),
             'eventTagEnabled' => $result->isEventTagEnabled(),
             'fullPathCid' => $result->isFullPathCid(),

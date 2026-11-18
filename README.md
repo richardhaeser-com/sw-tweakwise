@@ -32,6 +32,12 @@ Do you want an overview of all changes in the past versions? Just have a look at
 ### Plugin Studio settings
 Frontend records include an **Enable functions initialisation** option for the Plugin Studio integration.
 It is disabled for existing records and enabled by default for new records.
+Storefront templates, including the search results page, can access the option via
+`page.extensions.twConfiguration.functionsInitialisationEnabled`.
+When enabled for Plugin Studio, automatic initialisation is disabled in the shared configuration.
+The search results page uses `tweakwiseListerPage()` with
+the `tn_q` query parameter, the shop's domain-specific root category ID, language and event handlers.
+When disabled, the existing search results initialisation is preserved.
 
 ## Support
 If you have any question regarding the plugin or do you think you found a bug? Please contact Tweakwise. They will provide the first level of support. 
