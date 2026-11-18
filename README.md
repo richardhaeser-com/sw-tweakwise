@@ -29,6 +29,9 @@ Do you want an overview of all changes in the past versions? Just have a look at
 ## Documentation
 [Checkout the documentation](https://docs.tweakwise.com/reference/integrate-shopware)
 
+### Plugin Studio settings
+Frontend records include an **Enable functions initialisation** option for the Plugin Studio integration.
+It is disabled for existing records and enabled by default for new records.
 
 ## Support
 If you have any question regarding the plugin or do you think you found a bug? Please contact Tweakwise. They will provide the first level of support. 

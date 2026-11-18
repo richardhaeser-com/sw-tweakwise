@@ -39,6 +39,7 @@ class FrontendDefinition extends EntityDefinition
     {
         return [
             'name' => 'Main frontend',
+            'functionsInitialisationEnabled' => true,
         ];
     }
     protected function defineFields(): FieldCollection
@@ -49,6 +50,7 @@ class FrontendDefinition extends EntityDefinition
             (new StringField('token', 'token'))->addFlags(new ApiAware()),
             (new StringField('accessToken', 'accessToken'))->addFlags(new ApiAware()),
             (new StringField('integration', 'integration'))->addFlags(new ApiAware()),
+            (new BoolField('functionsInitialisationEnabled', 'functionsInitialisationEnabled'))->addFlags(new Required(), new ApiAware()),
             (new StringField('wayOfSearch', 'wayOfSearch'))->addFlags(new ApiAware()),
             (new StringField('checkoutSales', 'checkoutSales'))->addFlags(new ApiAware()),
             (new BoolField('eventTagEnabled', 'eventTagEnabled'))->addFlags(new ApiAware()),
