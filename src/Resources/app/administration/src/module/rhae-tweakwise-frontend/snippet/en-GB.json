@@ -38,7 +38,7 @@
         "token": "Instance key",
         "accessToken": "Access token",
         "integration": "Way of integration",
-        "functionsInitialisationEnabled": "Enable functions initialisation",
+        "functionsInitialisationEnabled": "Enable functions initialization",
         "integrationOptions": {
           "no-integration": "No integration",
           "javascript": "JavaScript implementation",
